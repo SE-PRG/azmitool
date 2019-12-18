@@ -14,7 +14,7 @@ namespace azmi_main
 
         public static string[] application()
         {
-            return new string[] { "Usage:", "Add more explanation" };
+            return new string[] { "Usage:", "help - displays this help", "setblob help - displays help on set blob command" };
         }
 
         public static string[] command(string commandName)
@@ -41,7 +41,7 @@ namespace azmi_main
             // TODO: This should also support different endpoints except management, like storage
 
             // Build request to acquire managed identities for Azure resources token
-            string metaDataUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://management.azure.com/"
+            string metaDataUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://management.azure.com/";
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(metaDataUri);
             request.Headers["Metadata"] = "true";
             request.Method = "GET";
@@ -51,7 +51,7 @@ namespace azmi_main
                 // Call /token endpoint
                 HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 
-                // Pipe response Stream to a StreamReader, and extract access token
+                // Pipe response Stream to a StreamReader
                 StreamReader streamResponse = new StreamReader(response.GetResponseStream());
                 return streamResponse.ReadToEnd();
             } catch (Exception e)
@@ -85,6 +85,7 @@ namespace azmi_main
         public static void setBlob(string blobUri, string filePath)
         {
             // sets blob content based on local file content
+            // TODO: Implement set blob method!
         }
     }
 
