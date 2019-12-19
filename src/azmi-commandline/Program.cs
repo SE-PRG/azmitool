@@ -1,5 +1,6 @@
 ﻿using azmi_main;
 using System;
+using System.Security.Cryptography;
 
 namespace azmi_commandline
 {
@@ -10,14 +11,14 @@ namespace azmi_commandline
             if (args.Length == 0)
             {
                 // display usage and error
-                HelpMessage.application();
+                WriteLines(HelpMessage.application());
                 Environment.Exit(1);
 
             }
             else if (args[0] == "help")
             {
                 // display usage
-                HelpMessage.application();
+                WriteLines(HelpMessage.application());
                 //Environment.Exit(0);
             }
             else if (args.Length == 2 && args[1] == "help") {
@@ -35,14 +36,14 @@ namespace azmi_commandline
                 if (args.Length != 3)
                 {
                     // requires parameters error, display setblob usage                    
-                    HelpMessage.command("setblob");
+                    WriteLines(HelpMessage.command("setblob"));
                     Environment.Exit(1);
                 }
                 else
                 {
                     // call setblob method
                     Console.WriteLine("Starting something");
-                    Operations.setBlob(args[1], args[2]);
+                    WriteLines(Operations.setBlob(args[1], args[2]));
 
                 }
                 // end of setblob command
@@ -56,6 +57,16 @@ namespace azmi_commandline
                 HelpMessage.application();
                 throw new ArgumentException();
             }
+        }
+
+        private static void WriteLines(string[] s)
+        {
+            foreach (var s1 in s) { Console.WriteLine(s1); };
+        }
+
+        private static void WriteLines(string s)
+        {
+            Console.WriteLine(s);
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text.Json;
+using System.Linq;
 
 namespace azmi_main
 {
@@ -35,14 +36,36 @@ namespace azmi_main
 
         // Class defining main operations performed by azmi tool
 
-        public static string getMetaDataResponse()
+        private static string metadataUri (string endpoint = "management", string apiVersion = "2018-02-01")
+        {
+            string[] validEndoints = { "management","storage"};
+            if (!(validEndoints.Contains(endpoint)))
+            {
+                throw new Exception();
+            }
+
+            string uri = "http://169.254.169.254/metadata/identity/oauth2/token";
+            uri += $"?api-version={apiVersion}";
+            uri += $"&resource=https://{endpoint}.azure.com";
+
+            return uri;
+        }
+
+        public static string getMetaDataResponse(string endpoint)
         {
             // TODO: Extend this to support also provided managed identity name
             // TODO: This should also support different endpoints except management, like storage
 
             // Build request to acquire managed identities for Azure resources token
-            string metaDataUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://management.azure.com/";
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(metaDataUri);
+            //string metaDataUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://management.azure.com/";
+            //string metaDataUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://storage.azure.com/";
+
+
+            string metaDataUri2 = "http://169.254.169.254/metadata/identity/oauth2/token";
+            metaDataUri2 += "?api-version=2018-02-01";
+            metaDataUri2 += "&resource=https://storage.azure.com/";
+
+            var request = (HttpWebRequest)WebRequest.Create(metaDataUri2);
             request.Headers["Metadata"] = "true";
             request.Method = "GET";
 
@@ -53,7 +76,16 @@ namespace azmi_main
 
                 // Pipe response Stream to a StreamReader
                 StreamReader streamResponse = new StreamReader(response.GetResponseStream());
-                return streamResponse.ReadToEnd();
+                var metaDataResponse = streamResponse.ReadToEnd();
+                if (String.IsNullOrEmpty(metaDataResponse))
+                {
+                    throw new Exception();
+                }
+                else
+                {
+                    return metaDataResponse;
+                }
+                
             } catch (Exception e)
             {
                 string errorText = String.Format("{0} \n\n{1}", e.Message, e.InnerException != null ? e.InnerException.Message : "Acquire token failed");
@@ -86,7 +118,8 @@ namespace azmi_main
         {
             // sets blob content based on local file content
             // TODO: Implement set blob method!
-            return getToken();
+            //return getToken();
+            return (getToken());
         }
     }
 
