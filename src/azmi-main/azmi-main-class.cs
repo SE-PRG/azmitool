@@ -7,18 +7,26 @@ using System.Linq;
 
 namespace azmi_main
 {
+    
     public class HelpMessage
     {
         // TODO: Add definition of implemented commands (string array) and use it programatically
         // TODO: Use definition above both in command line and tests projects
         // TODO: Add definition of command arguments (i.e. count, names, description)
 
+        public static string[] supportedSubCommands = { "setblob" };
+
         public static string[] application()
         {
-            return new string[] { "Usage:", "help - displays this help", "setblob help - displays help on set blob command" };
+            List<string> response = new List<string>() { "Usage:", "help - displays this help" };
+            foreach (var subCommand in supportedSubCommands)
+            {                
+                response.Add(@"azmi {subCommand} help - displays help on {subCommand} command");                
+            }            
+            return response.ToArray();
         }
 
-        public static string[] command(string commandName)
+        public static string[] subCommand(string commandName)
         {
             if (commandName == "setblob")
             {

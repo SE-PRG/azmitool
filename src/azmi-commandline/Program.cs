@@ -23,7 +23,7 @@ namespace azmi_commandline
             }
             else if (args.Length == 2 && args[1] == "help") {
                 // Command specific help. like "azmi setblob help"
-                HelpMessage.command(args[0]);
+                HelpMessage.subCommand(args[0]);
                 // TODO: Verify if args[0] is defined function, using predefined list in main project
             }
             else if (args[0] == "setblob") {
@@ -36,7 +36,7 @@ namespace azmi_commandline
                 if (args.Length != 3)
                 {
                     // requires parameters error, display setblob usage                    
-                    WriteLines(HelpMessage.command("setblob"));
+                    WriteLines(HelpMessage.subCommand("setblob"));
                     Environment.Exit(1);
                 }
                 else
