@@ -66,7 +66,7 @@ namespace azmi_main
         {
             try
             {
-                Dictionary<string, string> obj = (Dictionary<string, string>)JsonSerializer.Deserialize(metaDataResponse, typeof(Dictionary<string, string>));
+                var obj = (Dictionary<string, string>)JsonSerializer.Deserialize(metaDataResponse, typeof(Dictionary<string, string>));
                 return obj["access_token"];
             }
             catch
@@ -82,10 +82,11 @@ namespace azmi_main
             return extractToken(getMetaDataResponse());
         }
 
-        public static void setBlob(string blobUri, string filePath)
+        public static string setBlob(string blobUri, string filePath)
         {
             // sets blob content based on local file content
             // TODO: Implement set blob method!
+            return getToken();
         }
     }
 

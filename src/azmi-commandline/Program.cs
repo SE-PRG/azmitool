@@ -11,18 +11,19 @@ namespace azmi_commandline
             {
                 // display usage and error
                 HelpMessage.application();
-                throw new ArgumentNullException();
+                Environment.Exit(1);
 
             }
             else if (args[0] == "help")
             {
                 // display usage
                 HelpMessage.application();
+                //Environment.Exit(0);
             }
             else if (args.Length == 2 && args[1] == "help") {
                 // Command specific help. like "azmi setblob help"
                 HelpMessage.command(args[0]);
-                // TODO: Verify if args[0] is defined function
+                // TODO: Verify if args[0] is defined function, using predefined list in main project
             }
             else if (args[0] == "setblob") {
                 
@@ -35,11 +36,12 @@ namespace azmi_commandline
                 {
                     // requires parameters error, display setblob usage                    
                     HelpMessage.command("setblob");
-                    throw new ArgumentNullException();
+                    Environment.Exit(1);
                 }
                 else
                 {
                     // call setblob method
+                    Console.WriteLine("Starting something");
                     Operations.setBlob(args[1], args[2]);
 
                 }
