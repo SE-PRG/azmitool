@@ -5,6 +5,12 @@ using System.Net;
 using System.Text.Json;
 using System.Linq;
 
+using Azure;
+using Azure.Storage;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using Azure.Identity;
+
 namespace azmi_main
 {
     
@@ -59,7 +65,7 @@ namespace azmi_main
             return uri;
         }
 
-        public static string getMetaDataResponse(string endpoint = null)
+        public static string getMetaDataResponse(string endpoint = "management")
         {
             // TODO: Extend this to support also provided managed identity name
             // TODO: This should also support different endpoints except management, like storage
@@ -120,7 +126,33 @@ namespace azmi_main
         {
             // sets blob content based on local file content
             // TODO: Implement set blob method!
-            //return getToken();
+
+            string localPath = ".";
+            string fileName = "quickstart" + Guid.NewGuid().ToString() + ".txt";
+            string localFilePath = Path.Combine(localPath, fileName);
+
+            // Write text to the file
+            File.WriteAllText(localFilePath, "Hello, World!");
+
+            var containerEndpoint = new Uri("https://azmitest.blob.core.windows.net/azmitest");
+
+            // Get a credential and create a client object for the blob container.
+            BlobContainerClient containerClient = new BlobContainerClient(containerEndpoint, new ManagedIdentityCredential());
+
+            // Create the container if it does not exist.
+            containerClient.CreateIfNotExists();
+
+            // Get a reference to a blob
+            BlobClient blobClient = containerClient.GetBlobClient(fileName);
+
+            Console.WriteLine("Uploading to Blob storage as blob:\n\t {0}\n", blobClient.Uri);
+
+            // Open the file and upload its data
+            using FileStream uploadFileStream = File.OpenRead(localFilePath);
+            blobClient.Upload(uploadFileStream);
+            
+            uploadFileStream.Close();
+            
             return (getToken());
         }
     }

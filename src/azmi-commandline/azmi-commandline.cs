@@ -22,8 +22,8 @@ namespace azmi_commandline
                 //Environment.Exit(0);
             }
             else if (args.Length == 2 && args[1] == "help") {
-                // Command specific help. like "azmi setblob help"
-                HelpMessage.subCommand(args[0]);
+                // Command specific help. like "azmi 0:setblob 1:help"
+                WriteLines(HelpMessage.subCommand(args[0]));
                 // TODO: Verify if args[0] is defined function, using predefined list in main project
             }
             else if (args[0] == "setblob") {
