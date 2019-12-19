@@ -18,10 +18,10 @@ namespace azmi_main
 
         public static string[] application()
         {
-            List<string> response = new List<string>() { "Usage:", "help - displays this help" };
+            var response = new List<string>() { "Usage:", "help - displays this help" };
             foreach (var subCommand in supportedSubCommands)
             {                
-                response.Add(@"azmi {subCommand} help - displays help on {subCommand} command");                
+                response.Add($"azmi {subCommand} help - displays help on {subCommand} command");                
             }            
             return response.ToArray();
         }
@@ -44,7 +44,7 @@ namespace azmi_main
 
         // Class defining main operations performed by azmi tool
 
-        private static string metadataUri (string endpoint = "management", string apiVersion = "2018-02-01")
+        public static string metadataUri (string endpoint = "management", string apiVersion = "2018-02-01")
         {
             string[] validEndoints = { "management","storage"};
             if (!(validEndoints.Contains(endpoint)))
@@ -59,23 +59,17 @@ namespace azmi_main
             return uri;
         }
 
-        public static string getMetaDataResponse(string endpoint)
+        public static string getMetaDataResponse(string endpoint = null)
         {
             // TODO: Extend this to support also provided managed identity name
             // TODO: This should also support different endpoints except management, like storage
 
             // Build request to acquire managed identities for Azure resources token
-            //string metaDataUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://management.azure.com/";
-            //string metaDataUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://storage.azure.com/";
-
-
-            string metaDataUri2 = "http://169.254.169.254/metadata/identity/oauth2/token";
-            metaDataUri2 += "?api-version=2018-02-01";
-            metaDataUri2 += "&resource=https://storage.azure.com/";
-
-            var request = (HttpWebRequest)WebRequest.Create(metaDataUri2);
+            var request = (HttpWebRequest)WebRequest.Create(metadataUri(endpoint));
             request.Headers["Metadata"] = "true";
             request.Method = "GET";
+            // TODO: Switch to HttpClient
+            // https://docs.microsoft.com/en-us/dotnet/api/system.net.httpwebrequest?view=netframework-4.8#remarks
 
             try
             {

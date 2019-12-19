@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "azmi-commandline", "azmi-co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "azmi-main", "azmi-main\azmi-main.csproj", "{8A00C0BE-396E-41DF-BC45-DF27C85116AF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "azmi-tests", "azmi-tests\azmi-tests.csproj", "{9C2C3C70-F456-4A7A-AA83-286372274F5C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "azmi-tests", "azmi-tests\azmi-tests.csproj", "{9C2C3C70-F456-4A7A-AA83-286372274F5C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
