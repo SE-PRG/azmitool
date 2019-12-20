@@ -150,6 +150,7 @@ Usage:
                 throw new Exception($"File ${filePath} not found!");
             }
             
+            // TODO: Check if container uri contains blob path also, like container/fodler1/folder2
             // Get a credential and create a client object for the blob container.
             BlobContainerClient containerClient = new BlobContainerClient(new Uri(containerUri), new ManagedIdentityCredential());
 
