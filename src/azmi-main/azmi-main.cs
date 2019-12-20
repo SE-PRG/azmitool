@@ -7,6 +7,7 @@ using System.Linq;
 
 using Azure.Storage.Blobs;
 using Azure.Identity;
+using System.Net.Http;
 
 namespace azmi_main
 {
@@ -89,8 +90,13 @@ Usage:
             var request = (HttpWebRequest)WebRequest.Create(metadataUri(endpoint));                
             request.Headers["Metadata"] = "true";
             request.Method = "GET";
+            
             // TODO: Switch to HttpClient
-            // https://docs.microsoft.com/en-us/dotnet/api/system.net.httpwebrequest?view=netframework-4.8#remarks            
+            // https://docs.microsoft.com/en-us/dotnet/api/system.net.httpwebrequest?view=netframework-4.8#remarks
+            //HttpClient client = new HttpClient();
+            //HttpResponseMessage response2 = client.GetAsync("http://www.contoso.com/").Result;
+            //response2.EnsureSuccessStatusCode();
+            //string responseBody = response2.Content.ReadAsStringAsync().Result;
 
             try
             {
@@ -156,11 +162,19 @@ Usage:
 
             // Open the file and upload its data
             using FileStream uploadFileStream = File.OpenRead(filePath);
-            blobClient.Upload(uploadFileStream);
-            
-            uploadFileStream.Close();
-            
-            return ("OK");
+            try
+            {                
+                blobClient.Upload(uploadFileStream);
+                return "OK";
+            } catch
+            {
+                uploadFileStream.Close(); 
+                return "NOT OK";
+            }
+            finally
+            {
+                uploadFileStream.Close();
+            }
         }
     }
 
