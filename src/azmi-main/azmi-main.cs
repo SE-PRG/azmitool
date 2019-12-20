@@ -143,37 +143,24 @@ Usage:
         public static string setBlob(string containerUri, string filePath)
         {
             // sets blob content based on local file content
-            // TODO: Test / handle if we provide filename as /dir/file.name
-            // TODO: Test / handle if we provide container as directory within it
-            //       like mycontainer/mydir at the end
-
-            string fileName;
-            string localFilePath;
-
-            if (File.Exists(filePath))
+            if (!(File.Exists(filePath)))
             {
-                localFilePath = Path.GetFullPath(filePath);
-                fileName = Path.GetFileName(localFilePath);
-            } else
-            {
-                throw new Exception();
+                throw new Exception($"File ${filePath} not found!");
             }
             
-            var containerEndpoint = new Uri(containerUri);
-
             // Get a credential and create a client object for the blob container.
-            BlobContainerClient containerClient = new BlobContainerClient(containerEndpoint, new ManagedIdentityCredential());
+            BlobContainerClient containerClient = new BlobContainerClient(new Uri(containerUri), new ManagedIdentityCredential());
 
             // Create the container if it does not exist.
             containerClient.CreateIfNotExists();
 
             // Get a reference to a blob
-            BlobClient blobClient = containerClient.GetBlobClient(fileName);
+            BlobClient blobClient = containerClient.GetBlobClient(filePath);
 
             Console.WriteLine("Uploading to Blob storage as blob:\n\t {0}\n", blobClient.Uri);
 
             // Open the file and upload its data
-            using FileStream uploadFileStream = File.OpenRead(localFilePath);
+            using FileStream uploadFileStream = File.OpenRead(filePath);
             blobClient.Upload(uploadFileStream);
             
             uploadFileStream.Close();
