@@ -27,26 +27,51 @@ namespace azmi_commandline
                 // TODO: Verify if args[0] is defined function, using predefined list in main project
             }
             else if (args[0] == "setblob") {
-                
+
                 //
-                // set blob command
+                // set blob subcommand
                 // azmi setblob $BLOB $FILE
                 //
-                
+
                 if (args.Length != 3)
                 {
-                    // requires parameters error, display setblob usage                    
+                    // required parameters error, display setblob usage                    
                     WriteLines(HelpMessage.subCommand("setblob"));
                     Environment.Exit(1);
                 }
                 else
                 {
                     // call setblob method
-                    Console.WriteLine("Starting something");
                     WriteLines(Operations.setBlob(args[1], args[2]));
 
                 }
                 // end of setblob command
+            }
+            else if (args[0] == "gettoken")
+            {
+
+                //
+                // get token subcommand
+                // azmi gettoken [$ENDPOINT]
+                //
+
+                if (args.Length == 1)
+                {
+                    // returns token obtained from default endpoint
+                    WriteLines(Operations.getToken());
+                }
+                else if (args.Length == 2)
+                {
+                    WriteLines(Operations.getToken(args[1]));
+                    // we have already covered option azmi gettoken help
+                }
+                else if (args.Length != 2)
+                {
+                    // parameters error, display setblob usage                    
+                    WriteLines(HelpMessage.subCommand("gettoken"));
+                    Environment.Exit(1);
+                }
+
             }
             //
             // add here additional commands
