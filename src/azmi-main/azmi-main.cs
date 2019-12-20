@@ -5,10 +5,7 @@ using System.Net;
 using System.Text.Json;
 using System.Linq;
 
-using Azure;
-using Azure.Storage;
 using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
 using Azure.Identity;
 
 namespace azmi_main
@@ -16,7 +13,6 @@ namespace azmi_main
     
     public class HelpMessage
     {
-        // TODO: Add definition of implemented commands (string array) and use it programatically
         // TODO: Use definition above both in command line and tests projects
         // TODO: Add definition of command arguments (i.e. count, names, description)
 
@@ -28,7 +24,7 @@ namespace azmi_main
 
             var response = new List<string>() { @"
 Command-line utility azmi stands for Azure Managed Identity.
-It is helping admins simplify common operations (reading / writing) on standard  Azure resources.
+It is helping admins simplify common operations (reading / writing) on standard Azure resources.
 It is utilizing Azure AD authentication via user assigned managed identity.
 
 Usage:
@@ -45,7 +41,7 @@ Usage:
             if (commandName == "setblob")
             {
                 return new string[] { @"
-Subcommand setblob is used for writing to storage account blob.
+Subcommand 'setblob' is used for writing to storage account blob.
 
 Usage:
   azmi setblob help - displays this help message
@@ -54,14 +50,14 @@ Usage:
             else if (commandName == "gettoken")
             {
                 return new string[] { @"
-Subcommand gettoken is used for obtaining Azure authorization token.
+Subcommand 'gettoken' is used for obtaining Azure authorization token.
 
 Usage:
   azmi gettoken help - displays this help message              
   azmi gettoken [$ENDPOINT] obtains token against management (default value) or storage endpoints" };
             } else
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("Called unexpected code branch.");
             }
         }
     }
@@ -73,10 +69,10 @@ Usage:
 
         public static string metadataUri (string endpoint = "management", string apiVersion = "2018-02-01")
         {
-            string[] validEndoints = { "management","storage"};
-            if (!(validEndoints.Contains(endpoint)))
+            string[] validEndpoints = { "management", "storage"};
+            if (!(validEndpoints.Contains(endpoint)))
             {
-                throw new Exception();
+                throw new ArgumentOutOfRangeException($"Metadata endpoint '{endpoint}' not supported.");
             }
 
             string uri = "http://169.254.169.254/metadata/identity/oauth2/token";
@@ -88,14 +84,13 @@ Usage:
 
         public static string getMetaDataResponse(string endpoint = "management")
         {
-            // TODO: Extend this to support also provided managed identity name
-
+            // TODO: Extend this to support also provided managed identity name            
             // Build request to acquire managed identities for Azure resources token
-            var request = (HttpWebRequest)WebRequest.Create(metadataUri(endpoint));
+            var request = (HttpWebRequest)WebRequest.Create(metadataUri(endpoint));                
             request.Headers["Metadata"] = "true";
             request.Method = "GET";
             // TODO: Switch to HttpClient
-            // https://docs.microsoft.com/en-us/dotnet/api/system.net.httpwebrequest?view=netframework-4.8#remarks
+            // https://docs.microsoft.com/en-us/dotnet/api/system.net.httpwebrequest?view=netframework-4.8#remarks            
 
             try
             {
@@ -107,18 +102,16 @@ Usage:
                 var metaDataResponse = streamResponse.ReadToEnd();
                 if (String.IsNullOrEmpty(metaDataResponse))
                 {
-                    throw new Exception();
+                    throw new ArgumentNullException("Received empty response from metaData service.");
                 }
                 else
                 {
                     return metaDataResponse;
                 }
-                
-            } catch (Exception e)
-            {
-                string errorText = String.Format("{0} \n\n{1}", e.Message, e.InnerException != null ? e.InnerException.Message : "Acquire token failed");
-                //TODO: Throw proper error
-                throw new Exception();
+            }
+            catch (Exception e)
+            {                                
+                throw new Exception("Failed to receive response from metadata. " + e.Message);
             }
         }
 
@@ -129,10 +122,9 @@ Usage:
                 var obj = (Dictionary<string, string>)JsonSerializer.Deserialize(metaDataResponse, typeof(Dictionary<string, string>));
                 return obj["access_token"];
             }
-            catch
+            catch (Exception e)
             {
-                //TODO: Throw proper error
-                throw new Exception();
+                throw new Exception("Could not deserialize access token. " + e.Message);
             }
         }
 
@@ -147,7 +139,7 @@ Usage:
             // sets blob content based on local file content
             if (!(File.Exists(filePath)))
             {
-                throw new Exception($"File ${filePath} not found!");
+                throw new FileNotFoundException($"File '{filePath}' not found!");
             }
             
             // TODO: Check if container uri contains blob path also, like container/fodler1/folder2
