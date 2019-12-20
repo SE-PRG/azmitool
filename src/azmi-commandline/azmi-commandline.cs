@@ -10,8 +10,6 @@ namespace azmi_commandline
         {
             if (args.Length == 0)
             {
-                var a = HelpMessage.supportedSubCommands[0];
-
                 // display usage and error
                 WriteLines(HelpMessage.application());
                 Environment.Exit(1);

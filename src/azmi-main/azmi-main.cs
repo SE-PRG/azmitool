@@ -56,7 +56,7 @@ Usage:
 Subcommand gettoken is used for obtaining Azure authorization token.
 Usage:
   azmi gettoken help - displays this help message              
-  azmi gettoken [$ENDPOINT] obtains token against management or storage endpoints" };
+  azmi gettoken [$ENDPOINT] obtains token against management (default value) or storage endpoints" };
             } else
             {
                 throw new ArgumentNullException();
