@@ -1,6 +1,7 @@
 ﻿using azmi_main;
 using System;
 using System.Security.Cryptography;
+using System.Linq;
 
 namespace azmi_commandline
 {
@@ -22,9 +23,19 @@ namespace azmi_commandline
                 //Environment.Exit(0);
             }
             else if (args.Length == 2 && args[1] == "help") {
-                // Command specific help. like "azmi 0:setblob 1:help"
-                WriteLines(HelpMessage.subCommand(args[0]));
-                // TODO: Verify if args[0] is defined function, using predefined list in main project
+                string invokeSubCommand = args[0];
+                if (HelpMessage.supportedSubCommands.Contains(invokeSubCommand))
+                {
+                    // Command specific help. like "azmi 0:setblob 1:help"
+                    WriteLines(HelpMessage.subCommand(invokeSubCommand));
+                }
+                else
+                {
+                    WriteLines($"Unrecognized subcommand '{invokeSubCommand}'.");
+                    // display usage and error
+                    WriteLines(HelpMessage.application());
+                    Environment.Exit(1);
+                }
             }
             else if (args[0] == "setblob") {
                 

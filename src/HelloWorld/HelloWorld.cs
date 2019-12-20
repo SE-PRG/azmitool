@@ -4,7 +4,7 @@ using System.Net;
 
 namespace ConsoleApp2
 {
-    class Program
+    class HelloWorld
     {
         static void Main(string[] args)
         {
