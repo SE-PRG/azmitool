@@ -24,8 +24,10 @@ namespace azmi_main
 
         public static string[] application()
         {
+            
+
             var response = new List<string>() { @"
-Command-line utiliti azmi stands for Azure Managed Identity.
+Command-line utility azmi stands for Azure Managed Identity.
 It is helping admins simplify common operations (reading / writing) on standard  Azure resources.
 It is utilizing Azure AD authentication via user assigned managed identity.
 
@@ -51,10 +53,10 @@ Usage:
             else if (commandName == "gettoken")
             {
                 return new string[] { @"
-Subcommand setblob is used for writing to storage account blob.
+Subcommand gettoken is used for obtaining Azure authorization token.
 Usage:
-  azmi setblob help - displays this help message              
-  azmi setblob $CONTAINER $FILE - writes a file to storage account container" };
+  azmi gettoken help - displays this help message              
+  azmi gettoken [$ENDPOINT] obtains token against management or storage endpoints" };
             } else
             {
                 throw new ArgumentNullException();
