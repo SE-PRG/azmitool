@@ -46,14 +46,16 @@ Usage:
             {
                 return new string[] { @"
 Subcommand setblob is used for writing to storage account blob.
+
 Usage:
   azmi setblob help - displays this help message
-  azmi setblob $CONTAINER $FILE - writes a file to storage account container"};            
+  azmi setblob $FILE $CONTAINER - writes a local file to a storage account container" };            
             }
             else if (commandName == "gettoken")
             {
                 return new string[] { @"
 Subcommand gettoken is used for obtaining Azure authorization token.
+
 Usage:
   azmi gettoken help - displays this help message              
   azmi gettoken [$ENDPOINT] obtains token against management (default value) or storage endpoints" };
@@ -140,7 +142,7 @@ Usage:
             return extractToken(getMetaDataResponse(endpoint));
         }
 
-        public static string setBlob(string containerUri, string filePath)
+        public static string setBlob(string filePath, string containerUri)
         {
             // sets blob content based on local file content
             if (!(File.Exists(filePath)))
@@ -157,7 +159,7 @@ Usage:
             // Get a reference to a blob
             BlobClient blobClient = containerClient.GetBlobClient(filePath);
 
-            Console.WriteLine("Uploading to Blob storage as blob:\n\t {0}\n", blobClient.Uri);
+            Console.WriteLine("Uploading to Blob storage as blob: {0}", blobClient.Uri);
 
             // Open the file and upload its data
             using FileStream uploadFileStream = File.OpenRead(filePath);
