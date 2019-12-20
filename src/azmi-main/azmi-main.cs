@@ -20,14 +20,22 @@ namespace azmi_main
         // TODO: Use definition above both in command line and tests projects
         // TODO: Add definition of command arguments (i.e. count, names, description)
 
-        public static string[] supportedSubCommands = { "setblob" };
+        public static string[] supportedSubCommands = { "gettoken", "setblob" };
 
         public static string[] application()
         {
-            var response = new List<string>() { "Usage:", "help - displays this help" };
+            
+
+            var response = new List<string>() { @"
+Command-line utility azmi stands for Azure Managed Identity.
+It is helping admins simplify common operations (reading / writing) on standard  Azure resources.
+It is utilizing Azure AD authentication via user assigned managed identity.
+
+Usage:
+  azmi help - displays this help message" };
             foreach (var subCommand in supportedSubCommands)
             {                
-                response.Add($"azmi {subCommand} help - displays help on {subCommand} command");                
+                response.Add($"  azmi {subCommand} help - displays help on {subCommand} sub-command");                
             }            
             return response.ToArray();
         }
@@ -36,9 +44,20 @@ namespace azmi_main
         {
             if (commandName == "setblob")
             {
-                return new string[] { "Usage:", "Add more explanation" };            
+                return new string[] { @"
+Subcommand setblob is used for writing to storage account blob.
+Usage:
+  azmi setblob help - displays this help message
+  azmi setblob $CONTAINER $FILE - writes a file to storage account container"};            
             }
-            else
+            else if (commandName == "gettoken")
+            {
+                return new string[] { @"
+Subcommand gettoken is used for obtaining Azure authorization token.
+Usage:
+  azmi gettoken help - displays this help message              
+  azmi gettoken [$ENDPOINT] obtains token against management (default value) or storage endpoints" };
+            } else
             {
                 throw new ArgumentNullException();
             }
@@ -68,7 +87,6 @@ namespace azmi_main
         public static string getMetaDataResponse(string endpoint = "management")
         {
             // TODO: Extend this to support also provided managed identity name
-            // TODO: This should also support different endpoints except management, like storage
 
             // Build request to acquire managed identities for Azure resources token
             var request = (HttpWebRequest)WebRequest.Create(metadataUri(endpoint));
@@ -116,25 +134,32 @@ namespace azmi_main
             }
         }
 
-        public static string getToken()
+        public static string getToken(string endpoint = "management")
         {
             // Method unifies above two mentioned methods into one
-            return extractToken(getMetaDataResponse());
+            return extractToken(getMetaDataResponse(endpoint));
         }
 
-        public static string setBlob(string blobUri, string filePath)
+        public static string setBlob(string containerUri, string filePath)
         {
             // sets blob content based on local file content
-            // TODO: Implement set blob method!
+            // TODO: Test / handle if we provide filename as /dir/file.name
+            // TODO: Test / handle if we provide container as directory within it
+            //       like mycontainer/mydir at the end
 
-            string localPath = ".";
-            string fileName = "quickstart" + Guid.NewGuid().ToString() + ".txt";
-            string localFilePath = Path.Combine(localPath, fileName);
+            string fileName;
+            string localFilePath;
 
-            // Write text to the file
-            File.WriteAllText(localFilePath, "Hello, World!");
-
-            var containerEndpoint = new Uri("https://azmitest.blob.core.windows.net/azmitest");
+            if (File.Exists(filePath))
+            {
+                localFilePath = Path.GetFullPath(filePath);
+                fileName = Path.GetFileName(localFilePath);
+            } else
+            {
+                throw new Exception();
+            }
+            
+            var containerEndpoint = new Uri(containerUri);
 
             // Get a credential and create a client object for the blob container.
             BlobContainerClient containerClient = new BlobContainerClient(containerEndpoint, new ManagedIdentityCredential());
@@ -153,7 +178,7 @@ namespace azmi_main
             
             uploadFileStream.Close();
             
-            return (getToken());
+            return ("OK");
         }
     }
 
