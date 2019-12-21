@@ -64,7 +64,7 @@ namespace azmi_tests
         [Fact]
         public void metadataUri_throwsForInvalidEndpoint()
         {
-            Assert.Throws<Exception>(() => Operations.metadataUri("invalid_endpoint"));
+            Assert.Throws<ArgumentOutOfRangeException>(() => Operations.metadataUri("invalid_endpoint"));
         }
 
         //
