@@ -128,8 +128,8 @@ namespace azmi_tests
         [Fact]
         public void setBlob_failsIfNoLocalFile()
         {
-            var ex = Assert.Throws<Exception>(() => Operations.setBlob("nonexistingfile", "blobdoesnotmatter"));
-            Assert.Equal("File nonexistingfile not found!", ex.Message);
+            var ex = Assert.Throws<IO.FileNotFoundException>(() => Operations.setBlob("nonexistingfile", "blobdoesnotmatter"));
+            Assert.Equal("File 'nonexistingfile' not found!", ex.Message);
         }
 
         [Fact]
