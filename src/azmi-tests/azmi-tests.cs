@@ -1,7 +1,6 @@
 using System;
 using Xunit;
 using azmi_main;
-using System.Linq;
 using System.IO;
 
 namespace azmi_tests
@@ -42,7 +41,11 @@ namespace azmi_tests
 
     public class OperationsTests
     {
-        
+        // we use custom Azure functions instead to mock http metadata calls
+        private static string testAzureFunction = @"https://azmi-test.azurewebsites.net/api/metadata";
+        private static string testAzureVMuri = $"{testAzureFunction}?type=azure";
+        private static string testNonAzureVMuri = $"{testAzureFunction}?type=nonazure";
+
         //
         // metadataUri
         //
@@ -64,7 +67,7 @@ namespace azmi_tests
         [Fact]
         public void metadataUri_throwsForInvalidEndpoint()
         {
-            Assert.Throws<Exception>(() => Operations.metadataUri("invalid_endpoint"));
+            Assert.ThrowsAny<Exception>(() => Operations.metadataUri("invalid_endpoint"));
         }
 
         //
@@ -72,17 +75,15 @@ namespace azmi_tests
         //
 
         [Fact]
-        public void getMetaDataResponse_throwsOnNonAzureVM()
+        public void getMetaDataResponse_emptyOnNonAzureVM()
         {
-            // TODO: Fix test using Mock
-            Assert.True(true);
+            Assert.ThrowsAny<Exception>(() => Operations.getMetaDataResponse(testNonAzureVMuri));
         }
 
         [Fact]
         public void getMetaDataResponse_worksOnAzureVM()
         {
-            // TODO: Fix test using Mock
-            Assert.True(true);
+            Assert.NotEmpty(Operations.getMetaDataResponse(testAzureVMuri));
         }
 
         //
@@ -110,15 +111,13 @@ namespace azmi_tests
         [Fact]
         public void getToken_worksOnAzureVM()
         {
-            // TODO: Fix test using Mock
-            Assert.True(true);
+            Assert.NotEmpty(Operations.getToken(testAzureVMuri));
         }
 
         [Fact]
         public void getToken_failsOnNonAzureVM()
         {
-            // TODO: Fix test using Mock
-            Assert.True(true);
+            Assert.ThrowsAny<Exception>(() => Operations.getToken(testNonAzureVMuri));
         }
 
         //
@@ -128,8 +127,8 @@ namespace azmi_tests
         [Fact]
         public void setBlob_failsIfNoLocalFile()
         {
-            var ex = Assert.Throws<Exception>(() => Operations.setBlob("nonexistingfile", "blobdoesnotmatter"));
-            Assert.Equal("File nonexistingfile not found!", ex.Message);
+            var ex = Assert.Throws<FileNotFoundException>(() => Operations.setBlob("nonexistingfile", "blobdoesnotmatter"));
+            Assert.Equal("File 'nonexistingfile' not found!", ex.Message);
         }
 
         [Fact]
@@ -141,7 +140,5 @@ namespace azmi_tests
             Assert.ThrowsAny<Exception>(() => Operations.setBlob(tempFile, "blobdoesnotmatter"));
             File.Delete(tempFile);
         }
-
-
     }
 }

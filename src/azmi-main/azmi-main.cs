@@ -83,11 +83,16 @@ Usage:
             return uri;
         }
 
-        public static string getMetaDataResponse(string endpoint = "management")
+        public static string getMetaDataResponse(string endpointUri = "")
         {
             // TODO: Extend this to support also provided managed identity name            
             // Build request to acquire managed identities for Azure resources token
-            var request = (HttpWebRequest)WebRequest.Create(metadataUri(endpoint));                
+            if (string.IsNullOrEmpty(endpointUri))
+            {
+                endpointUri = Operations.metadataUri();
+            }
+
+            var request = (HttpWebRequest)WebRequest.Create(endpointUri);                
             request.Headers["Metadata"] = "true";
             request.Method = "GET";
             
@@ -134,7 +139,7 @@ Usage:
             }
         }
 
-        public static string getToken(string endpoint = "management")
+        public static string getToken(string endpoint = "")
         {
             // Method unifies above two mentioned methods into one
             return extractToken(getMetaDataResponse(endpoint));
@@ -148,7 +153,7 @@ Usage:
                 throw new FileNotFoundException($"File '{filePath}' not found!");
             }
             
-            // TODO: Check if container uri contains blob path also, like container/fodler1/folder2
+            // TODO: Check if container uri contains blob path also, like container/folder1/folder2
             // Get a credential and create a client object for the blob container.
             BlobContainerClient containerClient = new BlobContainerClient(new Uri(containerUri), new ManagedIdentityCredential());
 
