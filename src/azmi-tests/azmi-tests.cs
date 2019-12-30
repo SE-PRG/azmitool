@@ -64,7 +64,7 @@ namespace azmi_tests
         [Fact]
         public void metadataUri_throwsForInvalidEndpoint()
         {
-            Assert.Throws<Exception>(() => Operations.metadataUri("invalid_endpoint"));
+            Assert.Throws<ArgumentOutOfRangeException>(() => Operations.metadataUri("invalid_endpoint"));
         }
 
         //
@@ -128,8 +128,8 @@ namespace azmi_tests
         [Fact]
         public void setBlob_failsIfNoLocalFile()
         {
-            var ex = Assert.Throws<Exception>(() => Operations.setBlob("nonexistingfile", "blobdoesnotmatter"));
-            Assert.Equal("File nonexistingfile not found!", ex.Message);
+            var ex = Assert.Throws<FileNotFoundException>(() => Operations.setBlob("nonexistingfile", "blobdoesnotmatter"));
+            Assert.Equal("File 'nonexistingfile' not found!", ex.Message);
         }
 
         [Fact]
