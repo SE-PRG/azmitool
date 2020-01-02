@@ -37,6 +37,14 @@ namespace azmi_tests
                 Assert.Contains(helpResponse, s => s.Contains($"{subCommand} help"));
             }
         }
+
+        [Fact]
+        public void HelpMessage_InvalidSubcommand()
+        {
+            var subCommand = "invalidOne";
+            var ex = Assert.Throws<ArgumentNullException>(() => HelpMessage.subCommand(subCommand));
+            Assert.Contains($"Unknown help for subcommand '{subCommand}'.", ex.Message);
+        }
     }
 
     public class OperationsTests
