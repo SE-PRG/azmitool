@@ -21,8 +21,6 @@ namespace azmi_main
 
         public static string[] application()
         {
-            
-
             var response = new List<string>() { @"
 Command-line utility azmi stands for Azure Managed Identity.
 It is helping admins simplify common operations (reading / writing) on standard Azure resources.
@@ -56,9 +54,10 @@ Subcommand 'gettoken' is used for obtaining Azure authorization token.
 Usage:
   azmi gettoken help - displays this help message              
   azmi gettoken [$ENDPOINT] obtains token against management (default value) or storage endpoints" };
-            } else
+            }
+            else
             {
-                throw new ArgumentNullException("Called unexpected code branch.");
+                throw new ArgumentNullException($"Unknown help for subcommand '{commandName}'.");
             }
         }
     }
