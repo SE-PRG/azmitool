@@ -1,0 +1,12 @@
+Source: azmi
+Section: Network
+Priority: optional
+Maintainer: SE-PRG <NA@NA.com>
+Build-Depends: debhelper (>= 8.0.0)
+Standards-Version: 4.0.0
+
+Package: azmi
+Architecture: amd64
+Depends: libstdc++6
+Homepage: https://github.com/SRE-PRG/azmitool
+Description: Simplifies authentication in Azure VM. Using VM with assigned Managed Identity you can easily authenticate against Azure services like Key Vault, Storage Account, etc.
