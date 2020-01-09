@@ -41,7 +41,8 @@ test "Print help and return success status" assert.Success "azmi help"
 # e.g. 2020-01-07_14:41:02
 TIMESTAMP=`date "+%Y-%m-%d_%H:%M:%S"`
 RANDOM_BLOB_TO_STORE="/tmp/azmi_integration_test_${TIMESTAMP}.txt"
-test "Generate random blob (file) contents" assert.Success "for i in {1..32}; do echo -n \"\${chars:RANDOM%$\{#chars}:1}\"; done > $RANDOM_BLOB_TO_STORE"
+CHARS='012345689abcdefghiklmnopqrstuvwxyz'
+test "Generate random blob (file) contents" assert.Success "for i in {1..32}; do echo -n \"\${CHARS:RANDOM%$\{#CHARS}:1}\"; done > $RANDOM_BLOB_TO_STORE"
 
 # access granted to 'kotipoiss' and 'kevlar-test' identities
 CONTAINER_URL="https://azmitest.blob.core.windows.net/azmi-test"
