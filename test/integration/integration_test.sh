@@ -51,11 +51,11 @@ test "Store blob contents to Azure storage container" assert.Success "azmi setbl
 DOWNLOADED_BLOB="/tmp/azmi_integration_test_downloaded.txt"
 test "Download just saved blob from Azure storage container" assert.Success "curl ${CONTAINER_URL}/${RANDOM_BLOB_TO_STORE} > $DOWNLOADED_BLOB"
 
-test "Blobs have to have same contents." assert.Success "diff $RANDOM_BLOB_TO_STORE $DOWNLOADED_BLOB"
+test "Blobs have to have same contents" assert.Success "diff $RANDOM_BLOB_TO_STORE $DOWNLOADED_BLOB"
 
 RANDOM_BLOB_TO_STORE_SHA256=$(sha256sum $RANDOM_BLOB_TO_STORE | awk '{ print $1 }')
 DOWNLOADED_BLOB_SHA256=$(sha256sum $DOWNLOADED_BLOB | awk '{ print $1 }')
-test "Blobs have to have equal SHA256 checksums." assert.Success "[ $RANDOM_BLOB_TO_STORE_SHA256 = $DOWNLOADED_BLOB_SHA256 ]"
+test "Blobs have to have equal SHA256 checksums" assert.Success "[ $RANDOM_BLOB_TO_STORE_SHA256 = $DOWNLOADED_BLOB_SHA256 ]"
 
 # uninstalling
 testing class "package"
