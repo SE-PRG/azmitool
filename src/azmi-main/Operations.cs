@@ -89,6 +89,62 @@ namespace azmi_main
             return extractToken(getMetaDataResponse(endpoint));
         }
 
+        public static string getBlob(string blobURL, string filePath)
+        {
+            // Blob naming
+            // https://azmitest.blob.core.windows.net/azmi-test/tmp/azmi_integration_test_2020-01-29_04:34:16.txt
+            //                    CONTAINER                    |                                                 |
+            //                                                 |                      BLOB                       |
+
+            // Download the blob to a local file
+            BlobClient blobClient = null;
+            try
+            {                
+                blobClient = new BlobClient(new Uri(blobURL), new ManagedIdentityCredential());
+            } catch (Exception e)
+            {
+                Console.WriteLine("Can not setup blob client instance: {0}\n", e.Message);
+            }
+
+            Console.WriteLine("\nDownloading blob to:\n\t{0}\n", filePath);
+
+            Azure.Storage.Blobs.Models.BlobDownloadInfo download;
+            try
+            {
+                // Download the blob's contents
+                download = blobClient.Download();
+            } catch (Azure.RequestFailedException e)
+            {
+                Console.WriteLine("Download failed: {0}\n", e.Message);                
+
+                return "NOT OK";
+            }
+
+            FileStream downloadFileStream = null;
+            try {
+                // and save it to a file                
+                downloadFileStream = File.OpenWrite(filePath);
+                download.Content.CopyTo(downloadFileStream);
+                downloadFileStream.Close();
+                return "OK";
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Saving file failed: {0}\n", e.Message);
+                if (downloadFileStream != null)
+                {
+                    downloadFileStream.Close();
+                }
+                return "NOT OK";
+            } finally
+            {
+                if (downloadFileStream != null)
+                {
+                    downloadFileStream.Close();
+                }
+            }
+        }
+
         public static string setBlob(string filePath, string containerUri)
         {
             // sets blob content based on local file content

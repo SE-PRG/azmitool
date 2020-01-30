@@ -11,6 +11,9 @@ Simplifies authentication in Azure VM. Using VM with assigned Managed Identity y
 # read key vault secret
 azmitool getsecret https://mykey.vault.azure.net/secrets/mysecret
 
-# upload blob to storage account, using variables
+# download blob from a storage account and save to a file
+azmitool getblob $BLOB $FILE
+
+# upload file as a blob to storage account
 azmitool setblob $FILE $BLOB
 ```

@@ -37,11 +37,37 @@ namespace azmi_commandline
                     Environment.Exit(1);
                 }
             }
+            else if (args[0] == "getblob")
+            {
+                //
+                // get blob subcommand
+                // azmi getblob $BLOB $FILE
+                //
+                if (args.Length != 3)
+                {
+                    // required parameters error, display setblob usage
+                    WriteLines(HelpMessage.subCommand("getblob"));
+                    Environment.Exit(1);
+                }
+                else
+                {
+                    try
+                    {
+                        // call getblob method
+                        WriteLines(Operations.getBlob(args[1], args[2]));
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("General Error: {0}", ex.Message);
+                    }
+                }
+                // end of getblob command
+            }
             else if (args[0] == "setblob")
             {
                 //
                 // set blob subcommand
-                // azmi setblob $BLOB $FILE
+                // azmi setblob $FILE $BLOB
                 //
                 if (args.Length != 3)
                 {

@@ -2,7 +2,7 @@ Source: azmi
 Section: Network
 Priority: optional
 Maintainer: SE-PRG <NA@NA.com>
-Build-Depends: dotnet-sdk-3.1, debhelper (>= 8.0.0)
+Build-Depends: dotnet-sdk-3.0, debhelper (>= 8.0.0)
 Standards-Version: 4.0.0
 
 Package: azmi
