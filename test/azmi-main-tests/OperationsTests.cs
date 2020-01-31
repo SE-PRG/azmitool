@@ -87,6 +87,16 @@ namespace azmi_tests
         }
 
         //
+        // getBlob
+        //
+        
+        [Fact]
+        public void getBlob_failsToDownloadOrSave()
+        {
+            var ex = Assert.ThrowsAny<Exception>(() => Operations.getBlob("https://INVALID_BLOB_URL.net/", "download.txt"));            
+        }
+
+        //
         // setBlob
         //
 
