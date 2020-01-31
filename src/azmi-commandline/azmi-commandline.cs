@@ -27,7 +27,7 @@ namespace azmi_commandline
             var rootCommand = new RootCommand()
             {
                 Description = "Command-line utility azmi stands for Azure Managed Identity.\n" +
-                    "It is helping admins simplify common operations (reading / writing) on Azure resources.\n" +
+                    "It is helping admins simplify common operations (reading and writing) on Azure resources.\n" +
                     "It is utilizing Azure AD authentication via user assigned managed identity.",
             };
 
@@ -80,7 +80,7 @@ namespace azmi_commandline
                 try {
                     Console.WriteLine(Operations.getToken());
                 } catch (Exception ex) {
-                    DisplayError(ex);
+                    DisplayError("gettoken", ex);
                 }
             });
 
@@ -89,7 +89,7 @@ namespace azmi_commandline
                 try {
                     Console.WriteLine(Operations.setBlob(file, container));
                 } catch (Exception ex) {
-                    DisplayError(ex);
+                    DisplayError("setblob", ex);
                 }
             });
 
@@ -97,9 +97,12 @@ namespace azmi_commandline
             return rootCommand;
         }
 
-        private static void DisplayError(Exception ex)
+        private static void DisplayError(string subCommand, Exception ex)
         {
-            Console.Error.WriteLine($"azmi setblob: {ex.Message}");
+            var oldColor = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Error.WriteLine($"azmi {subCommand}: {ex.Message}");
+            Console.ForegroundColor = oldColor;
             Environment.Exit(2);
             // invocation returns exit code 2, parser errors will return exit code 1
         }
