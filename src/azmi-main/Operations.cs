@@ -104,6 +104,7 @@ namespace azmi_main
             } catch (Exception e)
             {
                 Console.WriteLine("Can not setup blob client instance: {0}\n", e.Message);
+                return "NOT OK";
             }
 
             Console.WriteLine("\nDownloading blob to:\n\t{0}\n", filePath);
@@ -116,26 +117,22 @@ namespace azmi_main
             } catch (Azure.RequestFailedException e)
             {
                 Console.WriteLine("Download failed: {0}\n", e.Message);                
-
                 return "NOT OK";
             }
 
             FileStream downloadFileStream = null;
+            string return_value = null;
             try {
                 // and save it to a file                
                 downloadFileStream = File.OpenWrite(filePath);
                 download.Content.CopyTo(downloadFileStream);
                 downloadFileStream.Close();
-                return "OK";
+                return_value = "OK";
             }
             catch (Exception e)
             {
-                Console.WriteLine("Saving file failed: {0}\n", e.Message);
-                if (downloadFileStream != null)
-                {
-                    downloadFileStream.Close();
-                }
-                return "NOT OK";
+                Console.WriteLine("Saving file failed: {0}\n", e.Message);                
+                return_value = "NOT OK";                
             } finally
             {
                 if (downloadFileStream != null)
@@ -143,6 +140,7 @@ namespace azmi_main
                     downloadFileStream.Close();
                 }
             }
+            return return_value;
         }
 
         public static string setBlob(string filePath, string containerUri)
