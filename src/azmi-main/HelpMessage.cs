@@ -7,7 +7,7 @@ namespace azmi_main
     public static class HelpMessage
     {
 
-        public static string[] supportedSubCommands = { "gettoken", "setblob" };
+        public static string[] supportedSubCommands = { "gettoken", "getblob", "setblob" };
         // TODO: Use definition above both in command line and tests projects
         // TODO: Add definition of command arguments (i.e. count, names, description)
 
@@ -24,7 +24,7 @@ It is helping admins simplify common operations (reading / writing) on standard 
 It is utilizing Azure AD authentication via user assigned managed identity.
 
 Usage:
-azmi help - displays this help message" };
+  azmi help - displays this help message" };
             foreach (var subCommand in supportedSubCommands)
             {
                 response.Add($"  azmi {subCommand} help - displays help on {subCommand} sub-command");
@@ -39,14 +39,22 @@ azmi help - displays this help message" };
 
         public static string[] subCommand(string commandName)
         {
-            if (commandName == "setblob")
+            if (commandName == "getblob")
+            {
+                return new string[] { @"
+Subcommand 'getblob' is used for reading contents from storage account blob.
+
+Usage:
+azmi getblob help - displays this help message
+azmi getblob $URL $FILE - reads contents from storage account blob (URL) and writes to a local file (FILE)" };
+            } else if (commandName == "setblob")
             {
                 return new string[] { @"
 Subcommand 'setblob' is used for writing to storage account blob.
 
 Usage:
 azmi setblob help - displays this help message
-azmi setblob $FILE $CONTAINER - writes a local file to a storage account container" };
+azmi setblob $FILE $CONTAINER - writes a local file (FILE) to a storage account container (CONTAINER)" };
             } else if (commandName == "gettoken")
             {
                 return new string[] { @"

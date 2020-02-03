@@ -1,4 +1,4 @@
-﻿using azmi_main;
+using azmi_main;
 using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
