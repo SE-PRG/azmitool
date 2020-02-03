@@ -1,155 +1,147 @@
-﻿using azmi_main;
+using azmi_main;
 using System;
-using System.Linq;
+using System.CommandLine;
+using System.CommandLine.Invocation;
 
 namespace azmi_commandline
 {
+
     class Program
     {
         static void Main(string[] args)
         {
-            if (args.Length == 0)
-            {
-                // display usage and error
-                WriteLines(HelpMessage.application());
-                Environment.Exit(1);
-
-            }
-            else if (args[0] == "help")
-            {
-                // display usage
-                WriteLines(HelpMessage.application());
-                Environment.Exit(0);
-            }
-            else if (args.Length == 2 && args[1] == "help")
-            {
-                string invokeSubCommand = args[0];
-                if (HelpMessage.supportedSubCommands.Contains(invokeSubCommand))
-                {
-                    // Command specific help. like "azmi 0:setblob 1:help"
-                    WriteLines(HelpMessage.subCommand(invokeSubCommand));
-                }
-                else
-                {
-                    WriteLines($"Unrecognized subcommand '{invokeSubCommand}'.");
-                    // display usage and error
-                    WriteLines(HelpMessage.application());
-                    Environment.Exit(1);
-                }
-            }
-            else if (args[0] == "getblob")
-            {
-                //
-                // get blob subcommand
-                // azmi getblob $BLOB $FILE
-                //
-                if (args.Length != 3)
-                {
-                    // required parameters error, display setblob usage
-                    WriteLines(HelpMessage.subCommand("getblob"));
-                    Environment.Exit(1);
-                }
-                else
-                {
-                    try
-                    {
-                        // call getblob method
-                        WriteLines(Operations.getBlob(args[1], args[2]));
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("General Error: {0}", ex.Message);
-                    }
-                }
-                // end of getblob command
-            }
-            else if (args[0] == "setblob")
-            {
-                //
-                // set blob subcommand
-                // azmi setblob $FILE $BLOB
-                //
-                if (args.Length != 3)
-                {
-                    // required parameters error, display setblob usage                    
-                    WriteLines(HelpMessage.subCommand("setblob"));
-                    Environment.Exit(1);
-                }
-                else
-                {
-                    try
-                    {
-                        // call setblob method
-                        WriteLines(Operations.setBlob(args[1], args[2]));
-                    }
-                    catch (System.IO.FileNotFoundException ex)
-                    {
-                        Console.WriteLine("Error: {0}", ex.Message);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("General Error: {0}", ex.Message);
-                    }
-                }
-                // end of setblob command
-            }
-            else if (args[0] == "gettoken")
-            {
-                //
-                // get token subcommand
-                // azmi gettoken [$ENDPOINT]
-                //
-                if (args.Length == 1)
-                {                    
-                    try
-                    {
-                        // returns token obtained from default endpoint
-                        WriteLines(Operations.getToken());
-                    }                   
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("General error: {0}", ex.Message);
-                    }
-                }
-                else if (args.Length == 2)
-                { // we have already covered option azmi gettoken help
-                    try
-                    {
-                        WriteLines(Operations.getToken(args[1]));
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("General Error: {0}", ex.Message);
-                    }
-                }
-                else if (args.Length != 2)
-                {
-                    // parameters error, display setblob usage                    
-                    WriteLines(HelpMessage.subCommand("gettoken"));
-                    Environment.Exit(1);
-                }
-
-            }
-            //
-            // add here additional commands
-            //
-            else
-            {
-                // error unrecognized command
-                WriteLines("Error: Unrecognized command(s).");
-                WriteLines(HelpMessage.application());                
-                Environment.Exit(1);
-            }            
+            var rootCommand = ConfigureArguments();
+            var parseResult = rootCommand.Invoke(args);
+            Environment.Exit(parseResult);            
         }
 
-        private static void WriteLines(string[] s)
+
+        static RootCommand ConfigureArguments()
         {
-            foreach (var s1 in s) { Console.WriteLine(s1); };
+
+            //
+            // Create subcommands
+            // using nuget from https://github.com/dotnet/command-line-api
+            //
+
+            var rootCommand = new RootCommand()
+            {
+                Description = "Command-line utility azmi stands for Azure Managed Identity.\n" +
+                    "It is helping admins simplify common operations (reading and writing) on Azure resources.\n" +
+                    "It is utilizing Azure AD authentication via user assigned managed identity.",
+            };
+
+
+            //
+            // gettoken
+            //
+
+            var getTokenCommand = new Command("gettoken", "Obtain Azure authorization token.");
+            var endpointOption = new Option(new String[] { "--endpoint", "-e" })
+            {
+                Argument = new Argument<String>("string"),
+                Description = "Optional. Endpoint against which to authenticate. Examples: management, storage. Default 'management'",
+                Required = false
+            };
+            getTokenCommand.AddOption(endpointOption);
+            rootCommand.AddCommand(getTokenCommand);
+
+
+            //
+            // getblob
+            //
+
+            var getBlobCommand = new Command("getblob", "Downloads storage account blob to local file.");
+
+            var getBlob_blobOption = new Option(new String[] { "--blob", "-b" })
+            {
+                Argument = new Argument<String>("string"),
+                Description = "URL of blob which will be downloaded. Example: https://myaccount.blob.core.windows.net/mycontainer/myblob",
+                Required = true
+            };
+            getBlobCommand.AddOption(getBlob_blobOption);
+
+            var getBlob_FileOption = new Option(new String[] { "--file", "-f" })
+            {
+                Argument = new Argument<String>("string"),
+                Description = "Path to local file to which content will be downloaded. Examples: /tmp/1.txt, ./1.xml",
+                Required = true,
+            };
+            getBlobCommand.AddOption(getBlob_FileOption);
+            rootCommand.AddCommand(getBlobCommand);
+
+
+            //
+            // setblob
+            //
+
+            var setBlobCommand = new Command("setblob", "Write local file to storage account blob.");
+
+            var setBlob_fileOption = new Option(new String[] { "--file", "-f" })
+            {
+                Argument = new Argument<String>("string"),
+                Description = "Path to local file which will be uploaded. Examples: /tmp/1.txt, ./1.xml",
+                Required = true,
+            };
+            setBlobCommand.AddOption(setBlob_fileOption);
+
+            var setBlob_containerOption = new Option(new String[] { "--container", "-c" })
+            {
+                Argument = new Argument<String>("string"),
+                Description = "URL of container to which file will be uploaded. Example: https://myaccount.blob.core.windows.net/mycontainer",
+                Required = true
+            };
+            setBlobCommand.AddOption(setBlob_containerOption);
+            rootCommand.AddCommand(setBlobCommand);
+
+
+            //
+            // define actual subcommand handlers
+            //
+
+            getTokenCommand.Handler = CommandHandler.Create<string>((endpoint) =>
+            {
+                try {
+                    Console.WriteLine(Operations.getToken());
+                } catch (Exception ex) {
+                    DisplayError("gettoken", ex);
+                }
+            });
+
+            getBlobCommand.Handler = CommandHandler.Create<string, string>((blob, file) =>
+            {
+                try
+                {
+                    Console.WriteLine(Operations.getBlob(blob, file));
+                } catch (Exception ex)
+                {
+                    DisplayError("getblob", ex);
+                }
+            });
+
+            setBlobCommand.Handler = CommandHandler.Create<string, string>((file, container) =>
+            {
+                try
+                {
+                    Console.WriteLine(Operations.setBlob(file, container));
+                } catch (Exception ex)
+                {
+                    DisplayError("setblob", ex);
+                }
+            });
+
+            // return generated command
+            return rootCommand;
         }
 
-        private static void WriteLines(string s)
+        private static void DisplayError(string subCommand, Exception ex)
         {
-            Console.WriteLine(s);
+            var oldColor = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Error.WriteLine($"azmi {subCommand}: {ex.Message}");
+            Console.ForegroundColor = oldColor;
+            Environment.Exit(2);
+            // invocation returns exit code 2, parser errors will return exit code 1
         }
     }
 }

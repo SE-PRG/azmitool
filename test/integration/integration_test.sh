@@ -35,9 +35,18 @@ test "Check all dependencies are installed" assert.Success "dpkg -s libstdc++6"
 install_azmi
 test "Verify azmi binary exists and is executable" assert.Success "[ -x /usr/bin/azmi ]"
 
-testing class "application"
-test "Print help and return success status" assert.Success "azmi help"
 
+testing class "help"
+test "Should fail if no arguments are provided" asser.Fail "azmi"
+test "Print help and return success status" assert.Success "azmi --help"
+test "Print help for gettoken" assert.Success "azmi gettoken --help"
+test "Fail gettoken with wrong args" assert.Fail "azmi gettoken blahblah"
+test "Print help for setblob" assert.Success "azmi setblob --help"
+test "Fail setblob with wrong args" assert.Fail "azmi setblob blahblah"
+# TODO Automate above using list of supported subcommands
+
+
+testing class "application"
 # e.g. 2020-01-07_14:41:02
 TIMESTAMP=`date "+%Y-%m-%d_%H:%M:%S"`
 RANDOM_BLOB_TO_STORE="/tmp/azmi_integration_test_${TIMESTAMP}.txt"
