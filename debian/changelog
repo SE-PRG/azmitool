@@ -1,3 +1,9 @@
+azmi (1.0.0-1) stable; urgency=medium
+
+  * Introduced new commandline parser
+
+ -- SRE-PRG <NA@NA.com>  Mon, 03 Feb 2020 15:34:41 +0100
+
 azmi (1.0.0-0) stable; urgency=medium
 
   * Initial release

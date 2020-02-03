@@ -56,9 +56,9 @@ testing class "application"
 ### no-access container ###
 CONTAINER_URL="https://azmitest.blob.core.windows.net/azmi-itest-no-access"
 BLOB="restricted_access_blob.txt"
-test "Read blob contents from restricted Azure storage container" assert.Fail "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt"
+test "Should fail: Read blob contents from restricted Azure storage container" assert.Fail "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt"
 date > upload.txt # generate unique file contents
-test "Save file contents   to restricted Azure storage container" assert.Fail "azmi setblob --file upload.txt --container $CONTAINER_URL"
+test "Should fail: Save file contents to restricted Azure storage container" assert.Fail "azmi setblob --file upload.txt --container $CONTAINER_URL"
 rm upload.txt
 
 ### read-only container ###
@@ -67,7 +67,7 @@ rm upload.txt
 CONTAINER_URL="https://azmitest.blob.core.windows.net/azmi-itest-r"
 BLOB="read_only_blob.txt"
 test "Read blob contents from read-only Azure storage container" assert.Success "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt"
-test "Save file contents   to read-only Azure storage container" assert.Fail "azmi setblob --file download.txt --container $CONTAINER_URL"
+test "Should fail: Save file contents to read-only Azure storage container" assert.Fail "azmi setblob --file download.txt --container $CONTAINER_URL"
 
 ### read-write container ###
 # Role(s):    Storage Blob Data Contributor
@@ -78,7 +78,7 @@ RANDOM_BLOB_TO_STORE="azmi_itest_${TIMESTAMP}.txt"
 CHARS='012345689abcdefghiklmnopqrstuvwxyz'
 test "Generate random blob (file) contents" assert.Success "for i in {1..32}; do echo -n \"\${CHARS:RANDOM%\${#CHARS}:1}\"; done > $RANDOM_BLOB_TO_STORE"
 test "Save file contents   to read-write Azure storage container" assert.Success "azmi setblob --file $RANDOM_BLOB_TO_STORE --container $CONTAINER_URL"
-DOWNLOADED_BLOB="azmi_integration_test_downloaded.txt"
+DOWNLOADED_BLOB="azmi_itest_downloaded.txt"
 test "Read blob contents from write-only Azure storage container" assert.Success "azmi getblob --blob ${CONTAINER_URL}/${RANDOM_BLOB_TO_STORE} --file $DOWNLOADED_BLOB"
 test "Blobs have to have same contents" assert.Success "diff $RANDOM_BLOB_TO_STORE $DOWNLOADED_BLOB"
 RANDOM_BLOB_TO_STORE_SHA256=$(sha256sum $RANDOM_BLOB_TO_STORE | awk '{ print $1 }')
@@ -96,7 +96,5 @@ test "Verify azmi binary does not exist anymore" assert.Fail "[ -f /usr/bin/azmi
 ################################
 echo -e "\n=============="
 echo "Test running at '`hostname`' host"
-echo "Available $PACKAGENAME packages:"
-apt-cache madison $PACKAGENAME
 
 testing end
