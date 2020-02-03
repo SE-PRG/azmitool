@@ -39,8 +39,13 @@ test "Verify azmi binary exists and is executable" assert.Success "[ -x /usr/bin
 testing class "help"
 test "Should fail if no arguments are provided" assert.Fail "azmi"
 test "Print help and return success status" assert.Success "azmi --help"
+
 test "Print help for gettoken" assert.Success "azmi gettoken --help"
 test "Fail gettoken with wrong args" assert.Fail "azmi gettoken blahblah"
+
+test "Print help for getblob" assert.Success "azmi getblob --help"
+test "Fail getblob with wrong args" assert.Fail "azmi getblob blahblah"
+
 test "Print help for setblob" assert.Success "azmi setblob --help"
 test "Fail setblob with wrong args" assert.Fail "azmi setblob blahblah"
 # TODO Automate above using list of supported subcommands
@@ -48,22 +53,25 @@ test "Fail setblob with wrong args" assert.Fail "azmi setblob blahblah"
 
 testing class "application"
 
+### no-access container ###
+CONTAINER_URL="https://azmitest.blob.core.windows.net/azmi-itest-no-access"
+BLOB="restricted_access_blob.txt"
+test "Read blob contents from restricted Azure storage container" assert.Fail "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt"
+date > upload.txt # generate unique file contents
+test "Save file contents   to restricted Azure storage container" assert.Fail "azmi setblob --file upload.txt --container $CONTAINER_URL"
+rm upload.txt
+
 ### read-only container ###
-# read access granted to 'kotipoiss'
+# Role(s):    Storage Blob Data Reader
+# Profile(s): bt-seu-test-id (obj. ID: d1c05b65-ccf9-47bd-870d-4e44d209ee7a), kotipoiss-identity (obj. ID: ccb781af-a4eb-4ecc-b183-cef74b3cc717)
 CONTAINER_URL="https://azmitest.blob.core.windows.net/azmi-itest-r"
 BLOB="read_only_blob.txt"
 test "Read blob contents from read-only Azure storage container" assert.Success "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt"
 test "Save file contents   to read-only Azure storage container" assert.Fail "azmi setblob --file download.txt --container $CONTAINER_URL"
 
-### write-only container ###
-# write access granted to 'kotipoiss'
-CONTAINER_URL="https://azmitest.blob.core.windows.net/azmi-itest-w"
-BLOB="write_only_blob.txt"
-test "Read blob contents from write-only Azure storage container" assert.Fail "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt"
-test "Save file contents   to write-only Azure storage container" assert.Success "azmi setblob --file download.txt --container $CONTAINER_URL"
-
 ### read-write container ###
-# read-write access granted to 'kotipoiss'
+# Role(s):    Storage Blob Data Contributor
+# Profile(s): bt-seu-test-id (obj. ID: d1c05b65-ccf9-47bd-870d-4e44d209ee7a), kotipoiss-identity (obj. ID: ccb781af-a4eb-4ecc-b183-cef74b3cc717)
 CONTAINER_URL="https://azmitest.blob.core.windows.net/azmi-itest-rw"
 TIMESTAMP=`date "+%Y-%m-%d_%H:%M:%S"` # e.g. 2020-01-07_14:41:02
 RANDOM_BLOB_TO_STORE="azmi_itest_${TIMESTAMP}.txt"
