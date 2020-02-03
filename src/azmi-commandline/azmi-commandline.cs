@@ -48,26 +48,50 @@ namespace azmi_commandline
 
 
             //
+            // getblob
+            //
+
+            var getBlobCommand = new Command("getblob", "Downloads storage account blob to local file.");
+
+            var getBlob_blobOption = new Option(new String[] { "--blob", "-b" })
+            {
+                Argument = new Argument<String>("string"),
+                Description = "URL of blob which will be downloaded. Example: https://myaccount.blob.core.windows.net/mycontainer/myblob",
+                Required = true
+            };
+            getBlobCommand.AddOption(getBlob_blobOption);
+
+            var getBlob_FileOption = new Option(new String[] { "--file", "-f" })
+            {
+                Argument = new Argument<String>("string"),
+                Description = "Path to local file to which content will be downloaded. Examples: /tmp/1.txt, ./1.xml",
+                Required = true,
+            };
+            getBlobCommand.AddOption(getBlob_FileOption);
+            rootCommand.AddCommand(getBlobCommand);
+
+
+            //
             // setblob
             //
 
             var setBlobCommand = new Command("setblob", "Write local file to storage account blob.");
 
-            var fileOption = new Option(new String[] { "--file", "-f" })
+            var setBlob_fileOption = new Option(new String[] { "--file", "-f" })
             {
                 Argument = new Argument<String>("string"),
                 Description = "Path to local file which will be uploaded. Examples: /tmp/1.txt, ./1.xml",
                 Required = true,
             };
-            setBlobCommand.AddOption(fileOption);
+            setBlobCommand.AddOption(setBlob_fileOption);
 
-            var containerOption = new Option(new String[] { "--container", "-c" })
+            var setBlob_containerOption = new Option(new String[] { "--container", "-c" })
             {
                 Argument = new Argument<String>("string"),
                 Description = "URL of container to which file will be uploaded. Example: https://myaccount.blob.core.windows.net/mycontainer",
                 Required = true
             };
-            setBlobCommand.AddOption(containerOption);
+            setBlobCommand.AddOption(setBlob_containerOption);
             rootCommand.AddCommand(setBlobCommand);
 
 
@@ -84,11 +108,24 @@ namespace azmi_commandline
                 }
             });
 
+            getBlobCommand.Handler = CommandHandler.Create<string, string>((blob, file) =>
+            {
+                try
+                {
+                    Console.WriteLine(Operations.getBlob(blob, file));
+                } catch (Exception ex)
+                {
+                    DisplayError("getblob", ex);
+                }
+            });
+
             setBlobCommand.Handler = CommandHandler.Create<string, string>((file, container) =>
             {
-                try {
+                try
+                {
                     Console.WriteLine(Operations.setBlob(file, container));
-                } catch (Exception ex) {
+                } catch (Exception ex)
+                {
                     DisplayError("setblob", ex);
                 }
             });
