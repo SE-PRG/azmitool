@@ -47,21 +47,32 @@ test "Fail setblob with wrong args" assert.Fail "azmi setblob blahblah"
 
 
 testing class "application"
-# e.g. 2020-01-07_14:41:02
-TIMESTAMP=`date "+%Y-%m-%d_%H:%M:%S"`
-RANDOM_BLOB_TO_STORE="/tmp/azmi_integration_test_${TIMESTAMP}.txt"
+
+### read-only container ###
+# read access granted to 'kotipoiss'
+CONTAINER_URL="https://azmitest.blob.core.windows.net/azmi-itest-r"
+BLOB="read_only_blob.txt"
+test "Read blob contents from read-only Azure storage container" assert.Success "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt"
+test "Save file contents   to read-only Azure storage container" assert.Fail "azmi setblob --file download.txt --container $CONTAINER_URL"
+
+### write-only container ###
+# write access granted to 'kotipoiss'
+CONTAINER_URL="https://azmitest.blob.core.windows.net/azmi-itest-w"
+BLOB="write_only_blob.txt"
+test "Read blob contents from write-only Azure storage container" assert.Fail "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt"
+test "Save file contents   to write-only Azure storage container" assert.Success "azmi setblob --file download.txt --container $CONTAINER_URL"
+
+### read-write container ###
+# read-write access granted to 'kotipoiss'
+CONTAINER_URL="https://azmitest.blob.core.windows.net/azmi-itest-rw"
+TIMESTAMP=`date "+%Y-%m-%d_%H:%M:%S"` # e.g. 2020-01-07_14:41:02
+RANDOM_BLOB_TO_STORE="azmi_itest_${TIMESTAMP}.txt"
 CHARS='012345689abcdefghiklmnopqrstuvwxyz'
 test "Generate random blob (file) contents" assert.Success "for i in {1..32}; do echo -n \"\${CHARS:RANDOM%\${#CHARS}:1}\"; done > $RANDOM_BLOB_TO_STORE"
-
-# access granted to 'kotipoiss' and 'kevlar-test' identities
-CONTAINER_URL="https://azmitest.blob.core.windows.net/azmi-test"
-test "Store blob contents to Azure storage container" assert.Success "azmi setblob $RANDOM_BLOB_TO_STORE $CONTAINER_URL"
-
-DOWNLOADED_BLOB="/tmp/azmi_integration_test_downloaded.txt"
-test "Download just saved blob from Azure storage container" assert.Success "curl ${CONTAINER_URL}/${RANDOM_BLOB_TO_STORE} > $DOWNLOADED_BLOB"
-
+test "Save file contents   to read-write Azure storage container" assert.Success "azmi setblob --file $RANDOM_BLOB_TO_STORE --container $CONTAINER_URL"
+DOWNLOADED_BLOB="azmi_integration_test_downloaded.txt"
+test "Read blob contents from write-only Azure storage container" assert.Success "azmi getblob --blob ${CONTAINER_URL}/${RANDOM_BLOB_TO_STORE} --file $DOWNLOADED_BLOB"
 test "Blobs have to have same contents" assert.Success "diff $RANDOM_BLOB_TO_STORE $DOWNLOADED_BLOB"
-
 RANDOM_BLOB_TO_STORE_SHA256=$(sha256sum $RANDOM_BLOB_TO_STORE | awk '{ print $1 }')
 DOWNLOADED_BLOB_SHA256=$(sha256sum $DOWNLOADED_BLOB | awk '{ print $1 }')
 test "Blobs have to have equal SHA256 checksums" assert.Success "[ $RANDOM_BLOB_TO_STORE_SHA256 = $DOWNLOADED_BLOB_SHA256 ]"
