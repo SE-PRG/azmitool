@@ -37,7 +37,7 @@ test "Verify azmi binary exists and is executable" assert.Success "[ -x /usr/bin
 
 
 testing class "help"
-test "Should fail if no arguments are provided" asser.Fail "azmi"
+test "Should fail if no arguments are provided" assert.Fail "azmi"
 test "Print help and return success status" assert.Success "azmi --help"
 test "Print help for gettoken" assert.Success "azmi gettoken --help"
 test "Fail gettoken with wrong args" assert.Fail "azmi gettoken blahblah"
