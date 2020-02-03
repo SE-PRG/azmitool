@@ -75,7 +75,7 @@ test "Should fail: Save file contents to read-only Azure storage container" asse
 CONTAINER_URL="https://azmitest.blob.core.windows.net/azmi-itest-rw"
 TIMESTAMP=`date "+%Y-%m-%d_%H:%M:%S"` # e.g. 2020-01-07_14:41:02
 RANDOM_BLOB_TO_STORE="azmi_itest_${TIMESTAMP}.txt"
-CHARS='012345689abcdefghiklmnopqrstuvwxyz'
+CHARS="012345689abcdefghiklmnopqrstuvwxyz"
 test "Generate random blob (file) contents" assert.Success "for i in {1..32}; do echo -n \"\${CHARS:RANDOM%\${#CHARS}:1}\"; done > $RANDOM_BLOB_TO_STORE"
 test "Save file contents   to read-write Azure storage container" assert.Success "azmi setblob --file $RANDOM_BLOB_TO_STORE --container $CONTAINER_URL"
 DOWNLOADED_BLOB="azmi_itest_downloaded.txt"
