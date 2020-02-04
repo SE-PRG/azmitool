@@ -53,6 +53,8 @@ test "Fail setblob with wrong args" assert.Fail "azmi setblob blahblah"
 
 testing class "application"
 
+test "Authenticate to Azure using a managed identity and get access token." assert.Success "azmi gettoken"
+
 ### no-access container ###
 CONTAINER_URL="https://azmitest.blob.core.windows.net/azmi-itest-no-access"
 BLOB="restricted_access_blob.txt"
