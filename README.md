@@ -8,12 +8,12 @@ Simplifies authentication in Azure VM. Using VM with assigned Managed Identity y
 ## Examples
 
 ```bash
-# read key vault secret
-azmitool getsecret https://mykey.vault.azure.net/secrets/mysecret
+# get token from Azure infrastructure
+azmi gettoken
 
-# download blob from a storage account and save to a file
-azmitool getblob $BLOB $FILE
+# download blob from a storage account container and save to a file
+azmi getblob --blob $BLOB_URL --file $FILE
 
-# upload file as a blob to storage account
-azmitool setblob $FILE $BLOB
+# upload file as a blob to storage account container
+azmi setblob --file $FILE --container $CONTAINER_URL
 ```
