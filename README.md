@@ -17,3 +17,8 @@ azmi getblob --blob $BLOB_URL --file $FILE
 # upload file as a blob to storage account container
 azmi setblob --file $FILE --container $CONTAINER_URL
 ```
+
+## Pipeline statuses
+
+- Package build [![Build status](https://skype.visualstudio.com/SCC/_apis/build/status/SE-UP/azmi/build%20-%20azmi)](https://skype.visualstudio.com/SCC/_build/latest?definitionId=8166)
+- Integration tests [![Build status](https://skype.visualstudio.com/SCC/_apis/build/status/SE-UP/azmi/Integration%20-%20azmi)](https://skype.visualstudio.com/SCC/_build/latest?definitionId=8091)
