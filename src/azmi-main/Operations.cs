@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 
 using Azure.Core;
@@ -36,10 +36,9 @@ namespace azmi_main
             try
             {                
                 blobClient = new BlobClient(new Uri(blobURL), new ManagedIdentityCredential());
-            } catch (Exception e)
+            } catch (Exception ex)
             {
-                Console.WriteLine("Can not setup blob client instance: {0}\n", e.Message);
-                return "NOT OK";
+                throw new Exception("Can not setup blob client instance.\n" + ex.Message, ex);
             }
 
             Console.WriteLine("\nDownloading blob to:\n\t{0}\n", filePath);
@@ -49,25 +48,23 @@ namespace azmi_main
             {
                 // Download the blob's contents
                 download = blobClient.Download();
-            } catch (Azure.RequestFailedException e)
+            } catch (Azure.RequestFailedException ex)
             {
-                Console.WriteLine("Download failed: {0}\n", e.Message);                
-                return "NOT OK";
+                throw new Exception("Download failed.\n" + ex.Message, ex);
             }
 
             FileStream downloadFileStream = null;
-            string return_value = null;
-            try {
-                // and save it to a file                
+            try
+            {
+                // and save it to a file
                 downloadFileStream = File.OpenWrite(filePath);
                 download.Content.CopyTo(downloadFileStream);
                 downloadFileStream.Close();
-                return_value = "OK";
+                return "Success";
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine("Saving file failed: {0}\n", e.Message);                
-                return_value = "NOT OK";                
+                throw new Exception("Saving file failed.\n" + ex.Message, ex);
             } finally
             {
                 if (downloadFileStream != null)
@@ -75,7 +72,6 @@ namespace azmi_main
                     downloadFileStream.Close();
                 }
             }
-            return return_value;
         }
 
         public static string setBlob(string filePath, string containerUri)
@@ -87,27 +83,33 @@ namespace azmi_main
             }
 
             // TODO: Check if container uri contains blob path also, like container/folder1/folder2
-            // Get a credential and create a client object for the blob container.
-            BlobContainerClient containerClient = new BlobContainerClient(new Uri(containerUri), new ManagedIdentityCredential());
-
-            // Create the container if it does not exist.
-            containerClient.CreateIfNotExists();
+            // Get a credential and create a client object for the blob container.            
+            BlobContainerClient containerClient = null;
+            try
+            {
+                containerClient = new BlobContainerClient(new Uri(containerUri), new ManagedIdentityCredential());
+                // Create the container if it does not exist.
+                containerClient.CreateIfNotExists();
+            } catch (Exception ex)
+            {
+                throw new Exception("Accessing container for write has failed.\n" + ex.Message, ex);
+            }
 
             // Get a reference to a blob
             BlobClient blobClient = containerClient.GetBlobClient(filePath);
 
-            Console.WriteLine("Uploading to Blob storage as blob: {0}", blobClient.Uri);
+            Console.WriteLine("Uploading file to container. Blob URL: {0}", blobClient.Uri);
 
             // Open the file and upload its data
             using FileStream uploadFileStream = File.OpenRead(filePath);
             try
             {
                 blobClient.Upload(uploadFileStream);
-                return "OK";
+                return "Success";
             } catch (Exception ex)
             {
                 uploadFileStream.Close();
-                throw new Exception("blah" + ex.Message, ex);
+                throw new Exception("Upload to container failed.\n" + ex.Message, ex);
             } finally
             {
                 uploadFileStream.Close();
