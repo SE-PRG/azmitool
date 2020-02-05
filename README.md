@@ -29,7 +29,7 @@ ls azmi -l
 ```
 P.S. Running azmi executable does not require root privilege.
 
-- package
+- Debian package
 ```bash
 curl https://azmideb.blob.core.windows.net/azmi-deb/azmi.deb > ./azmi.deb
 ls azmi.deb -l
