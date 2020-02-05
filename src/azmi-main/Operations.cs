@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.IO;
-using System.Net;
-using System.Text.Json;
-using System.Linq;
 
+using Azure.Core;
 using Azure.Storage.Blobs;
 using Azure.Identity;
 
@@ -15,78 +12,16 @@ namespace azmi_main
     {
         // Class defining main operations performed by azmi tool
 
-        public static string metadataUri(string endpoint = "management", string apiVersion = "2018-02-01")
+        public static string getToken(string endpoint = "management", string identity = "")
         {
-            string[] validEndpoints = { "management", "storage" };
-            if (!(validEndpoints.Contains(endpoint)))
-            {
-                throw new ArgumentOutOfRangeException($"Metadata endpoint '{endpoint}' not supported.\n");
-            }
+            var Cred = String.IsNullOrEmpty(identity)
+                ? new ManagedIdentityCredential()
+                : new ManagedIdentityCredential(identity);
+            var Scope = new String[] { $"https://{endpoint}.azure.com" };
+            var Request = new TokenRequestContext(Scope);
+            var Token = Cred.GetToken(Request);
 
-            string uri = "http://169.254.169.254/metadata/identity/oauth2/token";
-            uri += $"?api-version={apiVersion}";
-            uri += $"&resource=https://{endpoint}.azure.com";
-
-            return uri;
-        }
-
-        public static string getMetaDataResponse(string endpointUri = "")
-        {
-            // TODO: Extend this to support also provided managed identity name            
-            // Build request to acquire managed identities for Azure resources token
-            if (string.IsNullOrEmpty(endpointUri))
-            {
-                endpointUri = Operations.metadataUri();
-            }
-
-            var request = (HttpWebRequest)WebRequest.Create(endpointUri);
-            request.Headers["Metadata"] = "true";
-            request.Method = "GET";
-
-            // TODO: Switch to HttpClient
-            // https://docs.microsoft.com/en-us/dotnet/api/system.net.httpwebrequest?view=netframework-4.8#remarks
-            //HttpClient client = new HttpClient();
-            //HttpResponseMessage response2 = client.GetAsync("http://www.contoso.com/").Result;
-            //response2.EnsureSuccessStatusCode();
-            //string responseBody = response2.Content.ReadAsStringAsync().Result;
-
-            try
-            {
-                // Call /token endpoint
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-
-                // Pipe response Stream to a StreamReader
-                StreamReader streamResponse = new StreamReader(response.GetResponseStream());
-                var metaDataResponse = streamResponse.ReadToEnd();
-                if (String.IsNullOrEmpty(metaDataResponse))
-                {
-                    throw new ArgumentNullException("Received empty response from metaData service.\n");
-                } else
-                {
-                    return metaDataResponse;
-                }
-            } catch (Exception ex)
-            {
-                throw new Exception("Failed to receive response from metadata.\n" + ex.Message, ex);
-            }
-        }
-
-        public static string extractToken(string metaDataResponse)
-        {
-            try
-            {
-                var obj = (Dictionary<string, string>)JsonSerializer.Deserialize(metaDataResponse, typeof(Dictionary<string, string>));
-                return obj["access_token"];
-            } catch (Exception ex)
-            {
-                throw new Exception("Could not deserialize access token.\n" + ex.Message, ex);
-            }
-        }
-
-        public static string getToken(string endpoint = "")
-        {
-            // Method unifies above two mentioned methods into one
-            return extractToken(getMetaDataResponse(endpoint));
+            return Token.Token;
         }
 
         public static string getBlob(string blobURL, string filePath)
