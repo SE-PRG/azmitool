@@ -7,84 +7,12 @@ namespace azmi_tests
 {
     public class OperationsTests
     {
-        // we use custom Azure functions to mock http metadata calls
-        private static string testAzureFunction = @"https://azmi-test.azurewebsites.net/api/metadata";
-        private static string testAzureVMuri = $"{testAzureFunction}?type=azure";
-        private static string testNonAzureVMuri = $"{testAzureFunction}?type=nonazure";
-
-        //
-        // metadataUri
-        //
-
-        [Fact]
-        public void metadataUri_returnsInternalIP()
-        {
-            Assert.Contains("169.254.169.254", Operations.metadataUri());
-        }
-
-        [Theory]
-        [InlineData("storage")]
-        [InlineData("management")]
-        public void metadataUri_returnsProvidedEndpoint(string endpoint)
-        {
-            Assert.Contains(endpoint, Operations.metadataUri(endpoint));
-        }
-
-        [Fact]
-        public void metadataUri_throwsForInvalidEndpoint()
-        {
-            Assert.Throws<ArgumentOutOfRangeException>(() => Operations.metadataUri("invalid_endpoint"));
-        }
-
-        //
-        // getMetaDataResponse
-        //
-
-        [Fact]
-        public void getMetaDataResponse_emptyOnNonAzureVM()
-        {
-            Assert.ThrowsAny<Exception>(() => Operations.getMetaDataResponse(testNonAzureVMuri));
-        }
-
-        [Fact]
-        public void getMetaDataResponse_worksOnAzureVM()
-        {
-            Assert.NotEmpty(Operations.getMetaDataResponse(testAzureVMuri));
-        }
-
-        //
-        // extractToken
-        //
-
-        [Fact]
-        public void extractToken_worksWithProperJSON()
-        {
-            string validJSON = @"{""access_token"": ""123"", ""second_field"": ""234""}";
-            Assert.Equal("123", Operations.extractToken(validJSON));
-        }
-
-
-        [Fact]
-        public void extractToken_failsWithWrongJSON()
-        {
-            Assert.Throws<Exception>(() => Operations.extractToken("invalid_JSON"));
-        }
-
         //
         // getToken
         //
 
-        [Fact]
-        public void getToken_worksOnAzureVM()
-        {
-            Assert.NotEmpty(Operations.getToken(testAzureVMuri));
-        }
+        // TODO: Create tests for getToken command
 
-        [Fact]
-        public void getToken_failsOnNonAzureVM()
-        {
-            Assert.ThrowsAny<Exception>(() => Operations.getToken(testNonAzureVMuri));
-        }
 
         //
         // getBlob
