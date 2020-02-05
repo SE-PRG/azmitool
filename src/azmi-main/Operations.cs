@@ -172,7 +172,7 @@ namespace azmi_main
                 return "Success";
             } catch (Exception ex)
             {
-                uploadFileStream.Close();                
+                uploadFileStream.Close();
                 throw new Exception("Upload to container failed.\n" + ex.Message, ex);                
             } finally
             {
