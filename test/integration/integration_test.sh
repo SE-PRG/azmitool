@@ -70,6 +70,10 @@ CONTAINER_URL="https://azmitest.blob.core.windows.net/azmi-itest-r"
 BLOB="read_only_blob.txt"
 test "Read blob contents from read-only Azure storage container" assert.Success "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt"
 test "Should fail: Save file contents to read-only Azure storage container" assert.Fail "azmi setblob --file download.txt --container $CONTAINER_URL"
+# test --identity options
+test "Read blob contents from read-only Azure storage container using good identity"                      assert.Success "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt --identity d1c05b65-ccf9-47bd-870d-4e44d209ee7a"
+test "Should fail: Read blob contents from read-only Azure storage container using foreign identity"      assert.Fail    "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt --identity 017dc05c-4d12-4ac2-b5f8-5e239dc8bc54"
+test "Should fail: Read blob contents from read-only Azure storage container using non-existing identity" assert.Fail    "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt --identity non-existing"
 
 ### read-write container ###
 # Role(s):    Storage Blob Data Contributor

@@ -15,7 +15,6 @@ namespace azmi_commandline
             Environment.Exit(parseResult);            
         }
 
-
         static RootCommand ConfigureArguments()
         {
 
@@ -31,21 +30,28 @@ namespace azmi_commandline
                     "It is utilizing Azure AD authentication via user assigned managed identity.",
             };
 
-
             //
             // gettoken
             //
 
             var getTokenCommand = new Command("gettoken", "Obtain Azure authorization token.");
-            var endpointOption = new Option(new String[] { "--endpoint", "-e" })
+            var getToken_endpointOption = new Option(new String[] { "--endpoint", "-e" })
             {
                 Argument = new Argument<String>("string"),
                 Description = "Optional. Endpoint against which to authenticate. Examples: management, storage. Default 'management'",
                 Required = false
             };
-            getTokenCommand.AddOption(endpointOption);
-            rootCommand.AddCommand(getTokenCommand);
+            getTokenCommand.AddOption(getToken_endpointOption);
 
+            var getToken_identityOption = new Option(new String[] { "--identity", "-i" })
+            {
+                Argument = new Argument<String>("string"),
+                Description = "Use particular MSI identity to authenticate. Application ID or Client ID. Example: 017dc05c-4d12-4ac2-b5f8-5e239dc8bc54",
+                Required = false
+            };
+            getTokenCommand.AddOption(getToken_identityOption);
+
+            rootCommand.AddCommand(getTokenCommand);
 
             //
             // getblob
@@ -61,15 +67,23 @@ namespace azmi_commandline
             };
             getBlobCommand.AddOption(getBlob_blobOption);
 
-            var getBlob_FileOption = new Option(new String[] { "--file", "-f" })
+            var getBlob_fileOption = new Option(new String[] { "--file", "-f" })
             {
                 Argument = new Argument<String>("string"),
                 Description = "Path to local file to which content will be downloaded. Examples: /tmp/1.txt, ./1.xml",
-                Required = true,
+                Required = true
             };
-            getBlobCommand.AddOption(getBlob_FileOption);
-            rootCommand.AddCommand(getBlobCommand);
+            getBlobCommand.AddOption(getBlob_fileOption);
 
+            var getBlob_identityOption = new Option(new String[] { "--identity", "-i" })
+            {
+                Argument = new Argument<String>("string"),
+                Description = "Use particular MSI identity to authenticate. Application ID or Client ID. Example: 017dc05c-4d12-4ac2-b5f8-5e239dc8bc54",
+                Required = false
+            };
+            getBlobCommand.AddOption(getBlob_identityOption);
+
+            rootCommand.AddCommand(getBlobCommand);
 
             //
             // setblob
@@ -81,7 +95,7 @@ namespace azmi_commandline
             {
                 Argument = new Argument<String>("string"),
                 Description = "Path to local file which will be uploaded. Examples: /tmp/1.txt, ./1.xml",
-                Required = true,
+                Required = true
             };
             setBlobCommand.AddOption(setBlob_fileOption);
 
@@ -92,38 +106,46 @@ namespace azmi_commandline
                 Required = true
             };
             setBlobCommand.AddOption(setBlob_containerOption);
-            rootCommand.AddCommand(setBlobCommand);
 
+            var setBlob_identityOption = new Option(new String[] { "--identity", "-i" })
+            {
+                Argument = new Argument<String>("string"),
+                Description = "Use particular MSI identity to authenticate. Application ID or Client ID. Example: 017dc05c-4d12-4ac2-b5f8-5e239dc8bc54",
+                Required = false
+            };
+            setBlobCommand.AddOption(setBlob_identityOption);
+
+            rootCommand.AddCommand(setBlobCommand);
 
             //
             // define actual subcommand handlers
             //
 
-            getTokenCommand.Handler = CommandHandler.Create<string>((endpoint) =>
+            getTokenCommand.Handler = CommandHandler.Create<string, string>((endpoint, identity) =>
             {
                 try {
-                    Console.WriteLine(Operations.getToken());
+                    Console.WriteLine(Operations.getToken(endpoint, identity));
                 } catch (Exception ex) {
                     DisplayError("gettoken", ex);
                 }
             });
 
-            getBlobCommand.Handler = CommandHandler.Create<string, string>((blob, file) =>
+            getBlobCommand.Handler = CommandHandler.Create<string, string, string>((blob, file, identity) =>
             {
                 try
                 {
-                    Console.WriteLine(Operations.getBlob(blob, file));
+                    Console.WriteLine(Operations.getBlob(blob, file, identity));
                 } catch (Exception ex)
                 {
                     DisplayError("getblob", ex);
                 }
             });
 
-            setBlobCommand.Handler = CommandHandler.Create<string, string>((file, container) =>
+            setBlobCommand.Handler = CommandHandler.Create<string, string, string>((file, container, identity) =>
             {
                 try
                 {
-                    Console.WriteLine(Operations.setBlob(file, container));
+                    Console.WriteLine(Operations.setBlob(file, container, identity));
                 } catch (Exception ex)
                 {
                     DisplayError("setblob", ex);
@@ -139,8 +161,8 @@ namespace azmi_commandline
             var oldColor = Console.ForegroundColor;
             Console.ForegroundColor = ConsoleColor.Red;
             Console.Error.WriteLine($"azmi {subCommand}: {ex.Message}");
-            Console.ForegroundColor = oldColor;
-            Environment.Exit(2);
+            Console.ForegroundColor = oldColor;            
+            Environment.Exit(2);            
             // invocation returns exit code 2, parser errors will return exit code 1
         }
     }
