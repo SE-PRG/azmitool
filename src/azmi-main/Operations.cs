@@ -12,19 +12,19 @@ namespace azmi_main
     {
         // Class defining main operations performed by azmi tool
 
-        public static string getToken(string endpoint = "management", string identity = "")
+        public static string getToken(string endpoint = "management", string identity = null)
         {
-            var Cred = String.IsNullOrEmpty(identity)
-                ? new ManagedIdentityCredential()
-                : new ManagedIdentityCredential(identity);
-            var Scope = new String[] { $"https://{endpoint}.azure.com" };
+            var Cred = new ManagedIdentityCredential(clientId: identity);            
+            var Scope = String.IsNullOrEmpty(endpoint)
+                ? new String[] { $"https://management.azure.com" }
+                : new String[] { $"https://{endpoint}.azure.com" };
             var Request = new TokenRequestContext(Scope);
             var Token = Cred.GetToken(Request);
 
             return Token.Token;
         }
 
-        public static string getBlob(string blobURL, string filePath)
+        public static string getBlob(string blobURL, string filePath, string identity = null)
         {
             // Blob naming
             // https://azmitest.blob.core.windows.net/azmi-test/tmp/azmi_integration_test_2020-01-29_04:34:16.txt
@@ -35,7 +35,7 @@ namespace azmi_main
             BlobClient blobClient = null;
             try
             {                
-                blobClient = new BlobClient(new Uri(blobURL), new ManagedIdentityCredential());
+                blobClient = new BlobClient(new Uri(blobURL), new ManagedIdentityCredential(clientId: identity));
             } catch (Exception ex)
             {
                 throw new Exception("Can not setup blob client instance.\n" + ex.Message, ex);
@@ -51,6 +51,9 @@ namespace azmi_main
             } catch (Azure.RequestFailedException ex)
             {
                 throw new Exception("Download failed.\n" + ex.Message, ex);
+            } catch (AuthenticationFailedException ex)
+            {                
+                throw new Exception("Download (authentication) failed.\n" + ex.Message, ex);                
             }
 
             FileStream downloadFileStream = null;
@@ -74,7 +77,7 @@ namespace azmi_main
             }
         }
 
-        public static string setBlob(string filePath, string containerUri)
+        public static string setBlob(string filePath, string containerUri, string identity = null)
         {
             // sets blob content based on local file content
             if (!(File.Exists(filePath)))
@@ -87,7 +90,7 @@ namespace azmi_main
             BlobContainerClient containerClient = null;
             try
             {
-                containerClient = new BlobContainerClient(new Uri(containerUri), new ManagedIdentityCredential());
+                containerClient = new BlobContainerClient(new Uri(containerUri), new ManagedIdentityCredential(clientId: identity));
                 // Create the container if it does not exist.
                 containerClient.CreateIfNotExists();
             } catch (Exception ex)
