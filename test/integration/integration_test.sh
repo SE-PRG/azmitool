@@ -87,6 +87,12 @@ RANDOM_BLOB_TO_STORE_SHA256=$(sha256sum $RANDOM_BLOB_TO_STORE | awk '{ print $1 
 DOWNLOADED_BLOB_SHA256=$(sha256sum $DOWNLOADED_BLOB | awk '{ print $1 }')
 test "Blobs have to have equal SHA256 checksums" assert.Success "[ $RANDOM_BLOB_TO_STORE_SHA256 = $DOWNLOADED_BLOB_SHA256 ]"
 
+testing class "noname"
+test "There is no noname folder before start" assert.Fail "azmi getblob -f /tmp/noname2 -b ${CONTAINER_URL}//tmp/noname"
+test "Prepare noname file" assert.Success "rm -f /tmp/noname && echo somename > /tmp/noname"
+test "Upload noname file" assert.Success "azmi setblob -f /tmp/noname --container $CONTAINER_URL"
+test "There is no noname folder after upload" assert.Fail "azmi getblob -f /tmp/noname2 -b ${CONTAINER_URL}//tmp/noname"
+https://azmideb.blob.core.windows.net/tt1//tmp/noname
 # uninstalling
 testing class "package"
 test "Uninstall packages" assert.Success "apt purge $PACKAGENAME -y"

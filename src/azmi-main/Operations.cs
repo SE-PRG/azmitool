@@ -96,7 +96,7 @@ namespace azmi_main
             }
 
             // Get a reference to a blob
-            BlobClient blobClient = containerClient.GetBlobClient(filePath);
+            BlobClient blobClient = containerClient.GetBlobClient(filePath.TrimStart('/'));
 
             Console.WriteLine("Uploading file to container. Blob URL: {0}", blobClient.Uri);
 
