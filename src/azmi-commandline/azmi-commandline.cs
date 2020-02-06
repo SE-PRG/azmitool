@@ -161,8 +161,9 @@ namespace azmi_commandline
             var oldColor = Console.ForegroundColor;
             Console.ForegroundColor = ConsoleColor.Red;
             Console.Error.WriteLine($"azmi {subCommand}: {ex.Message}");
-            Console.ForegroundColor = oldColor;            
-            Environment.Exit(2);            
+            Console.ForegroundColor = oldColor;
+            throw ex;
+            Environment.Exit(2);
             // invocation returns exit code 2, parser errors will return exit code 1
         }
     }
