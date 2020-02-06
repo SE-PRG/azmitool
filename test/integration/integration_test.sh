@@ -75,7 +75,7 @@ test "Should fail: Save file contents to read-only Azure storage container" asse
 # Role(s):    Storage Blob Data Contributor
 # Profile(s): bt-seu-test-id (obj. ID: d1c05b65-ccf9-47bd-870d-4e44d209ee7a), kotipoiss-identity (obj. ID: ccb781af-a4eb-4ecc-b183-cef74b3cc717)
 CONTAINER_URL="https://azmitest.blob.core.windows.net/azmi-itest-rw"
-TIMESTAMP=`date "+%Y-%m-%d_%H:%M:%S"` # e.g. 2020-01-07_14:41:02
+TIMESTAMP=`date "+%Y%m%d_%H%M%S"` # e.g. 2020-01-07_14:41:02
 RANDOM_BLOB_TO_STORE="azmi_itest_${TIMESTAMP}.txt"
 CHARS="012345689abcdefghiklmnopqrstuvwxyz"
 test "Generate random blob (file) contents" assert.Success "for i in {1..32}; do echo -n \"\${CHARS:RANDOM%\${#CHARS}:1}\"; done > $RANDOM_BLOB_TO_STORE"
@@ -87,12 +87,12 @@ RANDOM_BLOB_TO_STORE_SHA256=$(sha256sum $RANDOM_BLOB_TO_STORE | awk '{ print $1 
 DOWNLOADED_BLOB_SHA256=$(sha256sum $DOWNLOADED_BLOB | awk '{ print $1 }')
 test "Blobs have to have equal SHA256 checksums" assert.Success "[ $RANDOM_BLOB_TO_STORE_SHA256 = $DOWNLOADED_BLOB_SHA256 ]"
 
+# there should be no <noname> folder in Azure
 testing class "noname"
-test "There is no noname folder before start" assert.Fail "azmi getblob -f /tmp/noname2 -b ${CONTAINER_URL}//tmp/noname"
-test "Prepare noname file" assert.Success "rm -f /tmp/noname && echo somename > /tmp/noname"
-test "Upload noname file" assert.Success "azmi setblob -f /tmp/noname --container $CONTAINER_URL"
-test "There is no noname folder after upload" assert.Fail "azmi getblob -f /tmp/noname2 -b ${CONTAINER_URL}//tmp/noname"
-https://azmideb.blob.core.windows.net/tt1//tmp/noname
+test "Prepare tmp file" assert.Success "rm -f /tmp/${RANDOM_BLOB_TO_STORE} && echo sometext > /tmp/${RANDOM_BLOB_TO_STORE}"
+test "Upload tmp file" assert.Success "azmi setblob -f /tmp/${RANDOM_BLOB_TO_STORE} --container ${CONTAINER_URL}"
+test "There is no noname folder after upload" assert.Fail "azmi getblob -f /dev/null -b ${CONTAINER_URL}//tmp/${RANDOM_BLOB_TO_STORE}"
+
 # uninstalling
 testing class "package"
 test "Uninstall packages" assert.Success "apt purge $PACKAGENAME -y"
