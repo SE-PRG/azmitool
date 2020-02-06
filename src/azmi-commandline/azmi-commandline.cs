@@ -46,7 +46,7 @@ namespace azmi_commandline
             var getToken_identityOption = new Option(new String[] { "--identity", "-i" })
             {
                 Argument = new Argument<String>("string"),
-                Description = "Use particular MSI identity to authenticate. Application ID or Client ID. Example: 017dc05c-4d12-4ac2-b5f8-5e239dc8bc54",
+                Description = "Optional. Use particular MSI identity to authenticate. Application ID or Client ID. Example: 017dc05c-4d12-4ac2-b5f8-5e239dc8bc54",
                 Required = false
             };
             getTokenCommand.AddOption(getToken_identityOption);
@@ -78,7 +78,7 @@ namespace azmi_commandline
             var getBlob_identityOption = new Option(new String[] { "--identity", "-i" })
             {
                 Argument = new Argument<String>("string"),
-                Description = "Use particular MSI identity to authenticate. Application ID or Client ID. Example: 017dc05c-4d12-4ac2-b5f8-5e239dc8bc54",
+                Description = "Optional. Use particular MSI identity to authenticate. Application ID or Client ID. Example: 017dc05c-4d12-4ac2-b5f8-5e239dc8bc54",
                 Required = false
             };
             getBlobCommand.AddOption(getBlob_identityOption);
@@ -110,7 +110,7 @@ namespace azmi_commandline
             var setBlob_identityOption = new Option(new String[] { "--identity", "-i" })
             {
                 Argument = new Argument<String>("string"),
-                Description = "Use particular MSI identity to authenticate. Application ID or Client ID. Example: 017dc05c-4d12-4ac2-b5f8-5e239dc8bc54",
+                Description = "Optional. Use particular MSI identity to authenticate. Application ID or Client ID. Example: 017dc05c-4d12-4ac2-b5f8-5e239dc8bc54",
                 Required = false
             };
             setBlobCommand.AddOption(setBlob_identityOption);
@@ -161,8 +161,7 @@ namespace azmi_commandline
             var oldColor = Console.ForegroundColor;
             Console.ForegroundColor = ConsoleColor.Red;
             Console.Error.WriteLine($"azmi {subCommand}: {ex.Message}");
-            Console.ForegroundColor = oldColor;
-            throw ex;
+            Console.ForegroundColor = oldColor;            
             Environment.Exit(2);
             // invocation returns exit code 2, parser errors will return exit code 1
         }

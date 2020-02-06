@@ -14,8 +14,10 @@ namespace azmi_main
 
         public static string getToken(string endpoint = "management", string identity = null)
         {
-            var Cred = new ManagedIdentityCredential(clientId: identity);
-            var Scope = new String[] { $"https://{endpoint}.azure.com" };
+            var Cred = new ManagedIdentityCredential(clientId: identity);            
+            var Scope = String.IsNullOrEmpty(endpoint)
+                ? new String[] { $"https://management.azure.com" }
+                : new String[] { $"https://{endpoint}.azure.com" };
             var Request = new TokenRequestContext(Scope);
             var Token = Cred.GetToken(Request);
 
