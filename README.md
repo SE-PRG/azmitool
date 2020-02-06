@@ -38,9 +38,15 @@ sudo dpkg -i ./azmi.deb
 ```
 
 ## How it works
-Azmi is utilizing managed identities to autheticate against Azure AD and obtain access token. This token is then sent to specified resource gether with request for specific action (read/write data).
+All Azure authentication is completly transparent VM user or for a running script. There is no need to keep any secrets in the code or on the system, or to rotate and distribute them.
+
+Azmi is utilizing managed identities to autheticate against Azure AD and obtain access token. This token is then sent to specified resource together with request for specific action (read/write data).
 
 ![azmi - how it works](img/azmi-explanation.png)
+
+For other azmi commands (i.e. setblob) authentication works the same way. The only difference is with request being sent to target resource.
+
+Azmi is not working accross different AAD tenants.
 
 Read more:
 - [Managed identities for Azure resources](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview)
