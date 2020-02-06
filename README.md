@@ -1,9 +1,10 @@
-# azmitool
-Azure Managed Identity tool
+<img align="right" width="320" height="160" src="img/azmi-logo.png">
+
+# azmi
 
 ## Description
 
-Simplifies authentication in Azure VM. Using VM with assigned Managed Identity you can easily authenticate against Azure services like Key Vault, Storage Account, etc.
+Azure Managed Identity tool - **azmi** - simplifies authentication to Azure resources inside Azure Linux VMs. Using VM with assigned Managed Identity you can easily authenticate against Azure services like Key Vault, Storage Account, etc.
 
 ## Examples
 
@@ -36,6 +37,14 @@ ls azmi.deb -l
 sudo dpkg -i ./azmi.deb
 ```
 
+## How it works
+Azmi is utilizing managed identities to autheticate against Azure AD and obtain access token. This token is then sent to specified resource gether with request for specific action (read/write data).
+
+![azmi - how it works](img/azmi-explanation.png)
+
+Read more:
+- [Managed identities for Azure resources](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview)
+ 
 ## Pipeline statuses
 
 - Package build [![Build status](https://skype.visualstudio.com/SCC/_apis/build/status/SE-UP/azmi/build%20-%20azmi)](https://skype.visualstudio.com/SCC/_build/latest?definitionId=8166)
