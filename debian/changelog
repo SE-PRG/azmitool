@@ -1,11 +1,15 @@
-azmi (1.0.0-1) stable; urgency=medium
+azmi (0.2.0-1) stable; urgency=medium
 
   * Introduced new commandline parser
+  * Implemented getblob command
+  * Support VMs with multiple identities
+  * Full list of issues: https://github.com/SRE-PRG/azmitool/milestone/1?closed=1
 
  -- SRE-PRG <NA@NA.com>  Mon, 03 Feb 2020 15:34:41 +0100
 
-azmi (1.0.0-0) stable; urgency=medium
+azmi (0.1.0-1) stable; urgency=medium
 
   * Initial release
+  * Commands: gettoken, setblob
 
  -- SRE-PRG <NA@NA.com>  Mon, 06 Jan 2020 12:57:13 +0100
