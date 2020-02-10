@@ -53,7 +53,7 @@ Read more:
  
 ## Common errors
 
-By default, `azmi` will display simple, Linux style errors. To discard the, you can redirect error stream.
+By default, `azmi` will display simple, Linux style errors. To discard the error, you can redirect the error stream to nul.
 To get more verbose error output, use `--verbose` or `-v` switch in command.
 
 - `Missing identity argument` 

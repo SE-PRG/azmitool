@@ -19,7 +19,7 @@ namespace azmi_main
             } else if (ex.Message.Contains("See inner exception for details.") 
                 && (ex.InnerException != null) 
                 && (ex.InnerException.Message.Contains("Identity not found"))) {
-                return new ArgumentException("Identity not found", ex);
+                return new ArgumentException("Managed identity not found", ex);
             } else {
                 return ex;
             }
