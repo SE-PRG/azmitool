@@ -30,6 +30,19 @@ namespace azmi_commandline
                     "It is utilizing Azure AD authentication via user assigned managed identity.",
             };
 
+            var shared_verboseOption = new Option(new String[] { "--verbose", "-v" })
+            {
+                Argument = new Argument<bool>("bool"),
+                Description = "If enabled, commands will produce more verbose error output.",
+                Required = false
+            };
+            var shared_identityOption = new Option(new String[] { "--identity", "-i" })
+            {
+                Argument = new Argument<String>("string"),
+                Description = "Optional. Client or application ID of managed identity used to authenticate. Example: 117dc05c-4d12-4ac2-b5f8-5e239dc8bc54",
+                Required = false
+            };
+
             //
             // gettoken
             //
@@ -42,15 +55,8 @@ namespace azmi_commandline
                 Required = false
             };
             getTokenCommand.AddOption(getToken_endpointOption);
-
-            var getToken_identityOption = new Option(new String[] { "--identity", "-i" })
-            {
-                Argument = new Argument<String>("string"),
-                Description = "Optional. Use particular MSI identity to authenticate. Application ID or Client ID. Example: 017dc05c-4d12-4ac2-b5f8-5e239dc8bc54",
-                Required = false
-            };
-            getTokenCommand.AddOption(getToken_identityOption);
-
+            getTokenCommand.AddOption(shared_identityOption);
+            getTokenCommand.AddOption(shared_verboseOption);
             rootCommand.AddCommand(getTokenCommand);
 
             //
@@ -74,14 +80,8 @@ namespace azmi_commandline
                 Required = true
             };
             getBlobCommand.AddOption(getBlob_fileOption);
-
-            var getBlob_identityOption = new Option(new String[] { "--identity", "-i" })
-            {
-                Argument = new Argument<String>("string"),
-                Description = "Optional. Use particular MSI identity to authenticate. Application ID or Client ID. Example: 017dc05c-4d12-4ac2-b5f8-5e239dc8bc54",
-                Required = false
-            };
-            getBlobCommand.AddOption(getBlob_identityOption);
+            getBlobCommand.AddOption(shared_identityOption);
+            getBlobCommand.AddOption(shared_verboseOption);
 
             rootCommand.AddCommand(getBlobCommand);
 
@@ -106,14 +106,8 @@ namespace azmi_commandline
                 Required = true
             };
             setBlobCommand.AddOption(setBlob_containerOption);
-
-            var setBlob_identityOption = new Option(new String[] { "--identity", "-i" })
-            {
-                Argument = new Argument<String>("string"),
-                Description = "Optional. Use particular MSI identity to authenticate. Application ID or Client ID. Example: 017dc05c-4d12-4ac2-b5f8-5e239dc8bc54",
-                Required = false
-            };
-            setBlobCommand.AddOption(setBlob_identityOption);
+            setBlobCommand.AddOption(shared_identityOption);
+            setBlobCommand.AddOption(shared_verboseOption);
 
             rootCommand.AddCommand(setBlobCommand);
 
@@ -121,34 +115,36 @@ namespace azmi_commandline
             // define actual subcommand handlers
             //
 
-            getTokenCommand.Handler = CommandHandler.Create<string, string>((endpoint, identity) =>
+            getTokenCommand.Handler = CommandHandler.Create<string, string, bool>((endpoint, identity, verbose) =>
             {
-                try {
+                try
+                {
                     Console.WriteLine(Operations.getToken(endpoint, identity));
-                } catch (Exception ex) {
-                    DisplayError("gettoken", ex);
+                } catch (Exception ex)
+                {
+                    DisplayError("gettoken", ex, verbose);
                 }
             });
 
-            getBlobCommand.Handler = CommandHandler.Create<string, string, string>((blob, file, identity) =>
+            getBlobCommand.Handler = CommandHandler.Create<string, string, string, bool>((blob, file, identity, verbose) =>
             {
                 try
                 {
                     Console.WriteLine(Operations.getBlob(blob, file, identity));
                 } catch (Exception ex)
                 {
-                    DisplayError("getblob", ex);
+                    DisplayError("getblob", ex, verbose);
                 }
             });
 
-            setBlobCommand.Handler = CommandHandler.Create<string, string, string>((file, container, identity) =>
+            setBlobCommand.Handler = CommandHandler.Create<string, string, string, bool>((file, container, identity, verbose) =>
             {
                 try
                 {
                     Console.WriteLine(Operations.setBlob(file, container, identity));
                 } catch (Exception ex)
                 {
-                    DisplayError("setblob", ex);
+                    DisplayError("setblob", ex, verbose);
                 }
             });
 
@@ -156,11 +152,19 @@ namespace azmi_commandline
             return rootCommand;
         }
 
-        private static void DisplayError(string subCommand, Exception ex)
+        private static void DisplayError(string subCommand, Exception ex, bool verbose)
         {
             var oldColor = Console.ForegroundColor;
             Console.ForegroundColor = ConsoleColor.Red;
             Console.Error.WriteLine($"azmi {subCommand}: {ex.Message}");
+            if (verbose)
+            {
+                while (ex.InnerException != null)
+                {
+                    ex = ex.InnerException;
+                    Console.Error.WriteLine(ex.Message);
+                }
+            }
             Console.ForegroundColor = oldColor;
             Environment.Exit(2);
             // invocation returns exit code 2, parser errors will return exit code 1
