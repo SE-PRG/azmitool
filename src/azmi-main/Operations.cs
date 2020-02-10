@@ -14,14 +14,21 @@ namespace azmi_main
 
         public static string getToken(string endpoint = "management", string identity = null)
         {
-            var Cred = new ManagedIdentityCredential(clientId: identity);            
-            var Scope = String.IsNullOrEmpty(endpoint)
-                ? new String[] { $"https://management.azure.com" }
-                : new String[] { $"https://{endpoint}.azure.com" };
+            var Cred = new ManagedIdentityCredential(identity);
+            if (string.IsNullOrEmpty(endpoint)) { endpoint = "management"; };
+            var Scope = new String[] { $"https://{endpoint}.azure.com" };
             var Request = new TokenRequestContext(Scope);
-            var Token = Cred.GetToken(Request);
 
-            return Token.Token;
+            try
+            {
+                var Token = Cred.GetToken(Request);
+                return Token.Token;
+            } catch (Exception ex)
+            {
+                throw (string.IsNullOrEmpty(identity)) 
+                    ? new ArgumentNullException("Missing identity argument", ex) 
+                    : ex;
+            }
         }
 
         public static string getBlob(string blobURL, string filePath, string identity = null)
