@@ -4,7 +4,6 @@ using System.IO;
 using Azure.Core;
 using Azure.Storage.Blobs;
 using Azure.Identity;
-using System.Reflection.Metadata;
 
 namespace azmi_main
 {
@@ -17,6 +16,10 @@ namespace azmi_main
             // if no identity, then append identity missing error, otherwise just return existing exception
             if (string.IsNullOrEmpty(identity)) {
                 return new ArgumentNullException("Missing identity argument", ex);
+            } else if (ex.Message.Contains("See inner exception for details.") 
+                && (ex.InnerException != null) 
+                && (ex.InnerException.Message.Contains("Identity not found"))) {
+                return new ArgumentException("Identity not found", ex);
             } else {
                 return ex;
             }
