@@ -5,117 +5,76 @@ using Azure.Core;
 using Azure.Storage.Blobs;
 using Azure.Identity;
 
-
 namespace azmi_main
 {
     public static class Operations
     {
         // Class defining main operations performed by azmi tool
 
+        private static Exception IdentityError(string identity, Exception ex)
+        {
+            // if no identity, then append identity missing error, otherwise just return existing exception
+            if (string.IsNullOrEmpty(identity)) {
+                return new ArgumentNullException("Missing identity argument", ex);
+            } else if (ex.Message.Contains("See inner exception for details.") 
+                && (ex.InnerException != null) 
+                && (ex.InnerException.Message.Contains("Identity not found"))) {
+                return new ArgumentException("Managed identity not found", ex);
+            } else {
+                return ex;
+            }
+        }
+
         public static string getToken(string endpoint = "management", string identity = null)
         {
-            var Cred = new ManagedIdentityCredential(clientId: identity);            
-            var Scope = String.IsNullOrEmpty(endpoint)
-                ? new String[] { $"https://management.azure.com" }
-                : new String[] { $"https://{endpoint}.azure.com" };
+            var Cred = new ManagedIdentityCredential(identity);
+            if (string.IsNullOrEmpty(endpoint)) { endpoint = "management"; };
+            var Scope = new String[] { $"https://{endpoint}.azure.com" };
             var Request = new TokenRequestContext(Scope);
-            var Token = Cred.GetToken(Request);
 
-            return Token.Token;
+            try
+            {
+                var Token = Cred.GetToken(Request);
+                return Token.Token;
+            } catch (Exception ex)
+            {
+                throw IdentityError(identity, ex);
+            }
         }
 
         public static string getBlob(string blobURL, string filePath, string identity = null)
         {
-            // Blob naming
-            // https://azmitest.blob.core.windows.net/azmi-test/tmp/azmi_integration_test_2020-01-29_04:34:16.txt
-            //                    CONTAINER                    |                                                 |
-            //                                                 |                      BLOB                       |
-
             // Download the blob to a local file
-            BlobClient blobClient = null;
+            var Cred = new ManagedIdentityCredential(identity);
+            var blobClient = new BlobClient(new Uri(blobURL), Cred);
             try
-            {                
-                blobClient = new BlobClient(new Uri(blobURL), new ManagedIdentityCredential(clientId: identity));
+            {
+                blobClient.DownloadTo(filePath);
+                return "Success";
             } catch (Exception ex)
             {
-                throw new Exception("Can not setup blob client instance.\n" + ex.Message, ex);
-            }
-
-            Console.WriteLine("\nDownloading blob to:\n\t{0}\n", filePath);
-
-            Azure.Storage.Blobs.Models.BlobDownloadInfo download;
-            try
-            {
-                // Download the blob's contents
-                download = blobClient.Download();
-            } catch (Azure.RequestFailedException ex)
-            {
-                throw new Exception("Download failed.\n" + ex.Message, ex);
-            } catch (AuthenticationFailedException ex)
-            {                
-                throw new Exception("Download (authentication) failed.\n" + ex.Message, ex);                
-            }
-
-            FileStream downloadFileStream = null;
-            try
-            {
-                // and save it to a file
-                downloadFileStream = File.OpenWrite(filePath);
-                download.Content.CopyTo(downloadFileStream);
-                downloadFileStream.Close();
-                return "Success";
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Saving file failed.\n" + ex.Message, ex);
-            } finally
-            {
-                if (downloadFileStream != null)
-                {
-                    downloadFileStream.Close();
-                }
+                throw IdentityError(identity, ex);
             }
         }
 
         public static string setBlob(string filePath, string containerUri, string identity = null)
         {
             // sets blob content based on local file content
-            if (!(File.Exists(filePath)))
-            {
+            if (!(File.Exists(filePath))) {
                 throw new FileNotFoundException($"File '{filePath}' not found!");
             }
 
-            // TODO: Check if container uri contains blob path also, like container/folder1/folder2
-            // Get a credential and create a client object for the blob container.            
-            BlobContainerClient containerClient = null;
+            var Cred = new ManagedIdentityCredential(identity);
+            var containerClient = new BlobContainerClient(new Uri(containerUri), Cred);
+            containerClient.CreateIfNotExists();
+            var blobClient = containerClient.GetBlobClient(filePath.TrimStart('/'));
             try
             {
-                containerClient = new BlobContainerClient(new Uri(containerUri), new ManagedIdentityCredential(clientId: identity));
-                // Create the container if it does not exist.
-                containerClient.CreateIfNotExists();
-            } catch (Exception ex)
-            {
-                throw new Exception("Accessing container for write has failed.\n" + ex.Message, ex);
-            }
-
-            // Get a reference to a blob
-            BlobClient blobClient = containerClient.GetBlobClient(filePath.TrimStart('/'));
-
-            Console.WriteLine("Uploading file to container. Blob URL: {0}", blobClient.Uri);
-
-            // Open the file and upload its data
-            using FileStream uploadFileStream = File.OpenRead(filePath);
-            try
-            {
-                blobClient.Upload(uploadFileStream);
+                blobClient.Upload(filePath);
                 return "Success";
             } catch (Exception ex)
             {
-                uploadFileStream.Close();
-                throw new Exception("Upload to container failed.\n" + ex.Message, ex);
-            } finally
-            {
-                uploadFileStream.Close();
+                throw IdentityError(identity, ex);
             }
         }
     }

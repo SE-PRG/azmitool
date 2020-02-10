@@ -51,6 +51,23 @@ Azmi is not working across different AAD tenants.
 Read more:
 - [Managed identities for Azure resources](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview)
  
+## Common errors
+
+By default, `azmi` will display simple, Linux style errors. To discard the error, you can redirect the error stream to nul.
+To get more verbose error output, use `--verbose` or `-v` switch in command.
+
+- `Missing identity argument` 
+
+If your VM has exactly one managed identity, you can omit `--identity` parameter. If it has more than one identity, you must specify it using the same argument.
+
+- `No managed identity endpoint found`
+
+If you run `azmi` on non-Azure VM, you will get the error above.
+
+- `Identity not found`
+
+If you used `--identity` argument, please verify if you used correct client / application ID
+
 ## Pipeline statuses
 
 - Package build [![Build status](https://skype.visualstudio.com/SCC/_apis/build/status/SE-UP/azmi/build%20-%20azmi)](https://skype.visualstudio.com/SCC/_build/latest?definitionId=8166)
