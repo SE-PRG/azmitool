@@ -39,7 +39,8 @@ sudo dpkg -i ./azmi.deb
 ```
 
 - Windows executable
-There is a version of `azmi` tool also for Windows, though this is not activly supported. You can download and use it from PowerShell 5,6 or 7 command prompt like this:
+
+Tool `azmi` is built on top of cross-platform dotnet core. Therefore, there is a version of `azmi` also for Windows, though this is not activly supported. You can download and use it from PowerShell 5,6 or 7 command prompt like this:
 
 ```PowerShell
 Invoke-WebRequest https://azmideb.blob.core.windows.net/azmi-deb/azmi.exe -OutFile ./azmi.exe
