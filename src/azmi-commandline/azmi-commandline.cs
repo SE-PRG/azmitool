@@ -148,25 +148,22 @@ namespace azmi_commandline
             {
                 if (blob == null && container == null)
                 {
-                    throw new ArgumentNullException("blob, container", "You must specify either blob or container url");
-                } else if (blob != null && container != null)
+                    throw new ArgumentException("You must specify either blob or container url");
+                }
+                else if (blob != null && container != null)
                 {
                     throw new ArgumentException("Cannot use both container and blob url");
-                } else
+                } 
+
+                try
                 {
-                    try
-                    {
-                        if (container != null)
-                        {
-                            Console.WriteLine(Operations.setBlob_byContainer(file, container, identity));
-                        } else
-                        {
-                            Console.WriteLine(Operations.setBlob_byBlob(file, blob, identity));
-                        }                        
-                    } catch (Exception ex)
-                    {
-                        DisplayError("setblob", ex, verbose);
-                    }
+                    Console.WriteLine(container != null
+                        ? Operations.setBlob_byContainer(file, container, identity)
+                        : Operations.setBlob_byBlob(file, blob, identity)
+                        );
+                } catch (Exception ex)
+                {
+                    DisplayError("setblob", ex, verbose);
                 }
             });
 
