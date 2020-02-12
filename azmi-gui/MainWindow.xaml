@@ -14,13 +14,13 @@
             Margin="17,16,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Content="Get Token" Click="Button_Click" />
-        <TextBlock x:Name="TokenTextBlock"
-            Width="362"
-            Height="156"
-            Margin="17,54,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
+            Click="Button_Click"
+            Content="Get Token" />
+        <TextBlock
+            x:Name="TokenTextBlock"
+            Margin="17,54,17,17"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
             Text="TextBlock"
             TextWrapping="Wrap" />
     </Grid>
