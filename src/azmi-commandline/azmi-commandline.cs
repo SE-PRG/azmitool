@@ -112,6 +112,7 @@ namespace azmi_commandline
                 Required = false
             };
             setBlobCommand.AddOption(setBlob_containerOption);
+            setBlobCommand.AddOption(setBlob_blobOption);
             setBlobCommand.AddOption(shared_identityOption);
             setBlobCommand.AddOption(shared_verboseOption);
 
