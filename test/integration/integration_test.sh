@@ -99,7 +99,7 @@ test "There is no noname folder after upload" assert.Fail "azmi getblob -f /dev/
 
 # testing setblob-byblob 
 testing class "setblob-byblob"
-test "Upload tmp file by blob" assert.Success "azmi setblob -f /tmp/${RANDOM_BLOB_TO_STORE} --blob ${CONTAINER_URL}/byblob/${RANDOM_BLOB_TO_STORE}.txt"
+test "Upload tmp file by blob" assert.Success "azmi setblob -f /tmp/${RANDOM_BLOB_TO_STORE} --blob ${CONTAINER_URL}/byblob/${RANDOM_BLOB_TO_STORE}"
 
 # it should support verbose option for commands
 testing class "verbose"
