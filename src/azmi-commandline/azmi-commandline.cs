@@ -111,6 +111,25 @@ namespace azmi_commandline
 
             rootCommand.AddCommand(setBlobCommand);
 
+
+            //
+            // listblobs
+            //
+
+            var listBlobsCommand = new Command("listblobs", "List all blobs in container and output to screen.");
+
+            var listBlobs_containerOption = new Option(new String[] { "--container", "-c" })
+            {
+                Argument = new Argument<String>("string"),
+                Description = "URL of container for which to list blobs. Example: https://myaccount.blob.core.windows.net/mycontainer",
+                Required = true
+            };
+            listBlobsCommand.AddOption(listBlobs_containerOption);
+            listBlobsCommand.AddOption(shared_identityOption);
+            listBlobsCommand.AddOption(shared_verboseOption);
+
+            rootCommand.AddCommand(listBlobsCommand);
+
             //
             // define actual subcommand handlers
             //
@@ -145,6 +164,17 @@ namespace azmi_commandline
                 } catch (Exception ex)
                 {
                     DisplayError("setblob", ex, verbose);
+                }
+            });
+
+            listBlobsCommand.Handler = CommandHandler.Create<string, string, bool>((container, identity, verbose) =>
+            {
+                try
+                {
+                    Console.WriteLine(Operations.listBlobs(container, identity));
+                } catch (Exception ex)
+                {
+                    DisplayError("listblobs", ex, verbose);
                 }
             });
 
