@@ -146,11 +146,11 @@ namespace azmi_commandline
 
             setBlobCommand.Handler = CommandHandler.Create<string, string, string, string, bool>((file, blob, container, identity, verbose) =>
             {
-                if (blob == null && container == null)
+                if (String.IsNullOrEmpty(blob) && String.IsNullOrEmpty(container))
                 {
                     throw new ArgumentException("You must specify either blob or container url");
                 }
-                else if (blob != null && container != null)
+                else if ( (!String.IsNullOrEmpty(blob)) && (!String.IsNullOrEmpty(container)))
                 {
                     throw new ArgumentException("Cannot use both container and blob url");
                 } 
