@@ -64,7 +64,7 @@ namespace azmi_commandline
             // getblob
             //
 
-            var getBlobCommand = new Command("getblob", "Downloads a blob from a storage account to local file.");
+            var getBlobCommand = new Command("getblob", "Downloads blob from storage account to local file.");
 
             var getBlob_blobOption = new Option(new String[] { "--blob", "-b" })
             {
@@ -90,7 +90,7 @@ namespace azmi_commandline
             // setblob
             //
 
-            var setBlobCommand = new Command("setblob", "Writes a local file to a storage account blob.");
+            var setBlobCommand = new Command("setblob", "Writes local file to storage account blob.");
 
             var setBlob_fileOption = new Option(new String[] { "--file", "-f" })
             {
