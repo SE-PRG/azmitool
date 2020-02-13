@@ -17,6 +17,9 @@ azmi getblob --blob $BLOB_URL --file $FILE
 
 # upload file as a blob to storage account container
 azmi setblob --file $FILE --container $CONTAINER_URL
+
+# upload file by specifying blob url and identity
+azmi setblob --file ~/info.txt --blob $CONTAINER_URL/myhostname/info.txt --identity 117dc05c-4d12-4ac2-b5f8-5e239dc8bc54
 ```
 
 ## Download
@@ -38,16 +41,11 @@ ls azmi.deb -l
 sudo dpkg -i ./azmi.deb
 ```
 
-- Windows executable
+- Windows
 
-Tool `azmi` is built on top of cross-platform dotnet core. Therefore, there is a version of `azmi` also for Windows, though this is not activly supported. You can download and use it from PowerShell 5,6 or 7 command prompt like this:
-
-```PowerShell
-Invoke-WebRequest https://azmideb.blob.core.windows.net/azmi-deb/azmi.exe -OutFile ./azmi.exe
-./azmi.exe --help
-./azmi.exe gettoken --verbose
-```
-See it in action [here](https://dev.azure.com/iiric/PS1/_build/results?buildId=1108&view=logs&j=275f1d19-1bd8-5591-b06b-07d489ea915a&t=24311d03-63ec-5098-c8e5-7df09da2b6d4).
+Tool `azmi` is built on top of cross-platform dotnet core.
+Therefore, there are versions of `azmi` also for Windows.
+Read more [here](Windows.md).
 
 ## How it works
 All Azure authentication is completely transparent VM user or for a running script. There is no need to keep any secrets in the code or on the system, or to rotate and distribute them.
