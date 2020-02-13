@@ -55,6 +55,11 @@ testing class "application"
 
 test "Authenticate to Azure using a managed identity and get access token" assert.Success "azmi gettoken"
 
+# URL structure
+# https://azmitest.blob.core.windows.net/azmi-itest-rw/azmi_itest_2020-02-03_15:53:38.txt
+# https://azmitest.blob.core.windows.net/azmi-itest-rw//tmp/azmi_itest_20200206_091521.txt
+#         storage account URL           |containerName|          blob name
+
 ### no-access container ###
 CONTAINER_URL="https://azmitest.blob.core.windows.net/azmi-itest-no-access"
 BLOB="restricted_access_blob.txt"
@@ -96,6 +101,19 @@ testing class "noname"
 test "Prepare tmp file" assert.Success "rm -f /tmp/${RANDOM_BLOB_TO_STORE} && echo sometext > /tmp/${RANDOM_BLOB_TO_STORE}"
 test "Upload tmp file" assert.Success "azmi setblob -f /tmp/${RANDOM_BLOB_TO_STORE} --container ${CONTAINER_URL}"
 test "There is no noname folder after upload" assert.Fail "azmi getblob -f /dev/null -b ${CONTAINER_URL}//tmp/${RANDOM_BLOB_TO_STORE}"
+
+### list-blobs container
+# Role(s):    Storage Blob Data Contributor
+# Profile(s): bt-seu-test-id (obj. ID: d1c05b65-ccf9-47bd-870d-4e44d209ee7a), kotipoiss-identity (obj. ID: ccb781af-a4eb-4ecc-b183-cef74b3cc717)
+CONTAINER_URL="https://azmitest.blob.core.windows.net/azmi-itest-listblobs"
+test "List all blobs in listblobs container" assert.Success "azmi listblobs --container $CONTAINER_URL"
+EXPECTED_BLOB_COUNT=5
+test "There should be $EXPECTED_BLOB_COUNT listed blobs in listblobs container" assert.Equals "azmi listblobs --container $CONTAINER_URL | wc -l" $EXPECTED_BLOB_COUNT
+# listing with an optional --prefix
+$EXPECTED_BLOB_COUNT=3; PREFIX="neu-pre"
+test "There should be $EXPECTED_BLOB_COUNT listed blobs with prefix '$PREFIX' in listblobs container" assert.Success "azmi listblobs --container $CONTAINER_URL --prefix $PREFIX | wc -l" $EXPECTED_BLOB_COUNT
+$EXPECTED_BLOB_COUNT=1; PREFIX="neu-pre-show-me-only"
+test "There should be $EXPECTED_BLOB_COUNT listed blob with prefix '$PREFIX' in listblobs container" assert.Success "azmi listblobs --container $CONTAINER_URL --prefix $PREFIX | wc -l" $EXPECTED_BLOB_COUNT
 
 # it should support verbose option for commands
 testing class "verbose"

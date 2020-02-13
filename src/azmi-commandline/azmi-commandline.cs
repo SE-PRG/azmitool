@@ -116,7 +116,7 @@ namespace azmi_commandline
             // listblobs
             //
 
-            var listBlobsCommand = new Command("listblobs", "List all blobs in container and output to screen.");
+            var listBlobsCommand = new Command("listblobs", "List all blobs in container and send to output.");
 
             var listBlobs_containerOption = new Option(new String[] { "--container", "-c" })
             {
@@ -124,7 +124,15 @@ namespace azmi_commandline
                 Description = "URL of container for which to list blobs. Example: https://myaccount.blob.core.windows.net/mycontainer",
                 Required = true
             };
+
+            var listBlobs_prefixOption = new Option(new String[] { "--prefix", "-p" })
+            {
+                Argument = new Argument<String>("string"),
+                Description = "Specifies a string that filters the results to return only blobs whose name begins with the specified prefix",
+                Required = false
+            };
             listBlobsCommand.AddOption(listBlobs_containerOption);
+            listBlobsCommand.AddOption(listBlobs_prefixOption);
             listBlobsCommand.AddOption(shared_identityOption);
             listBlobsCommand.AddOption(shared_verboseOption);
 
@@ -167,11 +175,15 @@ namespace azmi_commandline
                 }
             });
 
-            listBlobsCommand.Handler = CommandHandler.Create<string, string, bool>((container, identity, verbose) =>
+            listBlobsCommand.Handler = CommandHandler.Create<string, string, string, bool>((container, identity, prefix, verbose) =>
             {
                 try
                 {
-                    Console.WriteLine(Operations.listBlobs(container, identity));
+                    string output = Operations.listBlobs(container, identity, prefix);
+                    if (!String.IsNullOrEmpty(output))                    
+                    {
+                        Console.WriteLine(output);
+                    }
                 } catch (Exception ex)
                 {
                     DisplayError("listblobs", ex, verbose);
