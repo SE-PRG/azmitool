@@ -4,6 +4,7 @@ using System.IO;
 using Azure.Core;
 using Azure.Storage.Blobs;
 using Azure.Identity;
+using System.Collections.Generic;
 
 namespace azmi_main
 {
@@ -77,6 +78,27 @@ namespace azmi_main
                 throw IdentityError(identity, ex);
             }
         }
+
+        public static string listBlobs(string containerUri, string identity = null, string prefix = null)
+        {            
+            var Cred = new ManagedIdentityCredential(identity);
+            var containerClient = new BlobContainerClient(new Uri(containerUri), Cred);
+            containerClient.CreateIfNotExists();
+            var blobNamesList = new List<string>();
+
+            try
+            {
+                foreach (var blob in containerClient.GetBlobs(prefix: prefix)) {
+                    blobNamesList.Add(blob.Name);
+                }
+
+                return blobNamesList.Count == 0 ? null : String.Join("\n", blobNamesList);
+            } catch (Exception ex)
+            {
+                throw IdentityError(identity, ex);
+            }
+        }
+
         public static string setBlob_byBlob(string filePath, string blobUri, string identity = null)
         {
             // sets blob content based on local file content with provided blob url
@@ -96,6 +118,5 @@ namespace azmi_main
                 throw IdentityError(identity, ex);
             }
         }
-
     }
 }
