@@ -27,7 +27,8 @@ namespace azmi_commandline
             {
                 Description = "Command-line utility azmi stands for Azure Managed Identity.\n" +
                     "It is helping admins simplify common operations (reading and writing) on Azure resources.\n" +
-                    "It is utilizing Azure AD authentication via user assigned managed identity.",
+                    "It is utilizing Azure AD authentication via user-assigned managed identity.\n" +
+                    "Type azmi --help or azmi <command> --help for details on each command.",
             };
 
             var shared_verboseOption = new Option(new String[] { "--verbose", "-v" })
@@ -47,7 +48,7 @@ namespace azmi_commandline
             // gettoken
             //
 
-            var getTokenCommand = new Command("gettoken", "Obtain Azure authorization token.");
+            var getTokenCommand = new Command("gettoken", "Obtains Azure authorization token for usage in other command line tools.");
             var getToken_endpointOption = new Option(new String[] { "--endpoint", "-e" })
             {
                 Argument = new Argument<String>("string"),
@@ -63,7 +64,7 @@ namespace azmi_commandline
             // getblob
             //
 
-            var getBlobCommand = new Command("getblob", "Downloads storage account blob to local file.");
+            var getBlobCommand = new Command("getblob", "Downloads a blob from a storage account to local file.");
 
             var getBlob_blobOption = new Option(new String[] { "--blob", "-b" })
             {
@@ -89,7 +90,7 @@ namespace azmi_commandline
             // setblob
             //
 
-            var setBlobCommand = new Command("setblob", "Write local file to storage account blob.");
+            var setBlobCommand = new Command("setblob", "Writes a local file to a storage account blob.");
 
             var setBlob_fileOption = new Option(new String[] { "--file", "-f" })
             {
