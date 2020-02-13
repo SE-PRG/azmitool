@@ -110,9 +110,9 @@ test "List all blobs in listblobs container" assert.Success "azmi listblobs --co
 EXPECTED_BLOB_COUNT=5
 test "There should be $EXPECTED_BLOB_COUNT listed blobs in listblobs container" assert.Equals "azmi listblobs --container $CONTAINER_URL | wc -l" $EXPECTED_BLOB_COUNT
 # listing with an optional --prefix
-$EXPECTED_BLOB_COUNT=3; PREFIX="neu-pre"
+EXPECTED_BLOB_COUNT=3; PREFIX="neu-pre"
 test "There should be $EXPECTED_BLOB_COUNT listed blobs with prefix '$PREFIX' in listblobs container" assert.Equals "azmi listblobs --container $CONTAINER_URL --prefix $PREFIX | wc -l" $EXPECTED_BLOB_COUNT
-$EXPECTED_BLOB_COUNT=1; PREFIX="neu-pre-show-me-only"
+EXPECTED_BLOB_COUNT=1; PREFIX="neu-pre-show-me-only"
 test "There should be $EXPECTED_BLOB_COUNT listed blob with prefix '$PREFIX' in listblobs container" assert.Equals "azmi listblobs --container $CONTAINER_URL --prefix $PREFIX | wc -l" $EXPECTED_BLOB_COUNT
 
 # it should support verbose option for commands
