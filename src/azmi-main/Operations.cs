@@ -57,9 +57,9 @@ namespace azmi_main
             }
         }
 
-        public static string setBlob(string filePath, string containerUri, string identity = null)
+        public static string setBlob_byContainer(string filePath, string containerUri, string identity = null)
         {
-            // sets blob content based on local file content
+            // sets blob content based on local file content in provided container
             if (!(File.Exists(filePath))) {
                 throw new FileNotFoundException($"File '{filePath}' not found!");
             }
@@ -77,5 +77,25 @@ namespace azmi_main
                 throw IdentityError(identity, ex);
             }
         }
+        public static string setBlob_byBlob(string filePath, string blobUri, string identity = null)
+        {
+            // sets blob content based on local file content with provided blob url
+            if (!(File.Exists(filePath)))
+            {
+                throw new FileNotFoundException($"File '{filePath}' not found!");
+            }
+
+            var Cred = new ManagedIdentityCredential(identity);
+            var blobClient = new BlobClient(new Uri(blobUri), Cred);
+            try
+            {
+                blobClient.Upload(filePath);
+                return "Success";
+            } catch (Exception ex)
+            {
+                throw IdentityError(identity, ex);
+            }
+        }
+
     }
 }
