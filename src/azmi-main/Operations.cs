@@ -58,7 +58,29 @@ namespace azmi_main
             }
         }
 
-        public static string setBlob_byContainer(string filePath, string containerUri, string identity = null)
+        public static string listBlobs(string containerUri, string identity = null, string prefix = null)
+        {
+            var Cred = new ManagedIdentityCredential(identity);
+            var containerClient = new BlobContainerClient(new Uri(containerUri), Cred);
+            containerClient.CreateIfNotExists();
+            var blobNamesList = new List<string>();
+
+            try
+            {
+                foreach (var blob in containerClient.GetBlobs(prefix: prefix))
+                {
+                    blobNamesList.Add(blob.Name);
+                }
+
+                return blobNamesList.Count == 0 ? null : String.Join("\n", blobNamesList);
+            }
+            catch (Exception ex)
+            {
+                throw IdentityError(identity, ex);
+           }
+        }
+
+        public static string setBlob_byContainer(string filePath, string containerUri, bool force = false, string identity = null)
         {
             // sets blob content based on local file content in provided container
             if (!(File.Exists(filePath))) {
@@ -71,35 +93,15 @@ namespace azmi_main
             var blobClient = containerClient.GetBlobClient(filePath.TrimStart('/'));
             try
             {
-                blobClient.Upload(filePath);
+                blobClient.Upload(filePath, force);
                 return "Success";
             } catch (Exception ex)
             {
                 throw IdentityError(identity, ex);
             }
-        }
+        }       
 
-        public static string listBlobs(string containerUri, string identity = null, string prefix = null)
-        {            
-            var Cred = new ManagedIdentityCredential(identity);
-            var containerClient = new BlobContainerClient(new Uri(containerUri), Cred);
-            containerClient.CreateIfNotExists();
-            var blobNamesList = new List<string>();
-
-            try
-            {
-                foreach (var blob in containerClient.GetBlobs(prefix: prefix)) {
-                    blobNamesList.Add(blob.Name);
-                }
-
-                return blobNamesList.Count == 0 ? null : String.Join("\n", blobNamesList);
-            } catch (Exception ex)
-            {
-                throw IdentityError(identity, ex);
-            }
-        }
-
-        public static string setBlob_byBlob(string filePath, string blobUri, string identity = null)
+        public static string setBlob_byBlob(string filePath, string blobUri, bool force = false, string identity = null)
         {
             // sets blob content based on local file content with provided blob url
             if (!(File.Exists(filePath)))
@@ -111,7 +113,7 @@ namespace azmi_main
             var blobClient = new BlobClient(new Uri(blobUri), Cred);
             try
             {
-                blobClient.Upload(filePath);
+                blobClient.Upload(filePath, force);
                 return "Success";
             } catch (Exception ex)
             {

@@ -121,6 +121,13 @@ testing class "setblob-byblob"
 CONTAINER_URL="https://azmitest.blob.core.windows.net/azmi-itest-rw"
 test "Upload tmp file by blob" assert.Success "azmi setblob -f /tmp/${RANDOM_BLOB_TO_STORE} --blob ${CONTAINER_URL}/byblob/${RANDOM_BLOB_TO_STORE}"
 
+# --force option
+testing class "force option"
+test "Should fail: attempt to overwrite existing blob using --container option" assert.Fail "azmi setblob -f /tmp/${RANDOM_BLOB_TO_STORE} --container ${CONTAINER_URL}"
+test "Should fail: attempt to overwrite existing blob using --blob option" assert.Fail "azmi setblob -f /tmp/${RANDOM_BLOB_TO_STORE} --blob ${CONTAINER_URL}/byblob/${RANDOM_BLOB_TO_STORE}"
+test "Overwrite existing blob using --container option" assert.Success "azmi setblob -f /tmp/${RANDOM_BLOB_TO_STORE} --container ${CONTAINER_URL} --force"
+test "Overwrite existing blob using --blob option" assert.Success "azmi setblob -f /tmp/${RANDOM_BLOB_TO_STORE} --blob ${CONTAINER_URL}/byblob/${RANDOM_BLOB_TO_STORE} --force"
+
 # it should support verbose option for commands
 testing class "verbose"
 test "gettoken verbose option" assert.Success "azmi gettoken --help | grep verbose"

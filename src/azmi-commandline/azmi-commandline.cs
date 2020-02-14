@@ -112,13 +112,19 @@ namespace azmi_commandline
                 Description = "URL of blob to which file will be uploaded. Cannot be used together with --container. Example: https://myaccount.blob.core.windows.net/mycontainer/myblob.txt",
                 Required = false
             };
+            var setBlob_forceOption = new Option(new String[] { "--force" })
+            {
+                Argument = new Argument<bool>("bool"),
+                Description = "Overwrite existing blob in Azure.",
+                Required = false
+            };
             setBlobCommand.AddOption(setBlob_containerOption);
             setBlobCommand.AddOption(setBlob_blobOption);
+            setBlobCommand.AddOption(setBlob_forceOption);
             setBlobCommand.AddOption(shared_identityOption);
             setBlobCommand.AddOption(shared_verboseOption);
 
             rootCommand.AddCommand(setBlobCommand);
-
 
             //
             // listblobs
@@ -172,7 +178,7 @@ namespace azmi_commandline
                 }
             });
 
-            setBlobCommand.Handler = CommandHandler.Create<string, string, string, string, bool>((file, blob, container, identity, verbose) =>
+            setBlobCommand.Handler = CommandHandler.Create<string, string, string, string, bool, bool>((file, blob, container, identity, force, verbose) =>
             {
                 if (String.IsNullOrEmpty(blob) && String.IsNullOrEmpty(container))
                 {
@@ -186,8 +192,8 @@ namespace azmi_commandline
                 try
                 {
                     Console.WriteLine(container != null
-                        ? Operations.setBlob_byContainer(file, container, identity)
-                        : Operations.setBlob_byBlob(file, blob, identity)
+                        ? Operations.setBlob_byContainer(file, container, force, identity)
+                        : Operations.setBlob_byBlob(file, blob, force, identity)
                         );
                 } catch (Exception ex)
                 {
@@ -200,7 +206,7 @@ namespace azmi_commandline
                 try
                 {
                     string output = Operations.listBlobs(container, identity, prefix);
-                    if (!String.IsNullOrEmpty(output))                    
+                    if (!String.IsNullOrEmpty(output))
                     {
                         Console.WriteLine(output);
                     }
