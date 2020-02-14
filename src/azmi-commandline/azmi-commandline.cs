@@ -225,13 +225,10 @@ namespace azmi_commandline
             var oldColor = Console.ForegroundColor;
             Console.ForegroundColor = ConsoleColor.Red;
             Console.Error.WriteLine($"azmi {subCommand}: {ex.Message}");
-            if (verbose)
+            while (verbose && ex.InnerException != null)
             {
-                while (ex.InnerException != null)
-                {
-                    ex = ex.InnerException;
-                    Console.Error.WriteLine(ex.Message);
-                }
+                ex = ex.InnerException;
+                Console.Error.WriteLine(ex.Message);
             }
             Console.ForegroundColor = oldColor;
             Environment.Exit(2);

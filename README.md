@@ -48,9 +48,13 @@ Therefore, there are versions of `azmi` also for Windows.
 Read more [here](Windows.md).
 
 ## How it works
-All Azure authentication is completely transparent VM user or for a running script. There is no need to keep any secrets in the code or on the system, or to rotate and distribute them.
 
-Azmi is utilizing managed identities to authenticate against Azure AD and obtain access token. This token is then sent to specified resource together with request for specific action (read/write data).
+All Azure authentication is completely transparent for VM user or for a running script.
+Authentication is not attached for a user running the command, but actually to VM and its managed identity.
+There is no need to keep any secrets in the code or on the system, or to rotate and distribute them.
+
+Azmi is utilizing managed identities to authenticate against Azure AD and obtain access token.
+This token is then sent to specified resource together with request for specific action (read/write data).
 
 ![azmi - how it works](img/azmi-explanation.png)
 
