@@ -5,6 +5,7 @@ using Azure.Core;
 using Azure.Storage.Blobs;
 using Azure.Identity;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace azmi_main
 {
@@ -63,15 +64,10 @@ namespace azmi_main
             var Cred = new ManagedIdentityCredential(identity);
             var containerClient = new BlobContainerClient(new Uri(containerUri), Cred);
             containerClient.CreateIfNotExists();
-            var blobNamesList = new List<string>();
-
+            
             try
             {
-                foreach (var blob in containerClient.GetBlobs(prefix: prefix))
-                {
-                    blobNamesList.Add(blob.Name);
-                }
-
+                var blobNamesList = containerClient.GetBlobs(prefix: prefix).Select(i => i.Name).ToList();
                 return blobNamesList.Count == 0 ? null : String.Join("\n", blobNamesList);
             }
             catch (Exception ex)
