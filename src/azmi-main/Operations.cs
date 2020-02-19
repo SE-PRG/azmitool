@@ -1,9 +1,11 @@
 using System;
 using System.IO;
-using System.Linq;
+
 using Azure.Core;
-using Azure.Identity;
 using Azure.Storage.Blobs;
+using Azure.Identity;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace azmi_main
 {
@@ -42,41 +44,16 @@ namespace azmi_main
             }
         }
 
-        // Download the blob to a local file
-        public static string getBlob(string blobURL, string filePath, string identity = null, bool ifNewer = false)
+        public static string getBlob(string blobURL, string filePath, string identity = null)
         {
-            // Connection
+            // Download the blob to a local file
             var Cred = new ManagedIdentityCredential(identity);
             var blobClient = new BlobClient(new Uri(blobURL), Cred);
-
-            if (ifNewer)
-            {
-                var fileInfo = new System.IO.FileInfo(filePath);
-                if (fileInfo.Exists)
-                {
-                    var blobProperties = blobClient.GetProperties();
-                    // Any operation that modifies a blob, including an update of the blob's metadata or properties, changes the last modified time of the blob
-                    var blobLastModified = blobProperties.Value.LastModified.UtcDateTime;
-
-                    // returns date of local file was last written to
-                    DateTime fileLastWrite = File.GetLastWriteTimeUtc(filePath);
-
-                    int value = DateTime.Compare(blobLastModified, fileLastWrite);
-                    if (value < 0)
-                        return "Skipped. Blob is not newer than file.";
-                }
-            }
-
             try
             {
                 blobClient.DownloadTo(filePath);
                 return "Success";
-            }
-            catch (Azure.RequestFailedException)
-            {
-                throw;
-            }
-            catch (Exception ex)
+            } catch (Exception ex)
             {
                 throw IdentityError(identity, ex);
             }
@@ -99,9 +76,9 @@ namespace azmi_main
            }
         }
 
-        // sets blob content based on local file content into container
         public static string setBlob_byContainer(string filePath, string containerUri, bool force = false, string identity = null)
         {
+            // sets blob content based on local file content in provided container
             if (!(File.Exists(filePath))) {
                 throw new FileNotFoundException($"File '{filePath}' not found!");
             }
