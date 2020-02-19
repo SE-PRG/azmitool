@@ -136,8 +136,9 @@ sleep 1s
 test "Alter blob's modification time" assert.Success "azmi setblob --file /tmp/${RANDOM_BLOB_TO_STORE} --blob ${CONTAINER_URL}/${RANDOM_BLOB_TO_STORE} --force"
 test "Download blob and write to file only if difference has been spotted (--if-newer option)" assert.Equals \
   "azmi getblob --blob ${CONTAINER_URL}/${RANDOM_BLOB_TO_STORE} --file /tmp/${RANDOM_BLOB_TO_STORE} --if-newer" "Success"
+TIMESTAMP=`date "+%Y%m%d_%H%M%S"` # e.g. 20200107_144102
 test "Download blob and write to file which does not exist yet (--if-newer option)" assert.Equals \
-  "azmi getblob --blob ${CONTAINER_URL}/${RANDOM_BLOB_TO_STORE} --file $(mktemp /var/tmp/unique-file.XXXXXX) --if-newer" "Success"
+  "azmi getblob --blob ${CONTAINER_URL}/${RANDOM_BLOB_TO_STORE} --file /tmp/unique-file.${TIMESTAMP} --if-newer" "Success"
 
 # it should support verbose option for commands
 testing class "verbose"
