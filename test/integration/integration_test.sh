@@ -122,11 +122,20 @@ CONTAINER_URL="https://azmitest.blob.core.windows.net/azmi-itest-rw"
 test "Upload tmp file by blob" assert.Success "azmi setblob -f /tmp/${RANDOM_BLOB_TO_STORE} --blob ${CONTAINER_URL}/byblob/${RANDOM_BLOB_TO_STORE}"
 
 # --force option
-testing class "force option"
+testing class "--force option"
 test "Should fail: attempt to overwrite existing blob using --container option" assert.Fail "azmi setblob -f /tmp/${RANDOM_BLOB_TO_STORE} --container ${CONTAINER_URL}"
 test "Should fail: attempt to overwrite existing blob using --blob option" assert.Fail "azmi setblob -f /tmp/${RANDOM_BLOB_TO_STORE} --blob ${CONTAINER_URL}/byblob/${RANDOM_BLOB_TO_STORE}"
 test "Overwrite existing blob using --container option" assert.Success "azmi setblob -f /tmp/${RANDOM_BLOB_TO_STORE} --container ${CONTAINER_URL} --force"
 test "Overwrite existing blob using --blob option" assert.Success "azmi setblob -f /tmp/${RANDOM_BLOB_TO_STORE} --blob ${CONTAINER_URL}/byblob/${RANDOM_BLOB_TO_STORE} --force"
+
+# --if-newer option
+testing class "--if-newer option"
+test "Should skip: Download blob and write to file only if difference has been spotted (--if-newer option)" assert.Equals
+  "azmi getblob --blob ${CONTAINER_URL}/${RANDOM_BLOB_TO_STORE} --file /tmp/${RANDOM_BLOB_TO_STORE} --if-newer" "Skipped. Blob is not newer than file."
+sleep 1s
+test "Alter blob's modification time" assert.Success "azmi setblob --file /tmp/${RANDOM_BLOB_TO_STORE} --blob ${CONTAINER_URL}/${RANDOM_BLOB_TO_STORE} --force"
+test "Download blob and write to file only if difference has been spotted (--if-newer option)" assert.Equals
+  "azmi getblob --blob ${CONTAINER_URL}/${RANDOM_BLOB_TO_STORE} --file /tmp/${RANDOM_BLOB_TO_STORE} --if-newer" "Success"
 
 # it should support verbose option for commands
 testing class "verbose"

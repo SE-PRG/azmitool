@@ -80,9 +80,17 @@ namespace azmi_commandline
                 Description = "Path to local file to which content will be downloaded. Examples: /tmp/1.txt, ./1.xml",
                 Required = true
             };
+
+            var getBlob_ifNewerOption = new Option(new String[] { "--if-newer" })
+            {
+                Argument = new Argument<bool>("bool"),
+                Description = "Download a blob only if a newer version exists in a container.",
+                Required = false
+            };
             getBlobCommand.AddOption(getBlob_fileOption);
             getBlobCommand.AddOption(shared_identityOption);
             getBlobCommand.AddOption(shared_verboseOption);
+            getBlobCommand.AddOption(getBlob_ifNewerOption);
 
             rootCommand.AddCommand(getBlobCommand);
 
@@ -156,6 +164,7 @@ namespace azmi_commandline
             // define actual subcommand handlers
             //
 
+            // gettoken
             getTokenCommand.Handler = CommandHandler.Create<string, string, bool>((endpoint, identity, verbose) =>
             {
                 try
@@ -167,17 +176,19 @@ namespace azmi_commandline
                 }
             });
 
-            getBlobCommand.Handler = CommandHandler.Create<string, string, string, bool>((blob, file, identity, verbose) =>
+            // getblob
+            getBlobCommand.Handler = CommandHandler.Create<string, string, string, bool, bool>((blob, file, identity, ifNewer, verbose) =>
             {
                 try
                 {
-                    Console.WriteLine(Operations.getBlob(blob, file, identity));
+                    Console.WriteLine(Operations.getBlob(blob, file, identity, ifNewer));
                 } catch (Exception ex)
                 {
                     DisplayError("getblob", ex, verbose);
                 }
             });
 
+            // setblob
             setBlobCommand.Handler = CommandHandler.Create<string, string, string, string, bool, bool>((file, blob, container, identity, force, verbose) =>
             {
                 if (String.IsNullOrEmpty(blob) && String.IsNullOrEmpty(container))
@@ -201,6 +212,7 @@ namespace azmi_commandline
                 }
             });
 
+            // listblobs
             listBlobsCommand.Handler = CommandHandler.Create<string, string, string, bool>((container, identity, prefix, verbose) =>
             {
                 try
@@ -225,9 +237,11 @@ namespace azmi_commandline
             var oldColor = Console.ForegroundColor;
             Console.ForegroundColor = ConsoleColor.Red;
             Console.Error.WriteLine($"azmi {subCommand}: {ex.Message}");
+            Console.Error.WriteLine(ex.GetType());
             while (verbose && ex.InnerException != null)
             {
                 ex = ex.InnerException;
+                Console.Error.WriteLine(ex.GetType());
                 Console.Error.WriteLine(ex.Message);
             }
             Console.ForegroundColor = oldColor;
