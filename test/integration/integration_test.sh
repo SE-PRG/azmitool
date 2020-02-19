@@ -130,11 +130,11 @@ test "Overwrite existing blob using --blob option" assert.Success "azmi setblob 
 
 # --if-newer option
 testing class "--if-newer option"
-test "Should skip: Download blob and write to file only if difference has been spotted (--if-newer option)" assert.Equals
+test "Should skip: Download blob and write to file only if difference has been spotted (--if-newer option)" assert.Equals \
   "azmi getblob --blob ${CONTAINER_URL}/${RANDOM_BLOB_TO_STORE} --file /tmp/${RANDOM_BLOB_TO_STORE} --if-newer" "Skipped. Blob is not newer than file."
 sleep 1s
 test "Alter blob's modification time" assert.Success "azmi setblob --file /tmp/${RANDOM_BLOB_TO_STORE} --blob ${CONTAINER_URL}/${RANDOM_BLOB_TO_STORE} --force"
-test "Download blob and write to file only if difference has been spotted (--if-newer option)" assert.Equals
+test "Download blob and write to file only if difference has been spotted (--if-newer option)" assert.Equals \
   "azmi getblob --blob ${CONTAINER_URL}/${RANDOM_BLOB_TO_STORE} --file /tmp/${RANDOM_BLOB_TO_STORE} --if-newer" "Success"
 
 # it should support verbose option for commands
