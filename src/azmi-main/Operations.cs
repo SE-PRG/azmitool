@@ -49,22 +49,18 @@ namespace azmi_main
             var Cred = new ManagedIdentityCredential(identity);
             var blobClient = new BlobClient(new Uri(blobURL), Cred);
 
-            if (ifNewer)
+            if (ifNewer && File.Exists(filePath))
             {
-                var fileInfo = new System.IO.FileInfo(filePath);
-                if (fileInfo.Exists)
-                {
-                    var blobProperties = blobClient.GetProperties();
-                    // Any operation that modifies a blob, including an update of the blob's metadata or properties, changes the last modified time of the blob
-                    var blobLastModified = blobProperties.Value.LastModified.UtcDateTime;
+                var blobProperties = blobClient.GetProperties();
+                // Any operation that modifies a blob, including an update of the blob's metadata or properties, changes the last modified time of the blob
+                var blobLastModified = blobProperties.Value.LastModified.UtcDateTime;
 
-                    // returns date of local file was last written to
-                    DateTime fileLastWrite = File.GetLastWriteTimeUtc(filePath);
+                // returns date of local file was last written to
+                DateTime fileLastWrite = File.GetLastWriteTimeUtc(filePath);
 
-                    int value = DateTime.Compare(blobLastModified, fileLastWrite);
-                    if (value < 0)
-                        return "Skipped. Blob is not newer than file.";
-                }
+                int value = DateTime.Compare(blobLastModified, fileLastWrite);
+                if (value < 0)
+                    return "Skipped. Blob is not newer than file.";
             }
 
             try
