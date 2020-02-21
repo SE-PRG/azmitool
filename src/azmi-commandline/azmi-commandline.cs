@@ -159,6 +159,8 @@ namespace azmi_commandline
             listBlobsCommand.AddOption(shared_verboseOption);
 
             rootCommand.AddCommand(listBlobsCommand);
+            
+            Operations operations = new Operations();
 
             //
             // define actual subcommand handlers
@@ -168,8 +170,8 @@ namespace azmi_commandline
             getTokenCommand.Handler = CommandHandler.Create<string, string, bool>((endpoint, identity, verbose) =>
             {
                 try
-                {
-                    Console.WriteLine(Operations.getToken(endpoint, identity));
+                {                    
+                    Console.WriteLine(operations.getToken(endpoint, identity));
                 } catch (Exception ex)
                 {
                     DisplayError("gettoken", ex, verbose);
@@ -181,7 +183,7 @@ namespace azmi_commandline
             {
                 try
                 {
-                    Console.WriteLine(Operations.getBlob(blob, file, identity, ifNewer));
+                    Console.WriteLine(operations.getBlob(blob, file, identity, ifNewer));
                 } catch (Exception ex)
                 {
                     DisplayError("getblob", ex, verbose);
@@ -203,8 +205,8 @@ namespace azmi_commandline
                 try
                 {
                     Console.WriteLine(container != null
-                        ? Operations.setBlob_byContainer(file, container, force, identity)
-                        : Operations.setBlob_byBlob(file, blob, force, identity)
+                        ? operations.setBlob_byContainer(file, container, force, identity)
+                        : operations.setBlob_byBlob(file, blob, force, identity)
                         );
                 } catch (Exception ex)
                 {
@@ -217,7 +219,7 @@ namespace azmi_commandline
             {
                 try
                 {
-                    string output = Operations.listBlobs(container, identity, prefix);
+                    string output = operations.listBlobs(container, identity, prefix);
                     if (!String.IsNullOrEmpty(output))
                     {
                         Console.WriteLine(output);

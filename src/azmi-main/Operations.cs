@@ -6,12 +6,16 @@ using Azure.Identity;
 using Azure.Storage.Blobs;
 
 namespace azmi_main
-{
-    public static class Operations
+{    
+    // Class defining main operations performed by azmi tool
+    public class Operations : IOperations
     {
-        // Class defining main operations performed by azmi tool
+        // Constructor
+        public Operations() { }
+        // Destructor
+        ~Operations() { }
 
-        private static Exception IdentityError(string identity, Exception ex)
+        private Exception IdentityError(string identity, Exception ex)
         {
             // if no identity, then append identity missing error, otherwise just return existing exception
             if (string.IsNullOrEmpty(identity)) {
@@ -25,7 +29,7 @@ namespace azmi_main
             }
         }
 
-        public static string getToken(string endpoint = "management", string identity = null)
+        public string getToken(string endpoint = "management", string identity = null)
         {
             var Cred = new ManagedIdentityCredential(identity);
             if (string.IsNullOrEmpty(endpoint)) { endpoint = "management"; };
@@ -43,7 +47,7 @@ namespace azmi_main
         }
 
         // Download the blob to a local file
-        public static string getBlob(string blobURL, string filePath, string identity = null, bool ifNewer = false)
+        public string getBlob(string blobURL, string filePath, string identity = null, bool ifNewer = false)
         {
             // Connection
             var Cred = new ManagedIdentityCredential(identity);
@@ -78,7 +82,7 @@ namespace azmi_main
             }
         }
 
-        public static string listBlobs(string containerUri, string identity = null, string prefix = null)
+        public string listBlobs(string containerUri, string identity = null, string prefix = null)
         {
             var Cred = new ManagedIdentityCredential(identity);
             var containerClient = new BlobContainerClient(new Uri(containerUri), Cred);
@@ -96,7 +100,7 @@ namespace azmi_main
         }
 
         // sets blob content based on local file content into container
-        public static string setBlob_byContainer(string filePath, string containerUri, bool force = false, string identity = null)
+        public string setBlob_byContainer(string filePath, string containerUri, bool force = false, string identity = null)
         {
             if (!(File.Exists(filePath))) {
                 throw new FileNotFoundException($"File '{filePath}' not found!");
@@ -116,7 +120,7 @@ namespace azmi_main
             }
         }       
 
-        public static string setBlob_byBlob(string filePath, string blobUri, bool force = false, string identity = null)
+        public string setBlob_byBlob(string filePath, string blobUri, bool force = false, string identity = null)
         {
             // sets blob content based on local file content with provided blob url
             if (!(File.Exists(filePath)))
