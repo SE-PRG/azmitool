@@ -170,7 +170,7 @@ namespace azmi_commandline
             getTokenCommand.Handler = CommandHandler.Create<string, string, bool>((endpoint, identity, verbose) =>
             {
                 try
-                {                    
+                {
                     Console.WriteLine(operations.getToken(endpoint, identity));
                 } catch (Exception ex)
                 {
