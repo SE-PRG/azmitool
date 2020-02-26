@@ -1,5 +1,6 @@
 using azmi_main;
 using System;
+using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 
@@ -219,10 +220,10 @@ namespace azmi_commandline
             {
                 try
                 {
-                    string output = operations.listBlobs(container, identity, prefix);
-                    if (!String.IsNullOrEmpty(output))
+                    List<string> blobsListing = Operations.listBlobs(container, identity, prefix);
+                    if (blobsListing.Count >= 1)
                     {
-                        Console.WriteLine(output);
+                        Console.WriteLine(String.Join("\n", blobsListing));
                     }
                 } catch (Exception ex)
                 {

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Azure.Core;
@@ -82,16 +83,16 @@ namespace azmi_main
             }
         }
 
-        public string listBlobs(string containerUri, string identity = null, string prefix = null)
+        public static List<string> listBlobs(string containerUri, string identity = null, string prefix = null)
         {
             var Cred = new ManagedIdentityCredential(identity);
             var containerClient = new BlobContainerClient(new Uri(containerUri), Cred);
             containerClient.CreateIfNotExists();
-            
+
             try
             {
-                var blobNamesList = containerClient.GetBlobs(prefix: prefix).Select(i => i.Name).ToList();
-                return blobNamesList.Count == 0 ? null : String.Join("\n", blobNamesList);
+                List<string> blobListing = containerClient.GetBlobs(prefix: prefix).Select(i => i.Name).ToList();
+                return blobListing.Count == 0 ? null : blobListing;
             }
             catch (Exception ex)
             {
