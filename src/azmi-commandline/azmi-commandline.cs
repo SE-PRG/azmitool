@@ -56,7 +56,14 @@ namespace azmi_commandline
                 Description = "Optional. Endpoint against which to authenticate. Examples: management, storage. Default 'management'",
                 Required = false
             };
+            var getToken_JWTOption = new Option(new String[] { "--jwt-format" })
+            {
+                Argument = new Argument<bool>("bool"),
+                Description = "Optional. Print token in JSON Web Token (JWT) format.",
+                Required = false
+            };
             getTokenCommand.AddOption(getToken_endpointOption);
+            getTokenCommand.AddOption(getToken_JWTOption);
             getTokenCommand.AddOption(shared_identityOption);
             getTokenCommand.AddOption(shared_verboseOption);
             rootCommand.AddCommand(getTokenCommand);
@@ -168,11 +175,11 @@ namespace azmi_commandline
             //
 
             // gettoken
-            getTokenCommand.Handler = CommandHandler.Create<string, string, bool>((endpoint, identity, verbose) =>
+            getTokenCommand.Handler = CommandHandler.Create<string, string, bool, bool>((endpoint, identity, verbose, JWTFormat) =>
             {
                 try
                 {
-                    Console.WriteLine(operations.getToken(endpoint, identity));
+                    Console.WriteLine(operations.getToken(endpoint, identity, JWTFormat));
                 } catch (Exception ex)
                 {
                     DisplayError("gettoken", ex, verbose);
@@ -220,7 +227,7 @@ namespace azmi_commandline
             {
                 try
                 {
-                    List<string> blobsListing = Operations.listBlobs(container, identity, prefix);
+                    List<string> blobsListing = operations.listBlobs(container, identity, prefix);
                     if (blobsListing.Count >= 1)
                     {
                         Console.WriteLine(String.Join("\n", blobsListing));
