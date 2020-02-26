@@ -14,8 +14,9 @@ namespace azmi_gui
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
-        {            
-            TokenTextBlock.Text = Operations.getToken();
+        {
+            Operations operations = new Operations();
+            TokenTextBlock.Text = operations.getToken();
         }
     }
 }
