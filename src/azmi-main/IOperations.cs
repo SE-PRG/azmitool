@@ -5,7 +5,7 @@ using System.Text;
 namespace azmi_main
 {
     interface IOperations
-    {        
+    {
         string getToken(string endpoint = "management", string identity = null, bool JWTformat = false);
         string getBlob(string blobURL, string filePath, string identity = null, bool ifNewer = false);
         List<string> listBlobs(string containerUri, string identity = null, string prefix = null);
