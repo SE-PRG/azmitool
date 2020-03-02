@@ -1,13 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Azure.Core;
 using Azure.Identity;
 using Azure.Storage.Blobs;
 
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.IO;
+using System.Linq;
+
 namespace azmi_main
-{    
+{
     // Class defining main operations performed by azmi tool
     public class Operations : IOperations
     {
@@ -21,8 +23,8 @@ namespace azmi_main
             // if no identity, then append identity missing error, otherwise just return existing exception
             if (string.IsNullOrEmpty(identity)) {
                 return new ArgumentNullException("Missing identity argument", ex);
-            } else if (ex.Message.Contains("See inner exception for details.") 
-                && (ex.InnerException != null) 
+            } else if (ex.Message.Contains("See inner exception for details.")
+                && (ex.InnerException != null)
                 && (ex.InnerException.Message.Contains("Identity not found"))) {
                 return new ArgumentException("Managed identity not found", ex);
             } else {
@@ -30,7 +32,7 @@ namespace azmi_main
             }
         }
 
-        public string getToken(string endpoint = "management", string identity = null)
+        public string getToken(string endpoint = "management", string identity = null, bool JWTformat = false)
         {
             var Cred = new ManagedIdentityCredential(identity);
             if (string.IsNullOrEmpty(endpoint)) { endpoint = "management"; };
@@ -40,7 +42,19 @@ namespace azmi_main
             try
             {
                 var Token = Cred.GetToken(Request);
-                return Token.Token;
+
+                if (JWTformat)
+                {
+                    var stream = Token.Token;                    
+                    var handler = new JwtSecurityTokenHandler();
+                    var jsonToken = handler.ReadToken(stream);
+                    var tokenS = handler.ReadToken(stream) as JwtSecurityToken;
+                    return tokenS.ToString(); // decoded JSON Web Token
+                }
+                else
+                {
+                    return Token.Token; // encoded JWT token
+                }
             } catch (Exception ex)
             {
                 throw IdentityError(identity, ex);
@@ -83,7 +97,7 @@ namespace azmi_main
             }
         }
 
-        public static List<string> listBlobs(string containerUri, string identity = null, string prefix = null)
+        public List<string> listBlobs(string containerUri, string identity = null, string prefix = null)
         {
             var Cred = new ManagedIdentityCredential(identity);
             var containerClient = new BlobContainerClient(new Uri(containerUri), Cred);
