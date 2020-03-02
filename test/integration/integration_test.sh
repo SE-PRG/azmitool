@@ -54,6 +54,7 @@ test "Fail setblob with wrong args" assert.Fail "azmi setblob blahblah"
 testing class "application"
 
 test "Authenticate to Azure using a managed identity and get access token" assert.Success "azmi gettoken"
+test "Authenticate to Azure using a managed identity and get access token in JWT format" assert.Success "azmi gettoken --jwt-format | grep typ | grep JWT"
 
 # URL structure
 # https://azmitest.blob.core.windows.net/azmi-itest-rw/azmi_itest_2020-02-03_15:53:38.txt
