@@ -202,7 +202,7 @@ namespace azmi_commandline
 
             // gettoken
             getTokenCommand.Handler = CommandHandler.Create<string, string, bool, bool>((endpoint, identity, verbose, JWTFormat) =>
-            {                
+            {
                 try
                 {
                     Console.WriteLine(operations.getToken(endpoint, identity, JWTFormat));

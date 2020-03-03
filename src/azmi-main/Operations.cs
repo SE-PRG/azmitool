@@ -81,10 +81,11 @@ namespace azmi_main
                 if (value < 0)
                     return "Skipped. Blob is not newer than file.";
             }
-            
+
             try
-            {                                             
-                string dirName = Path.GetDirectoryName(filePath);
+            {
+                string absolutePath = Path.GetFullPath(filePath);
+                string dirName = Path.GetDirectoryName(absolutePath);
                 Directory.CreateDirectory(dirName);
 
                 blobClient.DownloadTo(filePath);
@@ -137,8 +138,8 @@ namespace azmi_main
             containerClient.CreateIfNotExists();                        
 
             try
-            {                
-                List<string> blobListing = containerClient.GetBlobs(prefix: prefix).Select(i => i.Name).ToList();                
+            {
+                List<string> blobListing = containerClient.GetBlobs(prefix: prefix).Select(i => i.Name).ToList();
                 return blobListing.Count == 0 ? null : blobListing;
             }
             catch (Exception ex)
