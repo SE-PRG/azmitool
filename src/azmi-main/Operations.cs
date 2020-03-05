@@ -63,7 +63,7 @@ namespace azmi_main
         }
 
         // Download the blob to a local file
-        public string getBlob(string blobURL, string filePath, string identity = null, bool deleteAfterCopy = false, bool ifNewer = false)
+        public string getBlob(string blobURL, string filePath, string identity = null, bool ifNewer = false, bool deleteAfterCopy = false)
         {
             // Connection
             var Cred = new ManagedIdentityCredential(identity);
@@ -124,7 +124,7 @@ namespace azmi_main
                 string filePath = directory + '/' + blob;
                 try
                 {
-                    result = this.getBlob(blobUri, filePath, identity, deleteAfterCopy, ifNewer);
+                    result = this.getBlob(blobUri, filePath, identity, ifNewer, deleteAfterCopy);
                     string downloadStatus = result + ' ' + blob;
                     results.Add(downloadStatus);
                 } catch
