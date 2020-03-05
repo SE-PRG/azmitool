@@ -47,11 +47,11 @@ Print token in JSON Web Token (JWT) format.
 
 |**command**|source|destination|other arguments|
 |-|-|-|-|
-|**`azmi listblobs`**|`--container`| *n.a.* |`--prefix`, `--exclude`|
-|**`azmi getblob`**|`--blob`|`--file`|`--if-newer`|
-|**`azmi getblobs`**|`--container`|`--directory`|`--prefix`, `--if-newer`, `--delete-on-copy`, `--exclude`|
-|**`azmi setblob`**|`--file`|`--blob` or `--container`|`--force`|
-|**`azmi setblobs`**|`--directory`|`--container`| `--force` |
+|**`listblobs`**|`--container`| *n.a.* |`--prefix`, `--exclude`|
+|**`getblob`**|`--blob`|`--file`|`--if-newer`|
+|**`getblobs`**|`--container`|`--directory`|`--prefix`, `--if-newer`, `--delete-on-copy`, `--exclude`|
+|**`setblob`**|`--file`|`--blob` or `--container`|`--force`|
+|**`setblobs`**|`--directory`|`--container`| `--force` |
 
 All commands support arguments `--identity` and `--verbose`.
 
