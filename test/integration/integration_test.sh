@@ -116,6 +116,23 @@ EXPECTED_BLOB_COUNT=3; PREFIX="neu-pre"
 test "There should be $EXPECTED_BLOB_COUNT listed blobs with prefix '$PREFIX' in listblobs container" assert.Equals "azmi listblobs --container $CONTAINER_URL --prefix $PREFIX | wc -l" $EXPECTED_BLOB_COUNT
 EXPECTED_BLOB_COUNT=1; PREFIX="neu-pre-show-me-only"
 test "There should be $EXPECTED_BLOB_COUNT listed blob with prefix '$PREFIX' in listblobs container" assert.Equals "azmi listblobs --container $CONTAINER_URL --prefix $PREFIX | wc -l" $EXPECTED_BLOB_COUNT
+EXPECTED_BLOB_COUNT=0; PREFIX="noBlobsShouldDownload"
+test "There should be $EXPECTED_BLOB_COUNT listed blob with prefix '$PREFIX' in listblobs container" assert.Equals "azmi listblobs --container $CONTAINER_URL --prefix $PREFIX | wc -l" $EXPECTED_BLOB_COUNT
+
+# getblobs subcommand
+testing class "getblobs"
+CONTAINER_URL="https://azmitest.blob.core.windows.net/azmi-itest-listblobs"
+DOWNLOAD_DIR="./Download"; EXPECTED_BLOB_COUNT=5; EXPECTED_SUCCESSES=6 # last one is summary
+rm -rf $DOWNLOAD_DIR
+test "We should successfully download $EXPECTED_BLOB_COUNT blobs from listblobs container" assert.Equals "azmi getblobs --container $CONTAINER_URL --directory $DOWNLOAD_DIR | grep Success | wc -l" $EXPECTED_SUCCESSES
+
+EXPECTED_BLOB_COUNT=3; PREFIX="neu-pre"; EXPECTED_SUCCESSES=4
+rm -rf $DOWNLOAD_DIR
+test "We should successfully download $EXPECTED_BLOB_COUNT blobs with prefix '$PREFIX' from listblobs container" assert.Equals "azmi getblobs --container $CONTAINER_URL --directory $DOWNLOAD_DIR --prefix $PREFIX | grep Success | wc -l" $EXPECTED_SUCCESSES
+
+EXPECTED_BLOB_COUNT=0; PREFIX="noBlobsShouldDownload"; EXPECTED_ROWS=0
+rm -rf $DOWNLOAD_DIR
+test "We should successfully download $EXPECTED_BLOB_COUNT blobs with prefix '$PREFIX' from listblobs container" assert.Equals "azmi getblobs --container $CONTAINER_URL --directory $DOWNLOAD_DIR --prefix $PREFIX | wc -l" $EXPECTED_ROWS
 
 # testing setblob-byblob 
 testing class "setblob-byblob"
