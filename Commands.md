@@ -3,14 +3,23 @@
 Here is the overview of all `azmi` commands and their arguments.
 You can run `azmi <command> --help` in your terminal to display help for any of the commands.
 
+## Common arguments
+
 These are the arguments shared amongst all commands listed below.
 
+`--help`
+
+Optional bool argument.
+Use this argument to get help about specific command right in your terminal.
+
 `--identity`
+
 Optional String argument.
 Client or application ID of managed identity used to authenticate.
 Example: 117dc05c-4d12-4ac2-b5f8-5e239dc8bc54
 
 `--verbose`
+
 Optional boolean argument.
 By default commands display short, Linux style error message.
 If this argument is specified, then command will produce more verbose error output.
@@ -89,7 +98,7 @@ String. Filters results to return only blobs whose name begins with the specifie
 String. Specifies which blob to exclude from list or download operation.
 
 *`--delete-on-copy`*
-Bool. TODO: Add description.
+Bool. Deletes blob after successful copy. Similar to "move" operations on file system.
 
 ## Known limitations
 
