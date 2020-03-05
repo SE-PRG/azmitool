@@ -102,8 +102,8 @@ Bool. Deletes blob after successful copy. Similar to "move" operations on file s
 
 ## Known limitations
 
-Commands `listblobs` and `getblobs` return upto 5,000 blobs filtered on Azure API side by `--prefix`.
-Filtering with `--exclude` though providing more flexibility with regex is client side filtering.
+Commands `listblobs` and `getblobs` return upto 5,000 blobs filtered on Azure API side by argument `--prefix`.
+Filtering with `--exclude` though providing more flexibility with regex, is only client side filtering.
 This means it operates on server filtered set which can be already topped to first 5,000 blobs.
 If storage account has more than 5,000 blobs, it is required to use `--prefix`, otherwise results might be inconclusive.
 
