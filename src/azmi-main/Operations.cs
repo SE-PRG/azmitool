@@ -106,11 +106,11 @@ namespace azmi_main
                 throw IdentityError(identity, ex);
             }
         }
-
+        
         public List<string> getBlobs(string containerUri, string directory, string identity = null, string prefix = null, string exclude = null, bool ifNewer = false, bool deleteAfterCopy = false)
         {            
-            containerUri.TrimEnd('/');
-            List<string> blobsListing = this.listBlobs(containerUri, identity, prefix, exclude);
+            string containerUriTrimmed = containerUri.TrimEnd('/');
+            List<string> blobsListing = this.listBlobs(containerUriTrimmed, identity, prefix);
             if (blobsListing == null)
                 return null;
 
@@ -120,7 +120,7 @@ namespace azmi_main
             foreach (var blob in blobsListing)
             {
                 // e.g. blobUri = https://<storageAccount>.blob.core.windows.net/Hello/World.txt
-                string blobUri = containerUri + '/' + blob;
+                string blobUri = containerUriTrimmed + '/' + blob;
                 string filePath = directory + '/' + blob;
                 try
                 {
