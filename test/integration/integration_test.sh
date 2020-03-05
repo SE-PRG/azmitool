@@ -141,7 +141,7 @@ EXPECTED_BLOB_COUNT=3; PREFIX="neu-pre"; EXPECTED_SUCCESSES=4
 rm -rf $DOWNLOAD_DIR
 test "We should successfully download $EXPECTED_BLOB_COUNT blobs with prefix '$PREFIX' from listblobs container" assert.Equals "azmi getblobs --container $CONTAINER_URL --directory $DOWNLOAD_DIR --prefix $PREFIX | grep Success | wc -l" $EXPECTED_SUCCESSES
 
-EXPECTED_BLOB_COUNT=2; EXCLUDE="neu-pre-logboxA1"; EXPECTED_SUCCESSES=3
+EXPECTED_BLOB_COUNT=4; EXCLUDE="neu-pre-logboxA1"; EXPECTED_SUCCESSES=5
 rm -rf $DOWNLOAD_DIR
 test "We should successfully download $EXPECTED_BLOB_COUNT blobs (--exclude $EXCLUDE applied) from listblobs container" assert.Equals "azmi getblobs --container $CONTAINER_URL --directory $DOWNLOAD_DIR --exclude $EXCLUDE | grep Success | wc -l" $EXPECTED_SUCCESSES
 
