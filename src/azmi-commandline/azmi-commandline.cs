@@ -281,6 +281,7 @@ namespace azmi_commandline
                 catch (Exception ex)
                 {
                     DisplayError("getblobs", ex, optionsType.verbose);
+                    DisplayError("getblobs", ex, verbose);
                 }
             });
 

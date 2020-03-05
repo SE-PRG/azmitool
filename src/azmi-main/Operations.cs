@@ -136,12 +136,13 @@ namespace azmi_main
             results.Add(failures == 0 ? "Success" : $"Failed {failures} blobs");
             return results;
         }
-        
+
         public List<string> listBlobs(string containerUri, string identity = null, string prefix = null, string exclude = null)
         {
             var Cred = new ManagedIdentityCredential(identity);
             var containerClient = new BlobContainerClient(new Uri(containerUri), Cred);
             containerClient.CreateIfNotExists();
+
             try
             {
                 List<string> blobListing = new List<string>();
