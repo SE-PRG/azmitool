@@ -99,7 +99,7 @@ RANDOM_BLOB_TO_STORE_SHA256=$(sha256sum $RANDOM_BLOB_TO_STORE | awk '{ print $1 
 DOWNLOADED_BLOB_SHA256=$(sha256sum $DOWNLOADED_BLOB | awk '{ print $1 }')
 test "Blobs have to have equal SHA256 checksums" assert.Success "[ $RANDOM_BLOB_TO_STORE_SHA256 = $DOWNLOADED_BLOB_SHA256 ]"
 # --delete-after-copy option
-BLOB="azmi_itest_delete_after_copy.txt"
+BLOB="azmi_itest_${TIMESTAMP}_delete_after_copy.txt"
 date > $BLOB # generate unique file contents
 test "Save file contents to read-write Azure storage container (preparation --delete-after-copy option)" assert.Success "azmi setblob --file $BLOB --container $CONTAINER_URL"
 test "Remove blob after download from read-write Azure storage container" assert.Success "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt --delete-after-copy"
