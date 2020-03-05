@@ -110,7 +110,7 @@ namespace azmi_main
         public List<string> getBlobs(string containerUri, string directory, string identity = null, string prefix = null, string exclude = null, bool ifNewer = false, bool deleteAfterCopy = false)
         {            
             string containerUriTrimmed = containerUri.TrimEnd('/');
-            List<string> blobsListing = this.listBlobs(containerUriTrimmed, identity, prefix);
+            List<string> blobsListing = this.listBlobs(containerUriTrimmed, identity, prefix, exclude);
             if (blobsListing == null)
                 return null;
 
