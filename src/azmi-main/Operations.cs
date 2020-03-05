@@ -103,8 +103,8 @@ namespace azmi_main
 
         public List<string> getBlobs(string containerUri, string directory, string prefix = null, string identity = null)
         {
-            containerUri.TrimEnd('/');
-            List<string> blobsListing = this.listBlobs(containerUri, identity, prefix);
+            string containerUriTrimmed = containerUri.TrimEnd('/');
+            List<string> blobsListing = this.listBlobs(containerUriTrimmed, identity, prefix);
             if (blobsListing == null)
                 return null;
 
@@ -114,7 +114,7 @@ namespace azmi_main
             foreach (var blob in blobsListing)
             {
                 // e.g. blobUri = https://<storageAccount>.blob.core.windows.net/Hello/World.txt
-                string blobUri = containerUri + '/' + blob;
+                string blobUri = containerUriTrimmed + '/' + blob;
                 string filePath = directory + '/' + blob;
                 try
                 {
