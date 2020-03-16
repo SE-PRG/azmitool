@@ -33,9 +33,8 @@ namespace azmi_commandline
             };
 
             var shared_verboseOption = new Option(new String[] { "--verbose", "-v" })
-            {
-                Argument = new Argument<bool>("bool"),
-                Description = "If enabled, commands will produce more verbose error output.",
+            {                
+                Description = "Optional. If enabled, commands will produce more verbose error output.",
                 Required = false
             };
             var shared_identityOption = new Option(new String[] { "--identity", "-i" })
@@ -50,15 +49,15 @@ namespace azmi_commandline
             //
 
             var getTokenCommand = new Command("gettoken", "Obtains Azure authorization token for usage in other command line tools.");
+
             var getToken_endpointOption = new Option(new String[] { "--endpoint", "-e" })
             {
                 Argument = new Argument<String>("string"),
                 Description = "Optional. Endpoint against which to authenticate. Examples: management, storage. Default 'management'",
                 Required = false
             };
-            var getToken_JWTOption = new Option(new String[] { "--jwt-format" })
-            {
-                Argument = new Argument<bool>("bool"),
+            var getToken_JWTOption = new Option("--jwt-format")
+            {                
                 Description = "Optional. Print token in JSON Web Token (JWT) format.",
                 Required = false
             };
@@ -66,6 +65,7 @@ namespace azmi_commandline
             getTokenCommand.AddOption(getToken_JWTOption);
             getTokenCommand.AddOption(shared_identityOption);
             getTokenCommand.AddOption(shared_verboseOption);
+
             rootCommand.AddCommand(getTokenCommand);
 
             //
@@ -79,28 +79,57 @@ namespace azmi_commandline
                 Argument = new Argument<String>("string"),
                 Description = "URL of blob which will be downloaded. Example: https://myaccount.blob.core.windows.net/mycontainer/myblob",
                 Required = true
-            };
-            getBlobCommand.AddOption(getBlob_blobOption);
-
+            };            
             var getBlob_fileOption = new Option(new String[] { "--file", "-f" })
             {
                 Argument = new Argument<String>("string"),
                 Description = "Path to local file to which content will be downloaded. Examples: /tmp/1.txt, ./1.xml",
                 Required = true
             };
-
-            var getBlob_ifNewerOption = new Option(new String[] { "--if-newer" })
-            {
-                Argument = new Argument<bool>("bool"),
-                Description = "Download a blob only if a newer version exists in a container.",
+            var getBlob_ifNewerOption = new Option("--if-newer")
+            {                
+                Description = "Optional. Download a blob only if a newer version exists in a container.",
                 Required = false
             };
+            getBlobCommand.AddOption(getBlob_blobOption);
             getBlobCommand.AddOption(getBlob_fileOption);
+            getBlobCommand.AddOption(getBlob_ifNewerOption);
             getBlobCommand.AddOption(shared_identityOption);
             getBlobCommand.AddOption(shared_verboseOption);
-            getBlobCommand.AddOption(getBlob_ifNewerOption);
 
             rootCommand.AddCommand(getBlobCommand);
+
+            //
+            // getblobs
+            //
+
+            var getBlobsCommand = new Command("getblobs", "Downloads blobs from container to local directory.");
+
+            var getBlobs_containerOption = new Option(new String[] { "--container", "-c" })
+            {
+                Argument = new Argument<String>("string"),
+                Description = "URL of container blobs will be downloaded from. Example: https://myaccount.blob.core.windows.net/mycontainer",
+                Required = true
+            };
+            var getBlobs_directoryOption = new Option(new String[] { "--directory", "-d" })
+            {
+                Argument = new Argument<String>("string"),
+                Description = "Path to a local directory to which blobs will be downloaded to. Examples: /home/avalanche/tmp/ or ./",
+                Required = true
+            };
+            var getBlobs_prefixOption = new Option(new String[] { "--prefix", "-p" })
+            {
+                Argument = new Argument<String>("string"),
+                Description = "Optional. Specifies a string that filters the results to return only blobs whose name begins with the specified prefix",
+                Required = false
+            };
+            getBlobsCommand.AddOption(getBlobs_containerOption);
+            getBlobsCommand.AddOption(getBlobs_directoryOption);
+            getBlobsCommand.AddOption(getBlobs_prefixOption);
+            getBlobsCommand.AddOption(shared_identityOption);
+            getBlobsCommand.AddOption(shared_verboseOption);
+
+            rootCommand.AddCommand(getBlobsCommand);
 
             //
             // setblob
@@ -113,27 +142,25 @@ namespace azmi_commandline
                 Argument = new Argument<String>("string"),
                 Description = "Path to local file which will be uploaded. Examples: /tmp/1.txt, ./1.xml",
                 Required = true
-            };
-            setBlobCommand.AddOption(setBlob_fileOption);
-
+            };            
             var setBlob_containerOption = new Option(new String[] { "--container", "-c" })
             {
                 Argument = new Argument<String>("string"),
-                Description = "URL of container to which file will be uploaded. Cannot be used together with --blob. Example: https://myaccount.blob.core.windows.net/mycontainer",
+                Description = "Optional. URL of container to which file will be uploaded. Cannot be used together with --blob. Example: https://myaccount.blob.core.windows.net/mycontainer",
                 Required = false
             };
             var setBlob_blobOption = new Option(new String[] { "--blob", "-b" })
             {
                 Argument = new Argument<String>("string"),
-                Description = "URL of blob to which file will be uploaded. Cannot be used together with --container. Example: https://myaccount.blob.core.windows.net/mycontainer/myblob.txt",
+                Description = "Optional. URL of blob to which file will be uploaded. Cannot be used together with --container. Example: https://myaccount.blob.core.windows.net/mycontainer/myblob.txt",
                 Required = false
             };
-            var setBlob_forceOption = new Option(new String[] { "--force" })
-            {
-                Argument = new Argument<bool>("bool"),
-                Description = "Overwrite existing blob in Azure.",
+            var setBlob_forceOption = new Option("--force")
+            {                
+                Description = "Optional. Overwrite existing blob in Azure.",
                 Required = false
             };
+            setBlobCommand.AddOption(setBlob_fileOption);
             setBlobCommand.AddOption(setBlob_containerOption);
             setBlobCommand.AddOption(setBlob_blobOption);
             setBlobCommand.AddOption(setBlob_forceOption);
@@ -154,11 +181,10 @@ namespace azmi_commandline
                 Description = "URL of container for which to list blobs. Example: https://myaccount.blob.core.windows.net/mycontainer",
                 Required = true
             };
-
             var listBlobs_prefixOption = new Option(new String[] { "--prefix", "-p" })
             {
                 Argument = new Argument<String>("string"),
-                Description = "Specifies a string that filters the results to return only blobs whose name begins with the specified prefix",
+                Description = "Optional. Specifies a string that filters the results to return only blobs whose name begins with the specified prefix",
                 Required = false
             };
             listBlobsCommand.AddOption(listBlobs_containerOption);
@@ -167,12 +193,12 @@ namespace azmi_commandline
             listBlobsCommand.AddOption(shared_verboseOption);
 
             rootCommand.AddCommand(listBlobsCommand);
-            
-            Operations operations = new Operations();
 
             //
             // define actual subcommand handlers
             //
+
+            Operations operations = new Operations();
 
             // gettoken
             getTokenCommand.Handler = CommandHandler.Create<string, string, bool, bool>((endpoint, identity, verbose, JWTFormat) =>
@@ -195,6 +221,23 @@ namespace azmi_commandline
                 } catch (Exception ex)
                 {
                     DisplayError("getblob", ex, verbose);
+                }
+            });
+
+            // getblobs
+            getBlobsCommand.Handler = CommandHandler.Create<string, string, string, string, bool>((container, directory, prefix, identity, verbose) =>
+            {
+                try
+                {                    
+                    List<string> results = operations.getBlobs(container, directory, prefix, identity);
+                    if (results != null)
+                    {
+                        Console.WriteLine(String.Join("\n", results));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    DisplayError("getblobs", ex, verbose);
                 }
             });
 
@@ -228,7 +271,7 @@ namespace azmi_commandline
                 try
                 {
                     List<string> blobsListing = operations.listBlobs(container, identity, prefix);
-                    if (blobsListing.Count >= 1)
+                    if (blobsListing != null)
                     {
                         Console.WriteLine(String.Join("\n", blobsListing));
                     }

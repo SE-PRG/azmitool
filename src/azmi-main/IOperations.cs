@@ -8,6 +8,7 @@ namespace azmi_main
     {
         string getToken(string endpoint = "management", string identity = null, bool JWTformat = false);
         string getBlob(string blobURL, string filePath, string identity = null, bool ifNewer = false);
+        List<string> getBlobs(string containerUri, string directory, string prefix = null, string identity = null);
         List<string> listBlobs(string containerUri, string identity = null, string prefix = null);
         string setBlob_byContainer(string filePath, string containerUri, bool force = false, string identity = null);
         string setBlob_byBlob(string filePath, string blobUri, bool force = false, string identity = null);

@@ -84,6 +84,10 @@ namespace azmi_main
 
             try
             {
+                string absolutePath = Path.GetFullPath(filePath);
+                string dirName = Path.GetDirectoryName(absolutePath);
+                Directory.CreateDirectory(dirName);
+
                 blobClient.DownloadTo(filePath);
                 return "Success";
             }
@@ -97,11 +101,41 @@ namespace azmi_main
             }
         }
 
+        public List<string> getBlobs(string containerUri, string directory, string prefix = null, string identity = null)
+        {
+            string containerUriTrimmed = containerUri.TrimEnd('/');
+            List<string> blobsListing = this.listBlobs(containerUriTrimmed, identity, prefix);
+            if (blobsListing == null)
+                return null;
+
+            List<string> results = new List<string>();
+            string result = null;
+            int failures = 0;
+            foreach (var blob in blobsListing)
+            {
+                // e.g. blobUri = https://<storageAccount>.blob.core.windows.net/Hello/World.txt
+                string blobUri = containerUriTrimmed + '/' + blob;
+                string filePath = directory + '/' + blob;
+                try
+                {
+                    result = this.getBlob(blobUri, filePath, identity);
+                    string downloadStatus = result + ' ' + blob;
+                    results.Add(downloadStatus);
+                } catch
+                {
+                    results.Add("Failed " + blob);
+                    failures++;
+                }
+            }
+            results.Add(failures == 0 ? "Success" : $"Failed {failures} blobs");
+            return results;
+        }
+        
         public List<string> listBlobs(string containerUri, string identity = null, string prefix = null)
         {
             var Cred = new ManagedIdentityCredential(identity);
             var containerClient = new BlobContainerClient(new Uri(containerUri), Cred);
-            containerClient.CreateIfNotExists();
+            containerClient.CreateIfNotExists();                        
 
             try
             {
