@@ -37,8 +37,9 @@ test "Print help and return success status" assert.Success "azmi --help"
 
 for subCommand in "${subCommands[@]}"
 do
-  test "Print help for $subcommand" assert.Success "azmi $subcommand --help"
-  test "Fail $subcommand with wrong args" assert.Fail "azmi $subcommand blahblah"
+  test "Print help for $subCommand" assert.Success "azmi $subCommand --help"
+  test "$subCommand verbose option" assert.Success "azmi $subCommand --help | grep verbose"
+  test "Fail $subCommand with wrong args" assert.Fail "azmi $subCommand blahblah"
 done
 # test "Print help for gettoken" assert.Success "azmi gettoken --help"
 # test "Fail gettoken with wrong args" assert.Fail "azmi gettoken blahblah"
@@ -49,6 +50,12 @@ done
 # test "Print help for setblob" assert.Success "azmi setblob --help"
 # test "Fail setblob with wrong args" assert.Fail "azmi setblob blahblah"
 # TODO Automate above using list of supported subcommands
+
+# it should support verbose option for commands
+# testing class "verbose"
+# test "gettoken verbose option" assert.Success "azmi gettoken --help | grep verbose"
+# test "getblob verbose option" assert.Success "azmi getblob --help | grep verbose"
+# test "setblob verbose option" assert.Success "azmi setblob --help | grep verbose"
 
 
 testing class "gettoken"
@@ -157,12 +164,6 @@ test "Download blob and write to file only if difference has been spotted (--if-
 TIMESTAMP=`date "+%Y%m%d_%H%M%S"` # e.g. 20200107_144102
 test "Download blob and write to file which does not exist yet (--if-newer option)" assert.Equals \
   "azmi getblob --blob ${CONTAINER_URL}/${RANDOM_BLOB_TO_STORE} --file /tmp/unique-file.${TIMESTAMP} --if-newer" "Success"
-
-# it should support verbose option for commands
-testing class "verbose"
-test "gettoken verbose option" assert.Success "azmi gettoken --help | grep verbose"
-test "getblob verbose option" assert.Success "azmi getblob --help | grep verbose"
-test "setblob verbose option" assert.Success "azmi setblob --help | grep verbose"
 
 # uninstalling
 testing class "package"
