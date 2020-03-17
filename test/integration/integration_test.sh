@@ -64,7 +64,7 @@ test "get access token in JWT format" assert.Success "azmi gettoken --jwt-format
 # storage subcommands testing
 #
 
-
+testing class "getblob"
 ### no-access container ###
 BLOB="restricted_access_blob.txt"
 test "Fails to read from NA container" assert.Fail "azmi getblob --blob $CONTAINER_NA/$BLOB --file download.txt"
@@ -88,15 +88,15 @@ test "Save file contents   to RW container" assert.Success "azmi setblob --file 
 DOWNLOADED_BLOB="azmi_itest_downloaded.txt"
 test "Read blob contents from RW container" assert.Success "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file $DOWNLOADED_BLOB"
 test "Blobs have to have same contents" assert.Success "diff $UPLOADFILE $DOWNLOADED_BLOB"
-UPLOADFILE_SHA256=$(sha256sum $UPLOADFILE | awk '{ print $1 }')
+UPLOADFILE_SHA256=$(sha256sum "$UPLOADFILE" | awk '{ print $1 }')
 DOWNLOADED_BLOB_SHA256=$(sha256sum $DOWNLOADED_BLOB | awk '{ print $1 }')
 test "Blobs have to have equal SHA256 checksums" assert.Success "[ $UPLOADFILE_SHA256 = $DOWNLOADED_BLOB_SHA256 ]"
 
 # there should be no <noname> folder in Azure
 testing class "noname"
-test "Prepare tmp file" assert.Success "rm -f /tmp/${RANDOM_BLOB_TO_STORE} && echo sometext > /tmp/${RANDOM_BLOB_TO_STORE}"
-test "Upload tmp file" assert.Success "azmi setblob -f /tmp/${RANDOM_BLOB_TO_STORE} --container ${CONTAINER_RW}"
-test "There is no noname folder after upload" assert.Fail "azmi getblob -f /dev/null -b ${CONTAINER_RW}//tmp/${RANDOM_BLOB_TO_STORE}"
+test "Prepare tmp file" assert.Success "rm -f /tmp/${UPLOADFILE} && echo sometext > /tmp/${UPLOADFILE}"
+test "Upload tmp file" assert.Success "azmi setblob -f /tmp/${UPLOADFILE} --container ${CONTAINER_RW}"
+test "There is no noname folder after upload" assert.Fail "azmi getblob -f /dev/null -b ${CONTAINER_RW}//tmp/${UPLOADFILE}"
 
 testing class "listblobs"
 ### list-blobs container
@@ -129,26 +129,26 @@ test "We should successfully download $EXPECTED_BLOB_COUNT blobs with prefix '$P
 
 # testing setblob-byblob 
 testing class "setblob-byblob"
-test "Upload tmp file by blob" assert.Success "azmi setblob -f /tmp/${RANDOM_BLOB_TO_STORE} --blob ${CONTAINER_RW}/byblob/${RANDOM_BLOB_TO_STORE}"
+test "Upload tmp file by blob" assert.Success "azmi setblob -f /tmp/${UPLOADFILE} --blob ${CONTAINER_RW}/byblob/${UPLOADFILE}"
 
 # --force option
 testing class "--force option"
-test "Fails to attempt to overwrite existing blob using --container option" assert.Fail "azmi setblob -f /tmp/${RANDOM_BLOB_TO_STORE} --container ${CONTAINER_RW}"
-test "Fails to attempt to overwrite existing blob using --blob option" assert.Fail "azmi setblob -f /tmp/${RANDOM_BLOB_TO_STORE} --blob ${CONTAINER_RW}/byblob/${RANDOM_BLOB_TO_STORE}"
-test "Overwrite existing blob using --container option" assert.Success "azmi setblob -f /tmp/${RANDOM_BLOB_TO_STORE} --container ${CONTAINER_RW} --force"
-test "Overwrite existing blob using --blob option" assert.Success "azmi setblob -f /tmp/${RANDOM_BLOB_TO_STORE} --blob ${CONTAINER_RW}/byblob/${RANDOM_BLOB_TO_STORE} --force"
+test "Fails to attempt to overwrite existing blob using --container option" assert.Fail "azmi setblob -f /tmp/${UPLOADFILE} --container ${CONTAINER_RW}"
+test "Fails to attempt to overwrite existing blob using --blob option" assert.Fail "azmi setblob -f /tmp/${UPLOADFILE} --blob ${CONTAINER_RW}/byblob/${UPLOADFILE}"
+test "Overwrite existing blob using --container option" assert.Success "azmi setblob -f /tmp/${UPLOADFILE} --container ${CONTAINER_RW} --force"
+test "Overwrite existing blob using --blob option" assert.Success "azmi setblob -f /tmp/${UPLOADFILE} --blob ${CONTAINER_RW}/byblob/${UPLOADFILE} --force"
 
 # --if-newer option
 testing class "--if-newer option"
 test "Should skip: Download blob and write to file only if difference has been spotted (--if-newer option)" assert.Equals \
-  "azmi getblob --blob ${CONTAINER_RW}/${RANDOM_BLOB_TO_STORE} --file /tmp/${RANDOM_BLOB_TO_STORE} --if-newer" "Skipped. Blob is not newer than file."
+  "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file /tmp/${UPLOADFILE} --if-newer" "Skipped. Blob is not newer than file."
 sleep 1s
-test "Alter blob's modification time" assert.Success "azmi setblob --file /tmp/${RANDOM_BLOB_TO_STORE} --blob ${CONTAINER_RW}/${RANDOM_BLOB_TO_STORE} --force"
+test "Alter blob's modification time" assert.Success "azmi setblob --file /tmp/${UPLOADFILE} --blob ${CONTAINER_RW}/${UPLOADFILE} --force"
 test "Download blob and write to file only if difference has been spotted (--if-newer option)" assert.Equals \
-  "azmi getblob --blob ${CONTAINER_RW}/${RANDOM_BLOB_TO_STORE} --file /tmp/${RANDOM_BLOB_TO_STORE} --if-newer" "Success"
-TIMESTAMP=`date "+%Y%m%d_%H%M%S"` # e.g. 20200107_144102
+  "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file /tmp/${UPLOADFILE} --if-newer" "Success"
+TIMESTAMP=$(date "+%Y%m%d_%H%M%S") # e.g. 20200107_144102
 test "Download blob and write to file which does not exist yet (--if-newer option)" assert.Equals \
-  "azmi getblob --blob ${CONTAINER_RW}/${RANDOM_BLOB_TO_STORE} --file /tmp/unique-file.${TIMESTAMP} --if-newer" "Success"
+  "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file /tmp/unique-file.${TIMESTAMP} --if-newer" "Success"
 
 # uninstalling
 testing class "package"
@@ -160,12 +160,12 @@ test "Verify azmi binary does not exist anymore" assert.Fail "[ -f /usr/bin/azmi
 #  Clean up actions
 #
 
-rm $UPLOADFILE
+rm "$UPLOADFILE"
 
 #################################
 # display some diagnostic data
 ################################
 echo -e "\n=============="
-echo "Test running at '`hostname`' host"
+echo "Test running at '$(hostname)' host"
 
 testing end
