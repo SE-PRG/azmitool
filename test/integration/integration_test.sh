@@ -66,25 +66,21 @@ test "get access token in JWT format" assert.Success "azmi gettoken --jwt-format
 
 testing class "getblob"
 ### no-access container ###
-BLOB="restricted_access_blob.txt"
-test "Fails to read from NA container" assert.Fail "azmi getblob --blob $CONTAINER_NA/$BLOB --file download.txt"
-test "Fails to save to NA container" assert.Fail "azmi setblob --file $UPLOADFILE --container $CONTAINER_NA"
+BLOB_NA="restricted_access_blob.txt"
+BLOB_RO="read_only_blob.txt"
 
-### read-only container ###
-# Role(s):    Storage Blob Data Reader
-# Profile(s): bt-seu-test-id (obj. ID: d1c05b65-ccf9-47bd-870d-4e44d209ee7a), kotipoiss-identity (obj. ID: ccb781af-a4eb-4ecc-b183-cef74b3cc717)
-BLOB="read_only_blob.txt"
-test "Read blob contents from RO container" assert.Success "azmi getblob --blob $CONTAINER_RO/$BLOB --file download.txt"
-test "Fails to save to RO container" assert.Fail "azmi setblob --file download.txt --container $CONTAINER_RO"
+test "getblob fails on NA container" assert.Fail "azmi getblob --blob $CONTAINER_NA/$BLOB_NA --file download.txt"
+test "getblob OK on RO container" assert.Success "azmi getblob --blob $CONTAINER_RO/$BLOB_RO --file download.txt"
 # test --identity options
-test "Read blob from RO container using right identity"                 assert.Success "azmi getblob --blob $CONTAINER_RO/$BLOB --file download.txt --identity $identity"
-test "Fails to read blob from RO container using foreign identity"      assert.Fail    "azmi getblob --blob $CONTAINER_RO/$BLOB --file download.txt --identity $identity_foreign"
-test "Fails to read blob from RO container using non-existing identity" assert.Fail    "azmi getblob --blob $CONTAINER_RO/$BLOB --file download.txt --identity non-existing"
+test "getblob OK on RO container using right identity"           assert.Success "azmi getblob --blob $CONTAINER_RO/$BLOB_RO --file download.txt --identity $identity"
+test "getblob fails on RO container using foreign identity"      assert.Fail    "azmi getblob --blob $CONTAINER_RO/$BLOB_RO --file download.txt --identity $identity_foreign"
+test "getblob fails on RO container using non-existing identity" assert.Fail    "azmi getblob --blob $CONTAINER_RO/$BLOB_RO --file download.txt --identity non-existing"
 
-### read-write container ###
-# Role(s):    Storage Blob Data Contributor
-# Profile(s): bt-seu-test-id (obj. ID: d1c05b65-ccf9-47bd-870d-4e44d209ee7a), kotipoiss-identity (obj. ID: ccb781af-a4eb-4ecc-b183-cef74b3cc717)
-test "Save file contents   to RW container" assert.Success "azmi setblob --file $UPLOADFILE --container $CONTAINER_RW"
+testing class "setblob"
+test "setblob fails on NA container" assert.Fail "azmi setblob --file $UPLOADFILE --container $CONTAINER_NA"
+test "setblob fails on RO container" assert.Fail "azmi setblob --file $UPLOADFILE --container $CONTAINER_RO"
+test "setblob OK on RW container" assert.Success "azmi setblob --file $UPLOADFILE --container $CONTAINER_RW"
+
 DOWNLOADED_BLOB="azmi_itest_downloaded.txt"
 test "Read blob contents from RW container" assert.Success "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file $DOWNLOADED_BLOB"
 test "Blobs have to have same contents" assert.Success "diff $UPLOADFILE $DOWNLOADED_BLOB"
