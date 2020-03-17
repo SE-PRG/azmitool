@@ -8,6 +8,10 @@ namespace azmi_commandline
 {    
     class Program
     {
+        // https://github.com/dotnet/command-line-api/issues/458
+        // CommandHandler.Create() does not support more than 7 parameters at the moment
+        // Workaround: bind complex objects
+        // TODO: This workaround/class should be cleaned up in future
         class getBlobsOptionsType
         {
             public string container { get; set; }
@@ -256,7 +260,7 @@ namespace azmi_commandline
             });
 
             // getblob
-            getBlobCommand.Handler = CommandHandler.Create<string, string, string, bool, bool, bool>((blob, file, identity, ifNewer, deleteAfterCopy, verbose) =>            
+            getBlobCommand.Handler = CommandHandler.Create<string, string, string, bool, bool, bool>((blob, file, identity, ifNewer, deleteAfterCopy, verbose) =>
             {
                 try
                 {
@@ -280,7 +284,7 @@ namespace azmi_commandline
                 }
                 catch (Exception ex)
                 {
-                    DisplayError("getblobs", ex, optionsType.verbose);                    
+                    DisplayError("getblobs", ex, optionsType.verbose);
                 }
             });
 
