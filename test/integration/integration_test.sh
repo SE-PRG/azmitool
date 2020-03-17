@@ -3,28 +3,23 @@
 # AzMiTool Integration tests
 # It requires Bash Testing Framework
 
+
+#
 # setup variables
+#
+
 export DEBIAN_FRONTEND=noninteractive
 PACKAGENAME=azmi
 PACKAGEFILE=/tmp/azmiX.deb
+STORAGEACCOUNTNAME=azmitest
 
-# define function(s)
-function install_azmi() { # installs/upgrades package from file if exists; otherwise APT repository
-  if $(dpkg-query --show $PACKAGENAME > /dev/null 2>&1); then
-    EVENT="Upgrade"
-  else
-    EVENT="Install"
-  fi
+# calculated variables
+CONTAINER_NA="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-no-access"
 
-  if [ -f $PACKAGEFILE ]; then
-      test "$EVENT $PACKAGENAME package from file" assert.Success "dpkg -i $PACKAGEFILE"
-  else
-      test "$EVENT $PACKAGENAME package from repository" assert.Success "apt --assume-yes install $PACKAGENAME"
-  fi  
-  dpkg-query --showformat='  - ${Package} ${Version} installed\n' --show $PACKAGENAME
-}
-
+#
 # start testing
+#
+
 testing start "$PACKAGENAME"
 testing class "package"
 test "Install fake package should fail" assert.Fail "apt --assume-yes install somenonexistingpackage"
@@ -33,8 +28,8 @@ test "Install fake package should fail" assert.Fail "apt --assume-yes install so
 test "Check all dependencies are installed" assert.Success "dpkg -s libstdc++6"
 
 install_azmi
+test "Install $PACKAGENAME package from file" assert.Success "dpkg -i $PACKAGEFILE"
 test "Verify azmi binary exists and is executable" assert.Success "[ -x /usr/bin/azmi ]"
-
 
 testing class "help"
 test "Should fail if no arguments are provided" assert.Fail "azmi"
