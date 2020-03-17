@@ -36,9 +36,10 @@ test "Fail if no arguments are provided" assert.Fail "azmi"
 test "Print help and return success status" assert.Success "azmi --help"
 
 for subCommand in "${subCommands[@]}"
+do
   test "Print help for $subcommand" assert.Success "azmi $subcommand --help"
   test "Fail $subcommand with wrong args" assert.Fail "azmi $subcommand blahblah"
-end
+done
 # test "Print help for gettoken" assert.Success "azmi gettoken --help"
 # test "Fail gettoken with wrong args" assert.Fail "azmi gettoken blahblah"
 
