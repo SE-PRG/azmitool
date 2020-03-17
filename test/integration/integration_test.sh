@@ -27,22 +27,25 @@ test "Install fake package should fail" assert.Fail "apt --assume-yes install so
 # dependencies installed?
 test "Check all dependencies are installed" assert.Success "dpkg -s libstdc++6"
 
-install_azmi
 test "Install $PACKAGENAME package from file" assert.Success "dpkg -i $PACKAGEFILE"
 test "Verify azmi binary exists and is executable" assert.Success "[ -x /usr/bin/azmi ]"
 
 testing class "help"
-test "Should fail if no arguments are provided" assert.Fail "azmi"
+test "Fail if no arguments are provided" assert.Fail "azmi"
 test "Print help and return success status" assert.Success "azmi --help"
 
-test "Print help for gettoken" assert.Success "azmi gettoken --help"
-test "Fail gettoken with wrong args" assert.Fail "azmi gettoken blahblah"
+foreach subcommand (gettoken getblob setblob)
+  test "Print help for $subcommand" assert.Success "azmi $subcommand --help"
+  test "Fail $subcommand with wrong args" assert.Fail "azmi $subcommand blahblah"
+end
+# test "Print help for gettoken" assert.Success "azmi gettoken --help"
+# test "Fail gettoken with wrong args" assert.Fail "azmi gettoken blahblah"
 
-test "Print help for getblob" assert.Success "azmi getblob --help"
-test "Fail getblob with wrong args" assert.Fail "azmi getblob blahblah"
+# test "Print help for getblob" assert.Success "azmi getblob --help"
+# test "Fail getblob with wrong args" assert.Fail "azmi getblob blahblah"
 
-test "Print help for setblob" assert.Success "azmi setblob --help"
-test "Fail setblob with wrong args" assert.Fail "azmi setblob blahblah"
+# test "Print help for setblob" assert.Success "azmi setblob --help"
+# test "Fail setblob with wrong args" assert.Fail "azmi setblob blahblah"
 # TODO Automate above using list of supported subcommands
 
 
