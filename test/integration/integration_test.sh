@@ -64,6 +64,7 @@ test "get access token in JWT format" assert.Success "azmi gettoken --jwt-format
 # storage subcommands testing
 #
 
+
 testing class "getblob"
 ### no-access container ###
 BLOB_NA="restricted_access_blob.txt"
@@ -76,10 +77,14 @@ test "getblob OK on RO container using right identity"           assert.Success 
 test "getblob fails on RO container using foreign identity"      assert.Fail    "azmi getblob --blob $CONTAINER_RO/$BLOB_RO --file download.txt --identity $identity_foreign"
 test "getblob fails on RO container using non-existing identity" assert.Fail    "azmi getblob --blob $CONTAINER_RO/$BLOB_RO --file download.txt --identity non-existing"
 
+
 testing class "setblob"
 test "setblob fails on NA container" assert.Fail "azmi setblob --file $UPLOADFILE --container $CONTAINER_NA"
 test "setblob fails on RO container" assert.Fail "azmi setblob --file $UPLOADFILE --container $CONTAINER_RO"
 test "setblob OK on RW container" assert.Success "azmi setblob --file $UPLOADFILE --container $CONTAINER_RW"
+
+
+# TODO: IGOR TAGGED: PROCEED FROM HERE
 
 DOWNLOADED_BLOB="azmi_itest_downloaded.txt"
 test "Read blob contents from RW container" assert.Success "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file $DOWNLOADED_BLOB"
