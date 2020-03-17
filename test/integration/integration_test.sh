@@ -22,6 +22,11 @@ CONTAINER_RO="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-r"
 CONTAINER_RW="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-rw"
 CONTAINER_LB="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-listblobs"
 
+# prepare test upload file
+DATE1=$(date +%s)   # used in file name
+DATE2=$(date +%s%N) # used in file content
+UPLOADFILE="upload$DATE1.txt"
+echo "$DATE2" > "$UPLOADFILE"
 
 #
 # start testing
@@ -62,10 +67,8 @@ test "get access token in JWT format" assert.Success "azmi gettoken --jwt-format
 
 ### no-access container ###
 BLOB="restricted_access_blob.txt"
-date > upload.txt # generate unique file contents
 test "Fails to read from NA container" assert.Fail "azmi getblob --blob $CONTAINER_NA/$BLOB --file download.txt"
-test "Fails to save to NA container" assert.Fail "azmi setblob --file upload.txt --container $CONTAINER_NA"
-rm upload.txt
+test "Fails to save to NA container" assert.Fail "azmi setblob --file $UPLOADFILE --container $CONTAINER_NA"
 
 ### read-only container ###
 # Role(s):    Storage Blob Data Reader
@@ -81,17 +84,13 @@ test "Fails to read blob from RO container using non-existing identity" assert.F
 ### read-write container ###
 # Role(s):    Storage Blob Data Contributor
 # Profile(s): bt-seu-test-id (obj. ID: d1c05b65-ccf9-47bd-870d-4e44d209ee7a), kotipoiss-identity (obj. ID: ccb781af-a4eb-4ecc-b183-cef74b3cc717)
-TIMESTAMP=`date "+%Y%m%d_%H%M%S"` # e.g. 20200107_144102
-RANDOM_BLOB_TO_STORE="azmi_itest_${TIMESTAMP}.txt"
-CHARS="012345689abcdefghiklmnopqrstuvwxyz"
-test "Generate random blob (file) contents" assert.Success "for i in {1..32}; do echo -n \"\${CHARS:RANDOM%\${#CHARS}:1}\"; done > $RANDOM_BLOB_TO_STORE"
-test "Save file contents   to read-write container" assert.Success "azmi setblob --file $RANDOM_BLOB_TO_STORE --container $CONTAINER_RW"
+test "Save file contents   to RW container" assert.Success "azmi setblob --file $UPLOADFILE --container $CONTAINER_RW"
 DOWNLOADED_BLOB="azmi_itest_downloaded.txt"
-test "Read blob contents from read-write container" assert.Success "azmi getblob --blob ${CONTAINER_RW}/${RANDOM_BLOB_TO_STORE} --file $DOWNLOADED_BLOB"
-test "Blobs have to have same contents" assert.Success "diff $RANDOM_BLOB_TO_STORE $DOWNLOADED_BLOB"
-RANDOM_BLOB_TO_STORE_SHA256=$(sha256sum $RANDOM_BLOB_TO_STORE | awk '{ print $1 }')
+test "Read blob contents from RW container" assert.Success "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file $DOWNLOADED_BLOB"
+test "Blobs have to have same contents" assert.Success "diff $UPLOADFILE $DOWNLOADED_BLOB"
+UPLOADFILE_SHA256=$(sha256sum $UPLOADFILE | awk '{ print $1 }')
 DOWNLOADED_BLOB_SHA256=$(sha256sum $DOWNLOADED_BLOB | awk '{ print $1 }')
-test "Blobs have to have equal SHA256 checksums" assert.Success "[ $RANDOM_BLOB_TO_STORE_SHA256 = $DOWNLOADED_BLOB_SHA256 ]"
+test "Blobs have to have equal SHA256 checksums" assert.Success "[ $UPLOADFILE_SHA256 = $DOWNLOADED_BLOB_SHA256 ]"
 
 # there should be no <noname> folder in Azure
 testing class "noname"
@@ -156,6 +155,12 @@ testing class "package"
 test "Uninstall packages" assert.Success "apt purge $PACKAGENAME -y"
 
 test "Verify azmi binary does not exist anymore" assert.Fail "[ -f /usr/bin/azmi ]"
+
+#
+#  Clean up actions
+#
+
+rm $UPLOADFILE
 
 #################################
 # display some diagnostic data
