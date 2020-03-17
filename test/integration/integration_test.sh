@@ -16,6 +16,7 @@ declare -a subCommands=("gettoken" "getblob" "getblobs" "setblob" "listblobs")
 
 # calculated variables
 CONTAINER_NA="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-no-access"
+CONTAINER_RO="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-r"
 
 #
 # start testing
@@ -68,25 +69,30 @@ test "Authenticate to Azure using a managed identity and get access token in JWT
 # https://azmitest.blob.core.windows.net/azmi-itest-rw//tmp/azmi_itest_20200206_091521.txt
 #         storage account URL           |containerName|          blob name
 
+
+
+#
+# storage subcommands testing
+#
+
+
 ### no-access container ###
-CONTAINER_URL="https://azmitest.blob.core.windows.net/azmi-itest-no-access"
 BLOB="restricted_access_blob.txt"
-test "Should fail: Read blob contents from restricted Azure storage container" assert.Fail "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt"
+test "Should fail: Read blob contents from restricted Azure storage container" assert.Fail "azmi getblob --blob $CONTAINER_NA/$BLOB --file download.txt"
 date > upload.txt # generate unique file contents
-test "Should fail: Save file contents to restricted Azure storage container" assert.Fail "azmi setblob --file upload.txt --container $CONTAINER_URL"
+test "Should fail: Save file contents to restricted Azure storage container" assert.Fail "azmi setblob --file upload.txt --container $CONTAINER_NA"
 rm upload.txt
 
 ### read-only container ###
 # Role(s):    Storage Blob Data Reader
 # Profile(s): bt-seu-test-id (obj. ID: d1c05b65-ccf9-47bd-870d-4e44d209ee7a), kotipoiss-identity (obj. ID: ccb781af-a4eb-4ecc-b183-cef74b3cc717)
-CONTAINER_URL="https://azmitest.blob.core.windows.net/azmi-itest-r"
 BLOB="read_only_blob.txt"
-test "Read blob contents from read-only Azure storage container" assert.Success "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt"
-test "Should fail: Save file contents to read-only Azure storage container" assert.Fail "azmi setblob --file download.txt --container $CONTAINER_URL"
+test "Read blob contents from read-only Azure storage container" assert.Success "azmi getblob --blob $CONTAINER_RO/$BLOB --file download.txt"
+test "Should fail: Save file contents to read-only Azure storage container" assert.Fail "azmi setblob --file download.txt --container $CONTAINER_RO"
 # test --identity options
-test "Read blob contents from read-only Azure storage container using right identity"                     assert.Success "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt --identity 354800af-354e-42e0-906b-5b96e02c4e1c"
-test "Should fail: Read blob contents from read-only Azure storage container using foreign identity"      assert.Fail    "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt --identity 017dc05c-4d12-4ac2-b5f8-5e239dc8bc54"
-test "Should fail: Read blob contents from read-only Azure storage container using non-existing identity" assert.Fail    "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt --identity non-existing"
+test "Read blob contents from read-only Azure storage container using right identity"                     assert.Success "azmi getblob --blob $CONTAINER_RO/$BLOB --file download.txt --identity 354800af-354e-42e0-906b-5b96e02c4e1c"
+test "Should fail: Read blob contents from read-only Azure storage container using foreign identity"      assert.Fail    "azmi getblob --blob $CONTAINER_RO/$BLOB --file download.txt --identity 017dc05c-4d12-4ac2-b5f8-5e239dc8bc54"
+test "Should fail: Read blob contents from read-only Azure storage container using non-existing identity" assert.Fail    "azmi getblob --blob $CONTAINER_RO/$BLOB --file download.txt --identity non-existing"
 
 ### read-write container ###
 # Role(s):    Storage Blob Data Contributor
