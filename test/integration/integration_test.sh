@@ -12,6 +12,7 @@ export DEBIAN_FRONTEND=noninteractive
 PACKAGENAME=azmi
 PACKAGEFILE=/tmp/azmiX.deb
 STORAGEACCOUNTNAME=azmitest
+declare -a subCommands=("gettoken" "getblob" "getblobs" "setblob" "listblobs")
 
 # calculated variables
 CONTAINER_NA="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-no-access"
@@ -34,7 +35,7 @@ testing class "help"
 test "Fail if no arguments are provided" assert.Fail "azmi"
 test "Print help and return success status" assert.Success "azmi --help"
 
-foreach subcommand (gettoken getblob setblob)
+for subCommand in "${subCommands[@]}"
   test "Print help for $subcommand" assert.Success "azmi $subcommand --help"
   test "Fail $subcommand with wrong args" assert.Fail "azmi $subcommand blahblah"
 end
@@ -49,7 +50,7 @@ end
 # TODO Automate above using list of supported subcommands
 
 
-testing class "application"
+testing class "gettoken"
 
 test "Authenticate to Azure using a managed identity and get access token" assert.Success "azmi gettoken"
 test "Authenticate to Azure using a managed identity and get access token in JWT format" assert.Success "azmi gettoken --jwt-format | grep typ | grep JWT"
