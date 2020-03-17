@@ -76,7 +76,9 @@ CONTAINER_URL="https://azmitest.blob.core.windows.net/azmi-itest-r"
 BLOB="read_only_blob.txt"
 test "Read blob contents from read-only Azure storage container" assert.Success "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt"
 test "Should fail: Save file contents to read-only Azure storage container" assert.Fail "azmi setblob --file download.txt --container $CONTAINER_URL"
-# test --identity options
+# --delete-after-copy option
+test "Should fail: Remove blob after download from read-only Azure storage container" assert.Fail "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt --delete-after-copy"
+# --identity option
 test "Read blob contents from read-only Azure storage container using right identity"                     assert.Success "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt --identity 354800af-354e-42e0-906b-5b96e02c4e1c"
 test "Should fail: Read blob contents from read-only Azure storage container using foreign identity"      assert.Fail    "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt --identity 017dc05c-4d12-4ac2-b5f8-5e239dc8bc54"
 test "Should fail: Read blob contents from read-only Azure storage container using non-existing identity" assert.Fail    "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt --identity non-existing"
@@ -96,6 +98,12 @@ test "Blobs have to have same contents" assert.Success "diff $RANDOM_BLOB_TO_STO
 RANDOM_BLOB_TO_STORE_SHA256=$(sha256sum $RANDOM_BLOB_TO_STORE | awk '{ print $1 }')
 DOWNLOADED_BLOB_SHA256=$(sha256sum $DOWNLOADED_BLOB | awk '{ print $1 }')
 test "Blobs have to have equal SHA256 checksums" assert.Success "[ $RANDOM_BLOB_TO_STORE_SHA256 = $DOWNLOADED_BLOB_SHA256 ]"
+# --delete-after-copy option
+BLOB="azmi_itest_${TIMESTAMP}_delete_after_copy.txt"
+date > $BLOB # generate unique file contents
+test "Save file contents to read-write Azure storage container (preparation --delete-after-copy option)" assert.Success "azmi setblob --file $BLOB --container $CONTAINER_URL"
+test "Remove blob after download from read-write Azure storage container" assert.Success "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt --delete-after-copy"
+test "Should fail: try to download just removed blob." assert.Fail "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt"
 
 # there should be no <noname> folder in Azure
 testing class "noname"
@@ -118,6 +126,9 @@ EXPECTED_BLOB_COUNT=1; PREFIX="neu-pre-show-me-only"
 test "There should be $EXPECTED_BLOB_COUNT listed blob with prefix '$PREFIX' in listblobs container" assert.Equals "azmi listblobs --container $CONTAINER_URL --prefix $PREFIX | wc -l" $EXPECTED_BLOB_COUNT
 EXPECTED_BLOB_COUNT=0; PREFIX="noBlobsShouldDownload"
 test "There should be $EXPECTED_BLOB_COUNT listed blob with prefix '$PREFIX' in listblobs container" assert.Equals "azmi listblobs --container $CONTAINER_URL --prefix $PREFIX | wc -l" $EXPECTED_BLOB_COUNT
+# --exclude
+EXPECTED_BLOB_COUNT=4; EXCLUDE="HelloWorld.txt"
+test "There should be $EXPECTED_BLOB_COUNT listed blobs (--exclude $EXCLUDE applied) in listblobs container" assert.Equals "azmi listblobs --container $CONTAINER_URL --exclude $EXCLUDE | wc -l" $EXPECTED_BLOB_COUNT
 
 # getblobs subcommand
 testing class "getblobs"
@@ -129,6 +140,10 @@ test "We should successfully download $EXPECTED_BLOB_COUNT blobs from listblobs 
 EXPECTED_BLOB_COUNT=3; PREFIX="neu-pre"; EXPECTED_SUCCESSES=4
 rm -rf $DOWNLOAD_DIR
 test "We should successfully download $EXPECTED_BLOB_COUNT blobs with prefix '$PREFIX' from listblobs container" assert.Equals "azmi getblobs --container $CONTAINER_URL --directory $DOWNLOAD_DIR --prefix $PREFIX | grep Success | wc -l" $EXPECTED_SUCCESSES
+
+EXPECTED_BLOB_COUNT=4; EXCLUDE="neu-pre-logboxA1"; EXPECTED_SUCCESSES=5
+rm -rf $DOWNLOAD_DIR
+test "We should successfully download $EXPECTED_BLOB_COUNT blobs (--exclude $EXCLUDE applied) from listblobs container" assert.Equals "azmi getblobs --container $CONTAINER_URL --directory $DOWNLOAD_DIR --exclude $EXCLUDE | grep Success | wc -l" $EXPECTED_SUCCESSES
 
 EXPECTED_BLOB_COUNT=0; PREFIX="noBlobsShouldDownload"; EXPECTED_ROWS=0
 rm -rf $DOWNLOAD_DIR
