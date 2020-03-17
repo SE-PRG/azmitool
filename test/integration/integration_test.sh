@@ -13,6 +13,8 @@ PACKAGENAME=azmi
 PACKAGEFILE=/tmp/azmiX.deb
 STORAGEACCOUNTNAME=azmitest
 declare -a subCommands=("gettoken" "getblob" "getblobs" "setblob" "listblobs")
+identity=354800af-354e-42e0-906b-5b96e02c4e1c
+identity_foreign=017dc05c-4d12-4ac2-b5f8-5e239dc8bc54
 
 # calculated variables
 CONTAINER_NA="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-no-access"
@@ -49,8 +51,8 @@ done
 
 testing class "gettoken"
 
-test "Authenticate to Azure using a managed identity and get access token" assert.Success "azmi gettoken"
-test "Authenticate to Azure using a managed identity and get access token in JWT format" assert.Success "azmi gettoken --jwt-format | grep typ | grep JWT"
+test "get access token" assert.Success "azmi gettoken"
+test "get access token in JWT format" assert.Success "azmi gettoken --jwt-format | grep typ | grep JWT"
 
 
 #
@@ -60,21 +62,21 @@ test "Authenticate to Azure using a managed identity and get access token in JWT
 
 ### no-access container ###
 BLOB="restricted_access_blob.txt"
-test "Should fail: Read blob contents from restricted Azure storage container" assert.Fail "azmi getblob --blob $CONTAINER_NA/$BLOB --file download.txt"
 date > upload.txt # generate unique file contents
-test "Should fail: Save file contents to restricted Azure storage container" assert.Fail "azmi setblob --file upload.txt --container $CONTAINER_NA"
+test "Fails to read from NA container" assert.Fail "azmi getblob --blob $CONTAINER_NA/$BLOB --file download.txt"
+test "Fails to save to NA container" assert.Fail "azmi setblob --file upload.txt --container $CONTAINER_NA"
 rm upload.txt
 
 ### read-only container ###
 # Role(s):    Storage Blob Data Reader
 # Profile(s): bt-seu-test-id (obj. ID: d1c05b65-ccf9-47bd-870d-4e44d209ee7a), kotipoiss-identity (obj. ID: ccb781af-a4eb-4ecc-b183-cef74b3cc717)
 BLOB="read_only_blob.txt"
-test "Read blob contents from read-only Azure storage container" assert.Success "azmi getblob --blob $CONTAINER_RO/$BLOB --file download.txt"
-test "Should fail: Save file contents to read-only Azure storage container" assert.Fail "azmi setblob --file download.txt --container $CONTAINER_RO"
+test "Read blob contents from RO container" assert.Success "azmi getblob --blob $CONTAINER_RO/$BLOB --file download.txt"
+test "Fails to save to RO container" assert.Fail "azmi setblob --file download.txt --container $CONTAINER_RO"
 # test --identity options
-test "Read blob contents from read-only Azure storage container using right identity"                     assert.Success "azmi getblob --blob $CONTAINER_RO/$BLOB --file download.txt --identity 354800af-354e-42e0-906b-5b96e02c4e1c"
-test "Should fail: Read blob contents from read-only Azure storage container using foreign identity"      assert.Fail    "azmi getblob --blob $CONTAINER_RO/$BLOB --file download.txt --identity 017dc05c-4d12-4ac2-b5f8-5e239dc8bc54"
-test "Should fail: Read blob contents from read-only Azure storage container using non-existing identity" assert.Fail    "azmi getblob --blob $CONTAINER_RO/$BLOB --file download.txt --identity non-existing"
+test "Read blob from RO container using right identity"                 assert.Success "azmi getblob --blob $CONTAINER_RO/$BLOB --file download.txt --identity $identity"
+test "Fails to read blob from RO container using foreign identity"      assert.Fail    "azmi getblob --blob $CONTAINER_RO/$BLOB --file download.txt --identity $identity_foreign"
+test "Fails to read blob from RO container using non-existing identity" assert.Fail    "azmi getblob --blob $CONTAINER_RO/$BLOB --file download.txt --identity non-existing"
 
 ### read-write container ###
 # Role(s):    Storage Blob Data Contributor
@@ -83,9 +85,9 @@ TIMESTAMP=`date "+%Y%m%d_%H%M%S"` # e.g. 20200107_144102
 RANDOM_BLOB_TO_STORE="azmi_itest_${TIMESTAMP}.txt"
 CHARS="012345689abcdefghiklmnopqrstuvwxyz"
 test "Generate random blob (file) contents" assert.Success "for i in {1..32}; do echo -n \"\${CHARS:RANDOM%\${#CHARS}:1}\"; done > $RANDOM_BLOB_TO_STORE"
-test "Save file contents   to read-write Azure storage container" assert.Success "azmi setblob --file $RANDOM_BLOB_TO_STORE --container $CONTAINER_RW"
+test "Save file contents   to read-write container" assert.Success "azmi setblob --file $RANDOM_BLOB_TO_STORE --container $CONTAINER_RW"
 DOWNLOADED_BLOB="azmi_itest_downloaded.txt"
-test "Read blob contents from read-write Azure storage container" assert.Success "azmi getblob --blob ${CONTAINER_RW}/${RANDOM_BLOB_TO_STORE} --file $DOWNLOADED_BLOB"
+test "Read blob contents from read-write container" assert.Success "azmi getblob --blob ${CONTAINER_RW}/${RANDOM_BLOB_TO_STORE} --file $DOWNLOADED_BLOB"
 test "Blobs have to have same contents" assert.Success "diff $RANDOM_BLOB_TO_STORE $DOWNLOADED_BLOB"
 RANDOM_BLOB_TO_STORE_SHA256=$(sha256sum $RANDOM_BLOB_TO_STORE | awk '{ print $1 }')
 DOWNLOADED_BLOB_SHA256=$(sha256sum $DOWNLOADED_BLOB | awk '{ print $1 }')
@@ -132,8 +134,8 @@ test "Upload tmp file by blob" assert.Success "azmi setblob -f /tmp/${RANDOM_BLO
 
 # --force option
 testing class "--force option"
-test "Should fail: attempt to overwrite existing blob using --container option" assert.Fail "azmi setblob -f /tmp/${RANDOM_BLOB_TO_STORE} --container ${CONTAINER_RW}"
-test "Should fail: attempt to overwrite existing blob using --blob option" assert.Fail "azmi setblob -f /tmp/${RANDOM_BLOB_TO_STORE} --blob ${CONTAINER_RW}/byblob/${RANDOM_BLOB_TO_STORE}"
+test "Fails to attempt to overwrite existing blob using --container option" assert.Fail "azmi setblob -f /tmp/${RANDOM_BLOB_TO_STORE} --container ${CONTAINER_RW}"
+test "Fails to attempt to overwrite existing blob using --blob option" assert.Fail "azmi setblob -f /tmp/${RANDOM_BLOB_TO_STORE} --blob ${CONTAINER_RW}/byblob/${RANDOM_BLOB_TO_STORE}"
 test "Overwrite existing blob using --container option" assert.Success "azmi setblob -f /tmp/${RANDOM_BLOB_TO_STORE} --container ${CONTAINER_RW} --force"
 test "Overwrite existing blob using --blob option" assert.Success "azmi setblob -f /tmp/${RANDOM_BLOB_TO_STORE} --blob ${CONTAINER_RW}/byblob/${RANDOM_BLOB_TO_STORE} --force"
 
