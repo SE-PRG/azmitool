@@ -88,8 +88,7 @@ test "setblob fails to overwrite on blob" assert.Fail "azmi setblob -f $UPLOADFI
 test "setblob overwrites blob on container" assert.Success "azmi setblob -f $UPLOADFILE --container $CONTAINER_RW --force"
 test "setblob overwrites blob on blob" assert.Success "azmi setblob -f $UPLOADFILE --blob ${CONTAINER_RW}/${UPLOADFILE} --force"
 
-testing class "SHA256"
-# it is using the file uploaded in previous step
+testing class "SHA256"3# it is using the file uploaded in previous step
 test "getblob SHA256 download" assert.Success "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file $DOWNLOAD_FILE"
 test "SHA256 same contents" assert.Success "diff $UPLOADFILE $DOWNLOAD_FILE"
 UPLOADFILE_SHA256=$(sha256sum "$UPLOADFILE" | awk '{ print $1 }')
@@ -106,7 +105,7 @@ testing class "listblobs"
 BC=5 # blob count
 test "listblobs basic" assert.Success "azmi listblobs --container $CONTAINER_LB"
 test "listblobs finds $BC blobs" assert.Equals "azmi listblobs --container $CONTAINER_LB | wc -l" $BC
-BC=5; PREFIX="neu-pre"
+BC=3; PREFIX="neu-pre"
 test "listblobs finds $BC blobs with prefix $PREFIX" assert.Equals "azmi listblobs -c $CONTAINER_LB --prefix $PREFIX | wc -l" $BC
 BC=1; PREFIX="neu-pre-show-me-only"
 test "listblobs finds $BC blobs with prefix $PREFIX" assert.Equals "azmi listblobs -c $CONTAINER_LB --prefix $PREFIX | wc -l" $BC
