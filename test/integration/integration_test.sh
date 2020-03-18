@@ -8,12 +8,14 @@
 # setup variables
 #
 
+# TODO: remove these two from script, or change it to $1, $2
+STORAGEACCOUNTNAME=azmitest
+identity=354800af-354e-42e0-906b-5b96e02c4e1c
+
 export DEBIAN_FRONTEND=noninteractive
 PACKAGENAME=azmi
 PACKAGEFILE=/tmp/azmiX.deb
-STORAGEACCOUNTNAME=azmitest
 declare -a subCommands=("gettoken" "getblob" "getblobs" "setblob" "listblobs")
-identity=354800af-354e-42e0-906b-5b96e02c4e1c
 identity_foreign=017dc05c-4d12-4ac2-b5f8-5e239dc8bc54
 
 # calculated variables
@@ -125,21 +127,17 @@ BC=0; PREFIX="noBlobsShouldDownload"; rm -rf $DOWNLOAD_DIR
 test "getblobs downloads $BC blobs with prefix $PREFIX" assert.Equals "azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --prefix $PREFIX | wc -l" $BC
 
 
-# TODO: IGOR TAGGED: PROCEED FROM HERE
-
-
-# --if-newer option
-testing class "--if-newer option"
-
-test "Should skip: Download blob and write to file only if difference has been spotted (--if-newer option)" assert.Equals \
-  "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file /tmp/${UPLOADFILE} --if-newer" "Skipped. Blob is not newer than file."
+testing class "if-newer"
+SKIPMSG="Skipped. Blob is not newer than file."
+test "setblob prepares the file" assert.Equals "azmi setblob -f $UPLOADFILE -c $CONTAINER_RW"
+test "getblob skips if not newer" assert.Equals "azmi getblob -b ${CONTAINER_RW}/${UPLOADFILE} -f $UPLOADFILE --if-newer" "$SKIPMSG"
 sleep 1s
-test "Alter blob's modification time" assert.Success "azmi setblob --file /tmp/${UPLOADFILE} --blob ${CONTAINER_RW}/${UPLOADFILE} --force"
-test "Download blob and write to file only if difference has been spotted (--if-newer option)" assert.Equals \
-  "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file /tmp/${UPLOADFILE} --if-newer" "Success"
-TIMESTAMP=$(date "+%Y%m%d_%H%M%S") # e.g. 20200107_144102
-test "Download blob and write to file which does not exist yet (--if-newer option)" assert.Equals \
-  "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file /tmp/unique-file.${TIMESTAMP} --if-newer --verbose" "Success"
+test "setblob updates blob" assert.Success "azmi setblob -f $UPLOADFILE -c $CONTAINER_RW --force"
+test "getblob downloads if newer" assert.Equals "azmi getblob -b ${CONTAINER_RW}/${UPLOADFILE} -f $UPLOADFILE --if-newer" "Success"
+rm -rf $DOWNLOAD_FILE
+test "getblob downloads newer than nonexisting" assert.Equals "azmi getblob -b ${CONTAINER_RW}/${UPLOADFILE} -f $DOWNLOAD_FILE --if-newer" "Success"
+
+# TODO: IGOR TAGGED: PROCEED FROM HERE
 
 # uninstalling
 testing class "package"
