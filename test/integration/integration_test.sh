@@ -64,18 +64,17 @@ test "get access token in JWT format" assert.Success "azmi gettoken --jwt-format
 # storage subcommands testing
 #
 
-
-testing class "getblob"
-### no-access container ###
 BLOB_NA="restricted_access_blob.txt"
 BLOB_RO="read_only_blob.txt"
+DOWNLOAD_FILE="download.txt"
 
-test "getblob fails on NA container" assert.Fail "azmi getblob --blob $CONTAINER_NA/$BLOB_NA --file download.txt"
-test "getblob OK on RO container" assert.Success "azmi getblob --blob $CONTAINER_RO/$BLOB_RO --file download.txt"
+testing class "getblob"
+test "getblob fails on NA container" assert.Fail "azmi getblob --blob $CONTAINER_NA/$BLOB_NA --file $DOWNLOAD_FILE"
+test "getblob OK on RO container" assert.Success "azmi getblob --blob $CONTAINER_RO/$BLOB_RO --file $DOWNLOAD_FILE"
 # test --identity options
-test "getblob OK on RO container using right identity"           assert.Success "azmi getblob --blob $CONTAINER_RO/$BLOB_RO --file download.txt --identity $identity"
-test "getblob fails on RO container using foreign identity"      assert.Fail    "azmi getblob --blob $CONTAINER_RO/$BLOB_RO --file download.txt --identity $identity_foreign"
-test "getblob fails on RO container using non-existing identity" assert.Fail    "azmi getblob --blob $CONTAINER_RO/$BLOB_RO --file download.txt --identity non-existing"
+test "getblob OK on RO container using right identity"        assert.Success "azmi getblob --blob $CONTAINER_RO/$BLOB_RO --file download.txt --identity $identity"
+test "getblob fails on RO container using foreign identity"      assert.Fail "azmi getblob --blob $CONTAINER_RO/$BLOB_RO --file download.txt --identity $identity_foreign"
+test "getblob fails on RO container using non-existing identity" assert.Fail "azmi getblob --blob $CONTAINER_RO/$BLOB_RO --file download.txt --identity non-existing"
 
 
 testing class "setblob"
@@ -84,14 +83,16 @@ test "setblob fails on RO container" assert.Fail "azmi setblob --file $UPLOADFIL
 test "setblob OK on RW container" assert.Success "azmi setblob --file $UPLOADFILE --container $CONTAINER_RW"
 
 
+testing class "SHA256"
+test "setblob SHA256 upload" assert.Success "azmi setblob --file $UPLOADFILE --container $CONTAINER_RW"
+test "getblob SHA256 download" assert.Success "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file $DOWNLOAD_FILE"
+test "SHA256 same contents" assert.Success "diff $UPLOADFILE $DOWNLOAD_FILE"
+UPLOADFILE_SHA256=$(sha256sum "$UPLOADFILE" | awk '{ print $1 }')
+DOWNLOADFILE_SHA256=$(sha256sum $DOWNLOAD_FILE | awk '{ print $1 }')
+test "SHA256 same checksums" assert.Success "[ $UPLOADFILE_SHA256 = $DOWNLOADFILE_SHA256 ]"
+
 # TODO: IGOR TAGGED: PROCEED FROM HERE
 
-DOWNLOADED_BLOB="azmi_itest_downloaded.txt"
-test "Read blob contents from RW container" assert.Success "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file $DOWNLOADED_BLOB"
-test "Blobs have to have same contents" assert.Success "diff $UPLOADFILE $DOWNLOADED_BLOB"
-UPLOADFILE_SHA256=$(sha256sum "$UPLOADFILE" | awk '{ print $1 }')
-DOWNLOADED_BLOB_SHA256=$(sha256sum $DOWNLOADED_BLOB | awk '{ print $1 }')
-test "Blobs have to have equal SHA256 checksums" assert.Success "[ $UPLOADFILE_SHA256 = $DOWNLOADED_BLOB_SHA256 ]"
 
 # there should be no <noname> folder in Azure
 testing class "noname"
