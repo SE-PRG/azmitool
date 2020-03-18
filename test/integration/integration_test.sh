@@ -67,6 +67,7 @@ test "get access token in JWT format" assert.Success "azmi gettoken --jwt-format
 BLOB_NA="restricted_access_blob.txt"
 BLOB_RO="read_only_blob.txt"
 DOWNLOAD_FILE="download.txt"
+DOWNLOAD_DIR="./Download"
 
 testing class "getblob"
 test "getblob fails on NA container" assert.Fail "azmi getblob --blob $CONTAINER_NA/$BLOB_NA --file $DOWNLOAD_FILE"
@@ -113,21 +114,17 @@ BC=0; PREFIX="noBlobsShouldDownload"
 test "listblobs finds $BC blobs with prefix $PREFIX" assert.Equals "azmi listblobs -c $CONTAINER_LB --prefix $PREFIX | wc -l" $BC
 
 
-# TODO: IGOR TAGGED: PROCEED FROM HERE
-
-# getblobs subcommand
 testing class "getblobs"
-DOWNLOAD_DIR="./Download"; EXPECTED_BLOB_COUNT=5; EXPECTED_SUCCESSES=6 # last one is summary
-rm -rf $DOWNLOAD_DIR
-test "We should successfully download $EXPECTED_BLOB_COUNT blobs from listblobs container" assert.Equals "azmi getblobs --container $CONTAINER_LB --directory $DOWNLOAD_DIR | grep Success | wc -l" $EXPECTED_SUCCESSES
+BC=5; rm -rf $DOWNLOAD_DIR
+test "getblobs downloads $BC blobs" assert.Equals "azmi getblobs --container $CONTAINER_LB --directory $DOWNLOAD_DIR | grep Success | wc -l" $((BC+1))
+# there is one extra line for summary
+BC=3; PREFIX="neu-pre"; rm -rf $DOWNLOAD_DIR
+test "getblobs downloads $BC blobs with prefix $PREFIX" assert.Equals "azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --prefix $PREFIX | grep Success | wc -l" $((BC+1))
+BC=0; PREFIX="noBlobsShouldDownload"; rm -rf $DOWNLOAD_DIR
+test "getblobs downloads $BC blobs with prefix $PREFIX" assert.Equals "azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --prefix $PREFIX | wc -l" $BC
 
-EXPECTED_BLOB_COUNT=3; PREFIX="neu-pre"; EXPECTED_SUCCESSES=4
-rm -rf $DOWNLOAD_DIR
-test "We should successfully download $EXPECTED_BLOB_COUNT blobs with prefix '$PREFIX' from listblobs container" assert.Equals "azmi getblobs --container $CONTAINER_LB --directory $DOWNLOAD_DIR --prefix $PREFIX | grep Success | wc -l" $EXPECTED_SUCCESSES
 
-EXPECTED_BLOB_COUNT=0; PREFIX="noBlobsShouldDownload"; EXPECTED_ROWS=0
-rm -rf $DOWNLOAD_DIR
-test "We should successfully download $EXPECTED_BLOB_COUNT blobs with prefix '$PREFIX' from listblobs container" assert.Equals "azmi getblobs --container $CONTAINER_LB --directory $DOWNLOAD_DIR --prefix $PREFIX | wc -l" $EXPECTED_ROWS
+# TODO: IGOR TAGGED: PROCEED FROM HERE
 
 # testing setblob-byblob 
 testing class "setblob-byblob"
