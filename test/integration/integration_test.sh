@@ -89,7 +89,8 @@ test "setblob fails to overwrite on blob" assert.Fail "azmi setblob -f $UPLOADFI
 test "setblob overwrites blob on container" assert.Success "azmi setblob -f $UPLOADFILE --container $CONTAINER_RW --force"
 test "setblob overwrites blob on blob" assert.Success "azmi setblob -f $UPLOADFILE --blob ${CONTAINER_RW}/${UPLOADFILE} --force"
 
-testing class "SHA256"3# it is using the file uploaded in previous step
+testing class "SHA256"
+test "setblob SHA256 upload" assert.Success "azmi setblob -f $UPLOADFILE --blob ${CONTAINER_RW}/${UPLOADFILE} --force"
 test "getblob SHA256 download" assert.Success "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file $DOWNLOAD_FILE"
 test "SHA256 same contents" assert.Success "diff $UPLOADFILE $DOWNLOAD_FILE"
 UPLOADFILE_SHA256=$(sha256sum "$UPLOADFILE" | awk '{ print $1 }')
