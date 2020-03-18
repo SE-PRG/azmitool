@@ -127,13 +127,10 @@ test "getblobs downloads $BC blobs with prefix $PREFIX" assert.Equals "azmi getb
 
 # TODO: IGOR TAGGED: PROCEED FROM HERE
 
-# testing setblob-byblob 
-testing class "setblob-byblob"
-test "Upload tmp file by blob" assert.Success "azmi setblob -f /tmp/${UPLOADFILE} --blob ${CONTAINER_RW}/byblob/${UPLOADFILE}"
-
 
 # --if-newer option
 testing class "--if-newer option"
+
 test "Should skip: Download blob and write to file only if difference has been spotted (--if-newer option)" assert.Equals \
   "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file /tmp/${UPLOADFILE} --if-newer" "Skipped. Blob is not newer than file."
 sleep 1s
@@ -142,7 +139,7 @@ test "Download blob and write to file only if difference has been spotted (--if-
   "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file /tmp/${UPLOADFILE} --if-newer" "Success"
 TIMESTAMP=$(date "+%Y%m%d_%H%M%S") # e.g. 20200107_144102
 test "Download blob and write to file which does not exist yet (--if-newer option)" assert.Equals \
-  "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file /tmp/unique-file.${TIMESTAMP} --if-newer" "Success"
+  "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file /tmp/unique-file.${TIMESTAMP} --if-newer --verbose" "Success"
 
 # uninstalling
 testing class "package"
