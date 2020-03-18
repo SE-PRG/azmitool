@@ -89,7 +89,7 @@ test "setblob overwrites blob on container" assert.Success "azmi setblob -f $UPL
 test "setblob overwrites blob on blob" assert.Success "azmi setblob -f $UPLOADFILE --blob ${CONTAINER_RW}/${UPLOADFILE} --force"
 
 testing class "SHA256"
-# it is using file uploaded in previous step
+# it is using the file uploaded in previous step
 test "getblob SHA256 download" assert.Success "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file $DOWNLOAD_FILE"
 test "SHA256 same contents" assert.Success "diff $UPLOADFILE $DOWNLOAD_FILE"
 UPLOADFILE_SHA256=$(sha256sum "$UPLOADFILE" | awk '{ print $1 }')
@@ -102,22 +102,19 @@ test "upload tmp file" assert.Success "azmi setblob -f /tmp/${UPLOADFILE} --cont
 test "there is no noname folder" assert.Fail "azmi getblob -f /dev/null -b ${CONTAINER_RW}//tmp/${UPLOADFILE}"
 
 
-# TODO: IGOR TAGGED: PROCEED FROM HERE
-
 testing class "listblobs"
-### list-blobs container
-# Role(s):    Storage Blob Data Contributor
-# Profile(s): bt-seu-test-id (obj. ID: d1c05b65-ccf9-47bd-870d-4e44d209ee7a), kotipoiss-identity (obj. ID: ccb781af-a4eb-4ecc-b183-cef74b3cc717)
-test "List all blobs in listblobs container" assert.Success "azmi listblobs --container $CONTAINER_LB"
-EXPECTED_BLOB_COUNT=5
-test "There should be $EXPECTED_BLOB_COUNT listed blobs in listblobs container" assert.Equals "azmi listblobs --container $CONTAINER_LB | wc -l" $EXPECTED_BLOB_COUNT
-# listing with an optional --prefix
-EXPECTED_BLOB_COUNT=3; PREFIX="neu-pre"
-test "There should be $EXPECTED_BLOB_COUNT listed blobs with prefix '$PREFIX' in listblobs container" assert.Equals "azmi listblobs --container $CONTAINER_LB --prefix $PREFIX | wc -l" $EXPECTED_BLOB_COUNT
-EXPECTED_BLOB_COUNT=1; PREFIX="neu-pre-show-me-only"
-test "There should be $EXPECTED_BLOB_COUNT listed blob with prefix '$PREFIX' in listblobs container" assert.Equals "azmi listblobs --container $CONTAINER_LB --prefix $PREFIX | wc -l" $EXPECTED_BLOB_COUNT
-EXPECTED_BLOB_COUNT=0; PREFIX="noBlobsShouldDownload"
-test "There should be $EXPECTED_BLOB_COUNT listed blob with prefix '$PREFIX' in listblobs container" assert.Equals "azmi listblobs --container $CONTAINER_LB --prefix $PREFIX | wc -l" $EXPECTED_BLOB_COUNT
+BC=5 # blob count
+test "listblobs basic" assert.Success "azmi listblobs --container $CONTAINER_LB"
+test "listblobs finds $BC blobs" assert.Equals "azmi listblobs --container $CONTAINER_LB | wc -l" $BC
+BC=5; PREFIX="neu-pre"
+test "listblobs finds $BC blobs with prefix $PREFIX" assert.Equals "azmi listblobs -c $CONTAINER_LB --prefix $PREFIX | wc -l" $BC
+BC=1; PREFIX="neu-pre-show-me-only"
+test "listblobs finds $BC blobs with prefix $PREFIX" assert.Equals "azmi listblobs -c $CONTAINER_LB --prefix $PREFIX | wc -l" $BC
+BC=0; PREFIX="noBlobsShouldDownload"
+test "listblobs finds $BC blobs with prefix $PREFIX" assert.Equals "azmi listblobs -c $CONTAINER_LB --prefix $PREFIX | wc -l" $BC
+
+
+# TODO: IGOR TAGGED: PROCEED FROM HERE
 
 # getblobs subcommand
 testing class "getblobs"
