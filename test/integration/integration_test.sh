@@ -24,11 +24,6 @@ CONTAINER_RO="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-r"
 CONTAINER_RW="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-rw"
 CONTAINER_LB="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-listblobs"
 
-# prepare test upload file
-DATE1=$(date +%s)   # used in file name
-DATE2=$(date +%s%N) # used in file content
-UPLOADFILE="upload$DATE1.txt"
-echo "$DATE2" > "$UPLOADFILE"
 
 #
 # start testing
@@ -70,6 +65,12 @@ BLOB_NA="restricted_access_blob.txt"
 BLOB_RO="read_only_blob.txt"
 DOWNLOAD_FILE="download.txt"
 DOWNLOAD_DIR="./Download"
+# prepare test upload file
+DATE1=$(date +%s)   # used in file name
+DATE2=$(date +%s%N) # used in file content
+UPLOADFILE="upload$DATE1.txt"
+echo "$DATE2" > "$UPLOADFILE"
+
 
 testing class "getblob"
 test "getblob fails on NA container" assert.Fail "azmi getblob --blob $CONTAINER_NA/$BLOB_NA --file $DOWNLOAD_FILE"
@@ -130,19 +131,17 @@ test "getblobs downloads $BC blobs with prefix $PREFIX" assert.Equals "azmi getb
 testing class "if-newer"
 SKIPMSG="Skipped. Blob is not newer than file."
 test "setblob prepares the file" assert.Equals "azmi setblob -f $UPLOADFILE -c $CONTAINER_RW"
+touch "$UPLOADFILE"
 test "getblob skips if not newer" assert.Equals "azmi getblob -b ${CONTAINER_RW}/${UPLOADFILE} -f $UPLOADFILE --if-newer" "$SKIPMSG"
-sleep 1s
 test "setblob updates blob" assert.Success "azmi setblob -f $UPLOADFILE -c $CONTAINER_RW --force"
+sleep 1
 test "getblob downloads if newer" assert.Equals "azmi getblob -b ${CONTAINER_RW}/${UPLOADFILE} -f $UPLOADFILE --if-newer" "Success"
 rm -rf $DOWNLOAD_FILE
 test "getblob downloads newer than nonexisting" assert.Equals "azmi getblob -b ${CONTAINER_RW}/${UPLOADFILE} -f $DOWNLOAD_FILE --if-newer" "Success"
 
-# TODO: IGOR TAGGED: PROCEED FROM HERE
-
 # uninstalling
 testing class "package"
 test "Uninstall packages" assert.Success "apt purge $PACKAGENAME -y"
-
 test "Verify azmi binary does not exist anymore" assert.Fail "[ -f /usr/bin/azmi ]"
 
 #
@@ -150,6 +149,7 @@ test "Verify azmi binary does not exist anymore" assert.Fail "[ -f /usr/bin/azmi
 #
 
 rm "$UPLOADFILE"
+rm -rf $DOWNLOAD_DIR
 
 #################################
 # display some diagnostic data
