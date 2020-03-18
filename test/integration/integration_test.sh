@@ -84,7 +84,7 @@ test "setblob OK on RW container" assert.Success "azmi setblob --file $UPLOADFIL
 
 
 testing class "SHA256"
-test "setblob SHA256 upload" assert.Success "azmi setblob --file $UPLOADFILE --container $CONTAINER_RW"
+# it is using file uploaded in previous step
 test "getblob SHA256 download" assert.Success "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file $DOWNLOAD_FILE"
 test "SHA256 same contents" assert.Success "diff $UPLOADFILE $DOWNLOAD_FILE"
 UPLOADFILE_SHA256=$(sha256sum "$UPLOADFILE" | awk '{ print $1 }')
