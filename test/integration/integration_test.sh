@@ -71,17 +71,22 @@ DOWNLOAD_FILE="download.txt"
 testing class "getblob"
 test "getblob fails on NA container" assert.Fail "azmi getblob --blob $CONTAINER_NA/$BLOB_NA --file $DOWNLOAD_FILE"
 test "getblob OK on RO container" assert.Success "azmi getblob --blob $CONTAINER_RO/$BLOB_RO --file $DOWNLOAD_FILE"
-# test --identity options
+
+testing class "getblob identity"
 test "getblob OK on RO container using right identity"        assert.Success "azmi getblob --blob $CONTAINER_RO/$BLOB_RO --file download.txt --identity $identity"
 test "getblob fails on RO container using foreign identity"      assert.Fail "azmi getblob --blob $CONTAINER_RO/$BLOB_RO --file download.txt --identity $identity_foreign"
 test "getblob fails on RO container using non-existing identity" assert.Fail "azmi getblob --blob $CONTAINER_RO/$BLOB_RO --file download.txt --identity non-existing"
-
 
 testing class "setblob"
 test "setblob fails on NA container" assert.Fail "azmi setblob --file $UPLOADFILE --container $CONTAINER_NA"
 test "setblob fails on RO container" assert.Fail "azmi setblob --file $UPLOADFILE --container $CONTAINER_RO"
 test "setblob OK on RW container" assert.Success "azmi setblob --file $UPLOADFILE --container $CONTAINER_RW"
 
+testing class "setblob force"
+test "setblob fails to overwrite on container" assert.Fail "azmi setblob -f $UPLOADFILE --container $CONTAINER_RW"
+test "setblob fails to overwrite on blob" assert.Fail "azmi setblob -f $UPLOADFILE --blob ${CONTAINER_RW}/${UPLOADFILE}"
+test "setblob overwrites blob on container" assert.Success "azmi setblob -f $UPLOADFILE --container $CONTAINER_RW --force"
+test "setblob overwrites blob on blob" assert.Success "azmi setblob -f $UPLOADFILE --blob ${CONTAINER_RW}/${UPLOADFILE} --force"
 
 testing class "SHA256"
 # it is using file uploaded in previous step
@@ -91,14 +96,13 @@ UPLOADFILE_SHA256=$(sha256sum "$UPLOADFILE" | awk '{ print $1 }')
 DOWNLOADFILE_SHA256=$(sha256sum $DOWNLOAD_FILE | awk '{ print $1 }')
 test "SHA256 same checksums" assert.Success "[ $UPLOADFILE_SHA256 = $DOWNLOADFILE_SHA256 ]"
 
-# TODO: IGOR TAGGED: PROCEED FROM HERE
-
-
-# there should be no <noname> folder in Azure
 testing class "noname"
-test "Prepare tmp file" assert.Success "rm -f /tmp/${UPLOADFILE} && echo sometext > /tmp/${UPLOADFILE}"
-test "Upload tmp file" assert.Success "azmi setblob -f /tmp/${UPLOADFILE} --container ${CONTAINER_RW}"
-test "There is no noname folder after upload" assert.Fail "azmi getblob -f /dev/null -b ${CONTAINER_RW}//tmp/${UPLOADFILE}"
+test "prepare tmp file" assert.Success "rm -f /tmp/${UPLOADFILE} && echo sometext > /tmp/${UPLOADFILE}"
+test "upload tmp file" assert.Success "azmi setblob -f /tmp/${UPLOADFILE} --container ${CONTAINER_RW}"
+test "there is no noname folder" assert.Fail "azmi getblob -f /dev/null -b ${CONTAINER_RW}//tmp/${UPLOADFILE}"
+
+
+# TODO: IGOR TAGGED: PROCEED FROM HERE
 
 testing class "listblobs"
 ### list-blobs container
@@ -133,12 +137,6 @@ test "We should successfully download $EXPECTED_BLOB_COUNT blobs with prefix '$P
 testing class "setblob-byblob"
 test "Upload tmp file by blob" assert.Success "azmi setblob -f /tmp/${UPLOADFILE} --blob ${CONTAINER_RW}/byblob/${UPLOADFILE}"
 
-# --force option
-testing class "--force option"
-test "Fails to attempt to overwrite existing blob using --container option" assert.Fail "azmi setblob -f /tmp/${UPLOADFILE} --container ${CONTAINER_RW}"
-test "Fails to attempt to overwrite existing blob using --blob option" assert.Fail "azmi setblob -f /tmp/${UPLOADFILE} --blob ${CONTAINER_RW}/byblob/${UPLOADFILE}"
-test "Overwrite existing blob using --container option" assert.Success "azmi setblob -f /tmp/${UPLOADFILE} --container ${CONTAINER_RW} --force"
-test "Overwrite existing blob using --blob option" assert.Success "azmi setblob -f /tmp/${UPLOADFILE} --blob ${CONTAINER_RW}/byblob/${UPLOADFILE} --force"
 
 # --if-newer option
 testing class "--if-newer option"
