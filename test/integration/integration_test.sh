@@ -9,11 +9,8 @@
 #
 
 # TODO: remove these two from script, or change it to $1, $2
-STORAGEACCOUNTNAME=azmitest
-identity=354800af-354e-42e0-906b-5b96e02c4e1c
-echo "First argument: '$1'"
-echo "Second argument: '$2'"
-echo "Third argument: '$3'"
+STORAGEACCOUNTNAME=$2
+identity=$3
 
 
 export DEBIAN_FRONTEND=noninteractive
