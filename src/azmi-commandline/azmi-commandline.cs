@@ -5,10 +5,25 @@ using System.CommandLine;
 using System.CommandLine.Invocation;
 
 namespace azmi_commandline
-{
-
+{    
     class Program
     {
+        // https://github.com/dotnet/command-line-api/issues/458
+        // CommandHandler.Create() does not support more than 7 parameters at the moment
+        // Workaround: bind complex objects
+        // TODO: This workaround/class should be cleaned up in future
+        class getBlobsOptionsType
+        {
+            public string container { get; set; }
+            public string directory { get; set; }
+            public string identity { get; set; }
+            public string prefix { get; set; }
+            public string exclude { get; set; }
+            public bool ifNewer { get; set; }
+            public bool deleteAfterCopy { get; set; }
+            public bool verbose { get; set; }
+        }
+
         static void Main(string[] args)
         {
             var rootCommand = ConfigureArguments();
@@ -91,9 +106,15 @@ namespace azmi_commandline
                 Description = "Optional. Download a blob only if a newer version exists in a container.",
                 Required = false
             };
+            var getBlob_deleteAfterCopyOption = new Option("--delete-after-copy")
+            {
+                Description = "Optional. Successfully downloaded blob is removed from a container.",
+                Required = false
+            };
             getBlobCommand.AddOption(getBlob_blobOption);
             getBlobCommand.AddOption(getBlob_fileOption);
             getBlobCommand.AddOption(getBlob_ifNewerOption);
+            getBlobCommand.AddOption(getBlob_deleteAfterCopyOption);
             getBlobCommand.AddOption(shared_identityOption);
             getBlobCommand.AddOption(shared_verboseOption);
 
@@ -123,9 +144,28 @@ namespace azmi_commandline
                 Description = "Optional. Specifies a string that filters the results to return only blobs whose name begins with the specified prefix",
                 Required = false
             };
+            var getBlobs_excludeOption = new Option(new String[] { "--exclude", "-e" })
+            {
+                Argument = new Argument<String>("string"),
+                Description = "Optional. Exclude blobs that match given regular expression.",
+                Required = false
+            };
+            var getBlobs_ifNewerOption = new Option("--if-newer")
+            {
+                Description = "Optional. Download blobs only if newer versions exist in a container.",
+                Required = false
+            };
+            var getBlobs_deleteAfterCopyOption = new Option("--delete-after-copy")
+            {
+                Description = "Optional. Successfully downloaded blobs are removed from a container.",
+                Required = false
+            };
             getBlobsCommand.AddOption(getBlobs_containerOption);
             getBlobsCommand.AddOption(getBlobs_directoryOption);
             getBlobsCommand.AddOption(getBlobs_prefixOption);
+            getBlobsCommand.AddOption(getBlobs_excludeOption);
+            getBlobsCommand.AddOption(getBlobs_ifNewerOption);
+            getBlobsCommand.AddOption(getBlobs_deleteAfterCopyOption);
             getBlobsCommand.AddOption(shared_identityOption);
             getBlobsCommand.AddOption(shared_verboseOption);
 
@@ -187,8 +227,15 @@ namespace azmi_commandline
                 Description = "Optional. Specifies a string that filters the results to return only blobs whose name begins with the specified prefix",
                 Required = false
             };
+            var listBlobs_excludeOption = new Option(new String[] { "--exclude", "-e" })
+            {
+                Argument = new Argument<String>("string"),
+                Description = "Optional. Exclude blobs that match given regular expression.",
+                Required = false
+            };
             listBlobsCommand.AddOption(listBlobs_containerOption);
             listBlobsCommand.AddOption(listBlobs_prefixOption);
+            listBlobsCommand.AddOption(listBlobs_excludeOption);
             listBlobsCommand.AddOption(shared_identityOption);
             listBlobsCommand.AddOption(shared_verboseOption);
 
@@ -201,7 +248,7 @@ namespace azmi_commandline
             Operations operations = new Operations();
 
             // gettoken
-            getTokenCommand.Handler = CommandHandler.Create<string, string, bool, bool>((endpoint, identity, verbose, JWTFormat) =>
+            getTokenCommand.Handler = CommandHandler.Create<string, string, bool, bool>((endpoint, identity, JWTFormat, verbose) =>
             {
                 try
                 {
@@ -213,11 +260,11 @@ namespace azmi_commandline
             });
 
             // getblob
-            getBlobCommand.Handler = CommandHandler.Create<string, string, string, bool, bool>((blob, file, identity, ifNewer, verbose) =>
+            getBlobCommand.Handler = CommandHandler.Create<string, string, string, bool, bool, bool>((blob, file, identity, ifNewer, deleteAfterCopy, verbose) =>
             {
                 try
                 {
-                    Console.WriteLine(operations.getBlob(blob, file, identity, ifNewer));
+                    Console.WriteLine(operations.getBlob(blob, file, identity, ifNewer, deleteAfterCopy));
                 } catch (Exception ex)
                 {
                     DisplayError("getblob", ex, verbose);
@@ -225,11 +272,11 @@ namespace azmi_commandline
             });
 
             // getblobs
-            getBlobsCommand.Handler = CommandHandler.Create<string, string, string, string, bool>((container, directory, prefix, identity, verbose) =>
+            getBlobsCommand.Handler = CommandHandler.Create<getBlobsOptionsType>(optionsType =>
             {
                 try
-                {                    
-                    List<string> results = operations.getBlobs(container, directory, prefix, identity);
+                {
+                    List<string> results = operations.getBlobs(optionsType.container, optionsType.directory, optionsType.identity, optionsType.prefix, optionsType.exclude, optionsType.ifNewer, optionsType.deleteAfterCopy);
                     if (results != null)
                     {
                         Console.WriteLine(String.Join("\n", results));
@@ -237,7 +284,7 @@ namespace azmi_commandline
                 }
                 catch (Exception ex)
                 {
-                    DisplayError("getblobs", ex, verbose);
+                    DisplayError("getblobs", ex, optionsType.verbose);
                 }
             });
 
@@ -256,8 +303,8 @@ namespace azmi_commandline
                 try
                 {
                     Console.WriteLine(container != null
-                        ? operations.setBlob_byContainer(file, container, force, identity)
-                        : operations.setBlob_byBlob(file, blob, force, identity)
+                        ? operations.setBlob_byContainer(file, container, identity, force)
+                        : operations.setBlob_byBlob(file, blob, identity, force)
                         );
                 } catch (Exception ex)
                 {
@@ -266,11 +313,11 @@ namespace azmi_commandline
             });
 
             // listblobs
-            listBlobsCommand.Handler = CommandHandler.Create<string, string, string, bool>((container, identity, prefix, verbose) =>
+            listBlobsCommand.Handler = CommandHandler.Create<string, string, string, string, bool>((container, identity, prefix, exclude, verbose) =>
             {
                 try
                 {
-                    List<string> blobsListing = operations.listBlobs(container, identity, prefix);
+                    List<string> blobsListing = operations.listBlobs(container, identity, prefix, exclude);
                     if (blobsListing != null)
                     {
                         Console.WriteLine(String.Join("\n", blobsListing));
