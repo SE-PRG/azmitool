@@ -84,11 +84,14 @@ BC=1; PREFIX="neu-pre-show-me-only"
 test "listblobs finds $BC blobs with prefix $PREFIX" assert.Equals "azmi listblobs -c $CONTAINER_LB --prefix $PREFIX | wc -l" $BC
 BC=0; PREFIX="noBlobsShouldDownload"
 test "listblobs finds $BC blobs with prefix $PREFIX" assert.Equals "azmi listblobs -c $CONTAINER_LB --prefix $PREFIX | wc -l" $BC
+BC=4; EXCLUDE="HelloWorld.txt"
+test "listblobs finds $BC blobs excluding $EXCLUDE" assert.Equals "azmi listblobs -c $CONTAINER_LB --exclude $EXCLUDE | wc -l" $BC
 
 
 testing class "getblob"
 test "getblob fails on NA container" assert.Fail "azmi getblob --blob $CONTAINER_NA/$BLOB_NA --file $DOWNLOAD_FILE"
 test "getblob OK on RO container" assert.Success "azmi getblob --blob $CONTAINER_RO/$BLOB_RO --file $DOWNLOAD_FILE"
+test "getblob fails to delete from RO container" assert.Fail "azmi getblob --blob $CONTAINER_RO/$BLOB_RO --file $DOWNLOAD_FILE --delete-after-copy"
 
 testing class "getblob identity"
 test "getblob OK on RO container using right identity"        assert.Success "azmi getblob --blob $CONTAINER_RO/$BLOB_RO --file download.txt --identity $identity"
@@ -104,6 +107,8 @@ BC=3; PREFIX="neu-pre"; rm -rf $DOWNLOAD_DIR
 test "getblobs downloads $BC blobs with prefix $PREFIX" assert.Equals "azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --prefix $PREFIX | grep Success | wc -l" $((BC+1))
 BC=0; PREFIX="noBlobsShouldDownload"; rm -rf $DOWNLOAD_DIR
 test "getblobs downloads $BC blobs with prefix $PREFIX" assert.Equals "azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --prefix $PREFIX | wc -l" $BC
+BC=4; EXCLUDE="neu-pre-logboxA1"; rm -rf $DOWNLOAD_DIR
+test "getblobs downloads $BC blobs excluding $EXCLUDE" assert.Equals "azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --exclude $EXCLUDE | grep Success | wc -l" $BC
 
 
 testing class "setblob"
@@ -136,7 +141,7 @@ test "there is no noname folder" assert.Fail "azmi getblob -f /dev/null -b ${CON
 
 testing class "if-newer"
 SKIPMSG="Skipped. Blob is not newer than file."
-test "setblob prepares the file" assert.Equals "azmi setblob -f $UPLOADFILE -c $CONTAINER_RW"
+test "setblob if-newer upload" assert.Equals "azmi setblob -f $UPLOADFILE -c $CONTAINER_RW"
 touch "$UPLOADFILE"
 test "getblob skips if not newer" assert.Equals "azmi getblob -b ${CONTAINER_RW}/${UPLOADFILE} -f $UPLOADFILE --if-newer" "$SKIPMSG"
 test "setblob updates blob" assert.Success "azmi setblob -f $UPLOADFILE -c $CONTAINER_RW --force"
@@ -144,6 +149,12 @@ sleep 1
 test "getblob downloads if newer" assert.Equals "azmi getblob -b ${CONTAINER_RW}/${UPLOADFILE} -f $UPLOADFILE --if-newer" "Success"
 rm -rf $DOWNLOAD_FILE
 test "getblob downloads newer than nonexisting" assert.Equals "azmi getblob -b ${CONTAINER_RW}/${UPLOADFILE} -f $DOWNLOAD_FILE --if-newer" "Success"
+
+testing class "delete-after-copy"
+test "setblob delete-after-copy upload" assert.Success "azmi setblob --file $UPLOADFILE --container $CONTAINER_RW --force"
+test "getblob remove blob with delete-after-copy" assert.Success "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file $DOWNLOAD_FILE --delete-after-copy"
+test "getblob fails with deleted file" assert.Fail "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file $DOWNLOAD_FILE"
+
 
 # uninstalling
 testing class "package"
