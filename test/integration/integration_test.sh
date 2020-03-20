@@ -8,7 +8,7 @@
 # setup variables
 #
 
-# TODO: remove these two from script, or change it to $1, $2
+# this script is called from testing framework script, therefore arguments are shifted
 STORAGEACCOUNTNAME=$2
 identity=$3
 
@@ -20,10 +20,6 @@ declare -a subCommands=("gettoken" "getblob" "getblobs" "setblob" "listblobs")
 identity_foreign=017dc05c-4d12-4ac2-b5f8-5e239dc8bc54
 
 # calculated variables
-CONTAINER_NA="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-no-access"
-CONTAINER_RO="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-r"
-CONTAINER_RW="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-rw"
-CONTAINER_LB="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-listblobs"
 
 
 #
@@ -54,13 +50,18 @@ done
 
 testing class "gettoken"
 
-test "get access token" assert.Success "azmi gettoken"
-test "get access token in JWT format" assert.Success "azmi gettoken --jwt-format | grep typ | grep JWT"
-
+test "gettoken basic" assert.Success "azmi gettoken"
+test "gettoken in JWT format" assert.Success "azmi gettoken --jwt-format | grep typ | grep JWT"
+test "gettoken fails with wrong args" assert.Fail "azmi gettoken blahblah"
 
 #
 # storage subcommands testing
 #
+
+CONTAINER_NA="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-no-access"
+CONTAINER_RO="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-r"
+CONTAINER_RW="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-rw"
+CONTAINER_LB="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-listblobs"
 
 BLOB_NA="restricted_access_blob.txt"
 BLOB_RO="read_only_blob.txt"
