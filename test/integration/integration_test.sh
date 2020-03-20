@@ -108,7 +108,7 @@ test "getblobs downloads $BC blobs with prefix $PREFIX" assert.Equals "azmi getb
 BC=0; PREFIX="noBlobsShouldDownload"; rm -rf $DOWNLOAD_DIR
 test "getblobs downloads $BC blobs with prefix $PREFIX" assert.Equals "azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --prefix $PREFIX | wc -l" $BC
 BC=4; EXCLUDE="neu-pre-logboxA1"; rm -rf $DOWNLOAD_DIR
-test "getblobs downloads $BC blobs excluding $EXCLUDE" assert.Equals "azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --exclude $EXCLUDE | grep Success | wc -l" $BC
+test "getblobs downloads $BC blobs excluding $EXCLUDE" assert.Equals "azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --exclude $EXCLUDE | grep Success | wc -l" $((BC+1))
 
 
 testing class "setblob"
