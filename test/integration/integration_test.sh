@@ -19,8 +19,6 @@ PACKAGEFILE=/tmp/azmiX.deb
 declare -a subCommands=("gettoken" "getblob" "getblobs" "setblob" "listblobs")
 identity_foreign=017dc05c-4d12-4ac2-b5f8-5e239dc8bc54
 
-# calculated variables
-
 
 #
 # start testing
