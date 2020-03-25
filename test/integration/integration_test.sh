@@ -127,10 +127,10 @@ test "getsecret fails on existing but foreign secret" assert.Fail "azmi getsecre
 test "getsecret OK on RO secret" assert.Equals "azmi getsecret --secret-identifier ${KV_RO}/secrets/readMyPassword --identity $identity" "LikeThat"
 
 test "getsecret fails on missing secret" assert.Fail "azmi getsecret --secret-identifier ${KV_RO}/secrets/iDoNotExist --identity $identity"
-test "getsecret fails on invalid URL 1#" assert.Fail "azmi getsecret --secret-identifier ${KV_RO}"
-test "getsecret fails on invalid URL 2#" assert.Fail "azmi getsecret --secret-identifier ${KV_RO}/"
-test "getsecret fails on invalid URL 3#" assert.Fail "azmi getsecret --secret-identifier http://azmi-itest-r.vault.azure.net/secrets/readMyPassword" # http protocol
-test "getsecret fails on invalid URL 4#" assert.Fail "azmi getsecret --secret-identifier https://azmi-itest-r.vault.azure.net\secrets/readMyPassword" # backslash
+test "getsecret fails on invalid URL #1" assert.Fail "azmi getsecret --secret-identifier ${KV_RO}"
+test "getsecret fails on invalid URL #2" assert.Fail "azmi getsecret --secret-identifier ${KV_RO}/"
+test "getsecret fails on invalid URL #3" assert.Fail "azmi getsecret --secret-identifier http://azmi-itest-r.vault.azure.net/secrets/readMyPassword" # http protocol
+test "getsecret fails on invalid URL #4" assert.Fail "azmi getsecret --secret-identifier https://azmi-itest-r.vault.azure.net\secrets/readMyPassword" # backslash
 
 # TODO: Add here setblobs tests
 
