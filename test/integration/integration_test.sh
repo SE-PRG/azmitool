@@ -124,9 +124,9 @@ testing class "getsecret"
 KV_NA="https://azmi-itest-no-access.vault.azure.net"
 KV_RO="https://azmi-itest-r.vault.azure.net"
 test "getsecret fails on existing but foreign secret" assert.Fail "azmi getsecret --secret-identifier ${KV_NA}/secrets/buriedSecret"
-test "getsecret OK on RO secret" assert.Equals "azmi getsecret --secret-identifier ${KV_RO}/secrets/readMyPassword" "LikeThat"
-test "getsecret fails on missing secret" assert.Fail "azmi getsecret --secret-identifier ${KV_RO}/secrets/iDoNotExist"
+test "getsecret OK on RO secret" assert.Equals "azmi getsecret --secret-identifier ${KV_RO}/secrets/readMyPassword --identity $identity" "LikeThat"
 
+test "getsecret fails on missing secret" assert.Fail "azmi getsecret --secret-identifier ${KV_RO}/secrets/iDoNotExist --identity $identity"
 test "getsecret fails on invalid URL 1#" assert.Fail "azmi getsecret --secret-identifier ${KV_RO}"
 test "getsecret fails on invalid URL 2#" assert.Fail "azmi getsecret --secret-identifier ${KV_RO}/"
 test "getsecret fails on invalid URL 3#" assert.Fail "azmi getsecret --secret-identifier http://azmi-itest-r.vault.azure.net/secrets/readMyPassword" # http protocol
