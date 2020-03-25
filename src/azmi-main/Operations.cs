@@ -1,5 +1,6 @@
 using Azure.Core;
 using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using Azure.Storage.Blobs;
 
 using System;
@@ -33,6 +34,7 @@ namespace azmi_main
             }
         }
 
+        // Get MSI access token
         public string getToken(string endpoint = "management", string identity = null, bool JWTformat = false)
         {
             var Cred = new ManagedIdentityCredential(identity);
@@ -107,6 +109,7 @@ namespace azmi_main
             }
         }
 
+        // Download blobs from container to directory
         public List<string> getBlobs(string containerUri, string directory, string identity = null, string prefix = null, string exclude = null, bool ifNewer = false, bool deleteAfterCopy = false)
         {
             string containerUriTrimmed = containerUri.TrimEnd('/');
@@ -137,6 +140,7 @@ namespace azmi_main
             return results;
         }
 
+        // List blobs in a container
         public List<string> listBlobs(string containerUri, string identity = null, string prefix = null, string exclude = null)
         {
             var Cred = new ManagedIdentityCredential(identity);
@@ -165,7 +169,7 @@ namespace azmi_main
            }
         }
 
-        // sets blob content based on local file content into container
+        // Sets blob content based on local file content into container
         public string setBlob_byContainer(string filePath, string containerUri, string identity = null, bool force = false)
         {
             if (!(File.Exists(filePath))) {
@@ -184,8 +188,9 @@ namespace azmi_main
             {
                 throw IdentityError(identity, ex);
             }
-        }       
+        }
 
+        // Sets blob content based on local file content into blob
         public string setBlob_byBlob(string filePath, string blobUri, string identity = null, bool force = false)
         {
             // sets blob content based on local file content with provided blob url
@@ -201,6 +206,47 @@ namespace azmi_main
                 blobClient.Upload(filePath, force);
                 return "Success";
             } catch (Exception ex)
+            {
+                throw IdentityError(identity, ex);
+            }
+        }
+
+        // Validate URL to a key vault secret is generally valid
+        private void validateSecretURL(string secretIdentifierUrl, out Uri keyVaultUri, out Uri secretIdentifierUri)
+        {
+            // Example of expected URL: https://mine-key-vault.vault.azure.net/secrets/mineSecret.pwd
+            if (!Uri.IsWellFormedUriString(secretIdentifierUrl, UriKind.Absolute))
+                throw new UriFormatException($"Provided URL '{secretIdentifierUrl}' is not well formed URL.");
+
+            secretIdentifierUri = new Uri(secretIdentifierUrl);
+
+            if (secretIdentifierUri.Scheme != Uri.UriSchemeHttps)
+                throw new UriFormatException($"Only '{Uri.UriSchemeHttps}' protocol is supported.");
+
+            // e.g. http://mine-key-vault.vault.azure.net
+            keyVaultUri = new Uri(secretIdentifierUri.GetLeftPart(UriPartial.Authority));
+            // Segments = /, secrets/, mineSecret.pwd
+            if (secretIdentifierUri.Segments.Count() <= 2)
+                throw new UriFormatException($"URL '{secretIdentifierUrl}' is missing a path to secret.");
+        }
+
+        // Get secret from key vault
+        public string getSecret(string secretIdentifierUrl, string identity = null)
+        {
+            Uri keyVaultUri, secretIdentifierUri;
+            this.validateSecretURL(secretIdentifierUrl, out keyVaultUri, out secretIdentifierUri);
+
+            string secretName = secretIdentifierUri.Segments.Last();
+            var MIcredential = new ManagedIdentityCredential(identity);
+            var secretClient = new SecretClient(keyVaultUri, MIcredential);
+
+            // Retrieve a secret
+            try
+            {
+                KeyVaultSecret secret = secretClient.GetSecret(secretName);
+                return secret.Value;
+            }
+            catch (Exception ex)
             {
                 throw IdentityError(identity, ex);
             }
