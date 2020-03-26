@@ -16,8 +16,6 @@ namespace azmi_main
     {
         // Constructor
         public Operations() { }
-        // Destructor
-        ~Operations() { }
 
         private Exception IdentityError(string identity, Exception ex)
         {

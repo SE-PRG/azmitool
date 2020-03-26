@@ -1,11 +1,12 @@
 using azmi_main;
+
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 
 namespace azmi_commandline
-{    
+{
     class Program
     {
         // https://github.com/dotnet/command-line-api/issues/458
@@ -28,9 +29,14 @@ namespace azmi_commandline
         {
             var rootCommand = ConfigureArguments();
             var parseResult = rootCommand.Invoke(args);
-            Environment.Exit(parseResult);            
+            Environment.Exit(parseResult);
         }
 
+        class GT2Options : SharedOptions
+        {
+            public string endpoint;
+            public bool jwt_format;
+        };
         static RootCommand ConfigureArguments()
         {
 
@@ -58,6 +64,33 @@ namespace azmi_commandline
                 Description = "Optional. Client or application ID of managed identity used to authenticate. Example: 117dc05c-4d12-4ac2-b5f8-5e239dc8bc54",
                 Required = false
             };
+
+            //
+            // gettoken2
+            //
+
+            //getBlobsCommand.Handler = CommandHandler.Create<getBlobsOptionsType>(optionsType =>
+            //List<string> results = operations.getBlobs(optionsType.container, optionsType.directory, optionsType.identity, optionsType.prefix, optionsType.exclude, optionsType.ifNewer, optionsType.deleteAfterCopy);
+
+
+                    var cmd1 = new GetToken();
+            var getToken2Command = new Command(cmd1.name, cmd1.description);
+            foreach (var op in cmd1.azmiOptions) { getToken2Command.AddOption(op.ToOption()); };
+            getToken2Command.Handler = CommandHandler.Create<GetToken.Options>(op =>
+            Console.WriteLine(cmd1.Execute(op)));
+            //{
+            //    Console.WriteLine("id: " + op.identity);
+            //    Console.WriteLine("ep: " + op.endpoint);
+            //    Console.WriteLine("jwt " + op.jwtformat);
+            //    Console.WriteLine("ver " + op.verbose);
+            //});
+            rootCommand.AddCommand(getToken2Command);
+
+            var cmd2 = new GetBlob();
+            var getBlob2Command = new Command(cmd2.name, cmd2.description);
+            foreach (var op2 in cmd2.azmiOptions) { getBlob2Command.AddOption(op2.ToOption()); };
+            getBlob2Command.Handler = CommandHandler.Create<GetBlob.Options>(op2 => Console.WriteLine(cmd2.Execute(op2)));
+            rootCommand.AddCommand(getBlob2Command);
 
             //
             // gettoken
