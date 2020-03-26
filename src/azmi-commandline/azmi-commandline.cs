@@ -246,10 +246,10 @@ namespace azmi_commandline
             //
             var getSecretCommand = new Command("getsecret", "Fetches latest version of a secret from key vault.");
 
-            var getSecret_secretIdentifierOption = new Option(new String[] { "--secret-identifier" })
+            var getSecret_secretIdentifierOption = new Option(new String[] { "--secret-identifier", "-s" })
             {
                 Argument = new Argument<String>("URL"),
-                Description = "URL of a secret inside of key vault. Example: https://mine-key-vault.vault.azure.net/secrets/mineSecret.pwd",
+                Description = "URL of a secret inside of key vault. Example: https://my-key-vault.vault.azure.net/secrets/mySecret.pwd",
                 Required = true
             };
             getSecretCommand.AddOption(getSecret_secretIdentifierOption);

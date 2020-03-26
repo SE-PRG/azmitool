@@ -212,31 +212,33 @@ namespace azmi_main
         }
 
         // Validate URL to a key vault secret is generally valid
-        private void validateSecretURL(string secretIdentifierUrl, out Uri keyVaultUri, out Uri secretIdentifierUri)
+        private (Uri, string) validateAndParseSecretURL(string secretIdentifierUrl)
         {
-            // Example of expected URL: https://mine-key-vault.vault.azure.net/secrets/mineSecret.pwd
+            // Example of expected URL: https://my-key-vault.vault.azure.net/secrets/mySecret.pwd
             if (!Uri.IsWellFormedUriString(secretIdentifierUrl, UriKind.Absolute))
                 throw new UriFormatException($"Provided URL '{secretIdentifierUrl}' is not well formed URL.");
 
-            secretIdentifierUri = new Uri(secretIdentifierUrl);
+            Uri secretIdentifierUri = new Uri(secretIdentifierUrl);
 
             if (secretIdentifierUri.Scheme != Uri.UriSchemeHttps)
                 throw new UriFormatException($"Only '{Uri.UriSchemeHttps}' protocol is supported.");
 
-            // e.g. http://mine-key-vault.vault.azure.net
-            keyVaultUri = new Uri(secretIdentifierUri.GetLeftPart(UriPartial.Authority));
-            // Segments = /, secrets/, mineSecret.pwd
+            // e.g. http://my-key-vault.vault.azure.net
+            Uri keyVaultUri = new Uri(secretIdentifierUri.GetLeftPart(UriPartial.Authority));
+            // Segments = /, secrets/, mySecret.pwd
             if (secretIdentifierUri.Segments.Count() <= 2)
                 throw new UriFormatException($"URL '{secretIdentifierUrl}' is missing a path to secret.");
+
+            string secretName = secretIdentifierUri.Segments.Last();
+
+            return (keyVaultUri, secretName);
         }
 
         // Get secret from key vault
         public string getSecret(string secretIdentifierUrl, string identity = null)
         {
-            Uri keyVaultUri, secretIdentifierUri;
-            this.validateSecretURL(secretIdentifierUrl, out keyVaultUri, out secretIdentifierUri);
+            (Uri keyVaultUri, string secretName) = this.validateAndParseSecretURL(secretIdentifierUrl);
 
-            string secretName = secretIdentifierUri.Segments.Last();
             var MIcredential = new ManagedIdentityCredential(identity);
             var secretClient = new SecretClient(keyVaultUri, MIcredential);
 
