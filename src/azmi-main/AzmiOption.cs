@@ -32,11 +32,15 @@ namespace azmi_main
         //public AzmiOption(string name)
         //: this(name, name[0], $"Description for {name}", false, AcceptedTypes.stringType ) { }
 
-        public AzmiOption(string name, AcceptedTypes type = AcceptedTypes.stringType, bool req = false)
-        : this(name, name[0], $"Description for {name}", req, type) { }
+        public AzmiOption(string name, AcceptedTypes type = AcceptedTypes.stringType, bool required = false)
+        : this(name, name[0], $"Description for {name}", required, type) { }
 
-        public AzmiOption(string name, char? shortName, AcceptedTypes type = AcceptedTypes.stringType, bool req = false)
-        : this(name, shortName, $"Description for {name}", req, type) { }
+        public AzmiOption( // name and null, or name and char
+            string name, 
+            char? shortName, 
+            AcceptedTypes type = AcceptedTypes.stringType, 
+            bool required = false)
+        : this(name, shortName, $"Description for {name}", required, type) { }
 
         //public AzmiOption(string name)
         //: this(name, name[0], $"Description for {name}", false, AcceptedTypes.stringType) { }

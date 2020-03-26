@@ -5,24 +5,26 @@ using Azure.Identity;
 
 namespace azmi_main
 {    
-    public class GetToken : BaseCommand
+    public class GetToken : IAzmiCommand
     {
 
         //
         // Declare command elements
         //
 
-        public new string name = "gettoken2";
-        public string description = "test for classified gettoken subcommand";
+        public string Name() { return "gettoken2"; }
+        public string Description() { return "test for classified gettoken subcommand"; }
 
-        public AzmiOption[] azmiOptions = new AzmiOption[] {            
-            SharedAzmiOptions.identity,
-            SharedAzmiOptions.verbose,
-            new AzmiOption("endpoint"),
-            new AzmiOption("jwt-format", AcceptedTypes.boolType)
-        };
+        public AzmiOption[] AzmiOptions() { 
+            return new AzmiOption[] {
+                SharedAzmiOptions.identity,
+                SharedAzmiOptions.verbose,
+                new AzmiOption("endpoint"),
+                new AzmiOption("jwt-format", AcceptedTypes.boolType)
+            };
+        }
         
-        public  class Options : SharedOptions {
+        public class Options : SharedOptions {
             public string endpoint { get; set; }
             public bool jwtformat { get; set; }
         }
@@ -30,6 +32,8 @@ namespace azmi_main
         //
         // Execute GetToken
         //
+
+        public string Execute(object options) {return Execute((Options)options);}
 
         public string Execute(Options options)
         {

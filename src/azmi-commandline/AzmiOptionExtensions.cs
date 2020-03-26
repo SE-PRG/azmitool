@@ -2,7 +2,7 @@
 
 using System;
 using System.CommandLine;
-
+using System.CommandLine.Invocation;
 
 namespace azmi_commandline
 {
@@ -32,12 +32,12 @@ namespace azmi_commandline
 
         public static string OptionDescription(this AzmiOption option)
         {
-            var tmpDesc = option.description;
-            if (option.required == false)
-            {
-                tmpDesc = "Optional. " + tmpDesc;
-            };
-            return tmpDesc;
+            return 
+                (option.required 
+                    ? "Required. " 
+                    : "Optional. "
+                ) 
+                + option.description;
         }
 
         public static Option ToOption(this AzmiOption option)
@@ -49,5 +49,23 @@ namespace azmi_commandline
                 Required = option.required
             };
         }
+
+        public static Command ToCommand<T,TOptions> () where T: IAzmiCommand, new()
+        {
+
+            T cmd = new T();
+            var commandLineSubCommand = new Command(cmd.Name(), cmd.Description());
+
+            foreach (var op in cmd.AzmiOptions())
+            {
+                commandLineSubCommand.AddOption(op.ToOption());
+                // TODO: Implement sorting: 1st required, then strings, then alphabet
+            }
+            commandLineSubCommand.Handler = CommandHandler.Create<TOptions>(
+                op => Console.WriteLine(cmd.Execute(op)));
+
+            return commandLineSubCommand;
+        }
+
     }
 }
