@@ -87,6 +87,8 @@ StyleCopReport.xml
 *.pidb
 *.svclog
 *.scc
+launchSettings.json
+
 
 # Chutzpah Test files
 _Chutzpah*
@@ -338,4 +340,3 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
-/src/azmi-commandline/Properties/launchSettings.json
