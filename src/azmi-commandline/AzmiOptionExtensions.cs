@@ -10,9 +10,9 @@ namespace azmi_commandline
     {
         public static String[] OptionNames(this AzmiOption option)
         {
-            if (option.shortName != null)
+            if (option.alias != null)
             {
-                return new String[] { $"--{option.name}", $"-{option.shortName}" };
+                return new String[] { $"--{option.name}", $"-{option.alias}" };
             } else
             {
                 return new String[] { $"--{option.name}" };
@@ -21,12 +21,13 @@ namespace azmi_commandline
 
         public static Argument OptionArgument(this AzmiOption option)
         {
-            if (option.type == AcceptedTypes.stringType)
+            switch (option.type)
             {
-                return new Argument<string>("string");
-            } else
-            {
-                return new Argument<bool>("bool");
+                case ArgType.str: return new Argument<string>("string");
+                case ArgType.flag: return new Argument<bool>("bool");
+                case ArgType.url: return new Argument<string>("url");                
+                
+                default: throw new Exception($"Unsupported option type: {option.type}");
             }
         }
 
@@ -54,9 +55,9 @@ namespace azmi_commandline
         {
 
             T cmd = new T();
-            var commandLineSubCommand = new Command(cmd.Name(), cmd.Description());
-
-            foreach (var op in cmd.AzmiOptions())
+            var commandLineSubCommand = new Command(cmd.Definition().name, cmd.Definition().description);
+             
+            foreach (var op in cmd.Definition().arguments)
             {
                 commandLineSubCommand.AddOption(op.ToOption());
                 // TODO: Implement sorting: 1st required, then strings, then alphabet

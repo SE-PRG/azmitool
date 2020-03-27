@@ -12,15 +12,18 @@ namespace azmi_main
         // Declare command elements
         //
 
-        public string Name() { return "gettoken2"; }
-        public string Description() { return "test for classified gettoken subcommand"; }
-
-        public AzmiOption[] AzmiOptions() { 
-            return new AzmiOption[] {
-                SharedAzmiOptions.identity,
-                SharedAzmiOptions.verbose,
-                new AzmiOption("endpoint"),
-                new AzmiOption("jwt-format", AcceptedTypes.boolType)
+        public SubCommandDefinition Definition() {
+            return new SubCommandDefinition {
+                
+                name = "gettoken2",
+                description = "test for classified gettoken subcommand",
+                
+                arguments = new AzmiOption[] {
+                    new AzmiOption("endpoint","Endpoint against which to authenticate. Examples: management, storage. Default 'management'"),
+                    SharedAzmiOptions.identity,
+                    new AzmiOption("jwt-format", "Print token in JSON Web Token (JWT) format.", ArgType.flag),
+                    SharedAzmiOptions.verbose
+                }
             };
         }
         

@@ -1,6 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.IO;
+
+using Azure.Identity;
+using Azure.Storage.Blobs;
 
 namespace azmi_main
 {
@@ -10,18 +12,26 @@ namespace azmi_main
         // Declare command elements
         //
 
-        public string Name() { return "getblob2"; }
-        public string Description() { return "test for classified getblob subcommand"; }
-
-        public AzmiOption[] AzmiOptions()
+        public SubCommandDefinition Definition()
         {
-            return new AzmiOption[] {
-                SharedAzmiOptions.identity,
-                SharedAzmiOptions.verbose,
-                new AzmiOption("blobURL", required: true),
-                new AzmiOption("filePath", required: true),
-                new AzmiOption("ifNewer", null, AcceptedTypes.boolType ),
-                new AzmiOption("deleteAfterCopy", AcceptedTypes.boolType)
+            return new SubCommandDefinition
+            {
+
+                name = "getblob2",
+                description = "test for classified getblob subcommand",
+
+                arguments = new AzmiOption[] {
+                    new AzmiOption("blobURL", required: true,
+                        description: "URL of blob which will be downloaded. Example: https://myaccount.blob.core.windows.net/mycontainer/myblob"),
+                    new AzmiOption("filePath", required: true,
+                        description: "Path to local file to which content will be downloaded. Examples: /tmp/1.txt, ./1.xml"),
+                    SharedAzmiOptions.identity,
+                    new AzmiOption("ifNewer", alias: null, type: ArgType.flag,
+                        description: "Download a blob only if a newer version exists in a container."),
+                    new AzmiOption("deleteAfterCopy", type: ArgType.flag,
+                        description: "Successfully downloaded blob is removed from a container."),
+                    SharedAzmiOptions.verbose
+                }
             };
         }
 
@@ -50,6 +60,47 @@ namespace azmi_main
 
             // method start
             return $"id: {identity}, blob: {blobURL}, file: {filePath}";
+
+            // Connection
+            var Cred = new ManagedIdentityCredential(identity);
+            var blobClient = new BlobClient(new Uri(blobURL), Cred);
+
+            if (ifNewer && File.Exists(filePath))
+            {
+                var blobProperties = blobClient.GetProperties();
+                // Any operation that modifies a blob, including an update of the blob's metadata or properties, changes the last modified time of the blob
+                var blobLastModified = blobProperties.Value.LastModified.UtcDateTime;
+
+                // returns date of local file was last written to
+                DateTime fileLastWrite = File.GetLastWriteTimeUtc(filePath);
+
+                int value = DateTime.Compare(blobLastModified, fileLastWrite);
+                if (value < 0)
+                    return "Skipped. Blob is not newer than file.";
+            }
+
+            try
+            {
+                string absolutePath = Path.GetFullPath(filePath);
+                string dirName = Path.GetDirectoryName(absolutePath);
+                Directory.CreateDirectory(dirName);
+
+                blobClient.DownloadTo(filePath);
+
+                if (deleteAfterCopy)
+                {
+                    blobClient.Delete();
+                }
+                return "Success";
+            } catch (Azure.RequestFailedException)
+            {
+                throw;
+            } catch (Exception ex)
+            {
+                throw ex;
+                // TODO: Roll back this
+            }
+
         }
     }
 }

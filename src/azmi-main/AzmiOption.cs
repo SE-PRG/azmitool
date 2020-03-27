@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 using System.Linq;
 using System.Text;
@@ -10,20 +11,25 @@ using System.Text;
 namespace azmi_main
 {
 
-    public enum AcceptedTypes {stringType, boolType};
+    public enum ArgType {str, flag, url};
+    // what are supported input argument types
+    // flag is boolean type
+    // str is string type
+    // url fails back to string, its just different in description
 
+    
     public class AzmiOption
     {
         public string name; // "blob"
-        public char? shortName; // "b" or null
+        public char? alias; // "b" or null
         public string description;
         public bool required;
-        public AcceptedTypes type; // string or bool
+        public ArgType type; // string or bool
 
-        public AzmiOption(string name, char? shortName, string description, bool required, AcceptedTypes type)
+        public AzmiOption(string name, char? alias, string description, bool required, ArgType type)
         {
             this.name = name;
-            this.shortName = shortName;
+            this.alias = alias;
             this.description = description;
             this.required = required;
             this.type = type;
@@ -32,17 +38,47 @@ namespace azmi_main
         //public AzmiOption(string name)
         //: this(name, name[0], $"Description for {name}", false, AcceptedTypes.stringType ) { }
 
-        public AzmiOption(string name, AcceptedTypes type = AcceptedTypes.stringType, bool required = false)
-        : this(name, name[0], $"Description for {name}", required, type) { }
+        // constructor NAME with one string
+        public AzmiOption(string name, 
+            ArgType type = ArgType.str, bool required = false)
+        : this(
+            name, 
+            name[0], 
+            $"Description for {name}", 
+            required, 
+            type) { }
 
-        public AzmiOption( // name and null, or name and char
-            string name, 
-            char? shortName, 
-            AcceptedTypes type = AcceptedTypes.stringType, 
-            bool required = false)
-        : this(name, shortName, $"Description for {name}", required, type) { }
+        // constructor NAME + ALIAS? with string and null, or string and char 
+        public AzmiOption(string name, char? alias, 
+            ArgType type = ArgType.str,bool required = false)
+        : this(
+              name, 
+              alias, 
+              $"Description for {name}", 
+              required, 
+              type) { }
 
-        //public AzmiOption(string name)
-        //: this(name, name[0], $"Description for {name}", false, AcceptedTypes.stringType) { }
+        // constructor NAME + ALIAS? + DESCRIPTION 
+        public AzmiOption(string name, char? alias, string description,
+            ArgType type = ArgType.str, bool required = false)
+        : this(
+            name,
+            alias,
+            description,
+            required,
+            type) { }
+
+        // constructor NAME + DESCRIPTION
+        // TODO: Conflicting NAME + ALIAS? if alias is null
+        public AzmiOption(string name, [DisallowNull]string description,
+            ArgType type = ArgType.str, bool required = false)
+        : this(
+            name,
+            name[0],
+            description,
+            required,
+            type)
+        { }
+
     }
 }
