@@ -111,12 +111,26 @@ If storage account has more than 5,000 blobs, it is required to use `--prefix`, 
 
 |**command**|description|
 |-|-|
-|**`azmi getsecret`**|Downloads single secret from Azure Key Vault.|
+|**`azmi getsecret`** 🚧|Downloads single secret from Azure Key Vault.|
 | T.B.D. | |
 
 ## Arguments overview
 
 |**command**|source|destination|other arguments|
 |-|-|-|-|
-|**`azmi getsecret`**|`--url`| `--file` or `--stdout` or `--variable` | |
+|**`azmi getsecret`**|`--secret-identifier`| `--file` or `--stdout` or `--variable` | |
+| T.B.D. | | | |
+
+# Key Vault Certificate commands
+
+|**command**|description|
+|-|-|
+|**`azmi getcertificate`** 🚧|Downloads single certificate from Azure Key Vault.|
+| T.B.D. | |
+
+## Arguments overview
+
+|**command**|source|destination|other arguments|
+|-|-|-|-|
+|**`azmi getcertificate`**|`--url`| `--file` | |
 | T.B.D. | | | |
