@@ -48,7 +48,7 @@ Print token in JSON Web Token (JWT) format.
 |-|-|
 |**`azmi listblobs`**|Lists all blobs in container and send their names to output.|
 |**`azmi getblob`**|Downloads single blob from storage account to a local file.|
-|**`azmi getblobs`** 🚧|Downloads multiple blobs from container to a local directory.|
+|**`azmi getblobs`**|Downloads multiple blobs from container to a local directory.|
 |**`azmi setblob`**|Writes single local file to a storage account blob.|
 |**`azmi setblobs`** 🚧|Writes multiple local files to a storage account container.|
 
@@ -118,5 +118,5 @@ If storage account has more than 5,000 blobs, it is required to use `--prefix`, 
 
 |**command**|source|destination|other arguments|
 |-|-|-|-|
-|**`azmi getsecret`** 🚧 |`--url`| `--file` or `--stdout` or `--variable` | |
+|**`azmi getsecret`**|`--url`| `--file` or `--stdout` or `--variable` | |
 | T.B.D. | | | |

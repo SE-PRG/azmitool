@@ -1,0 +1,15 @@
+{
+  "profiles": {
+    "azmi-commandline": {
+      "commandName": "Project"
+    },
+    "help": {
+      "commandName": "Project",
+      "commandLineArgs": "--help"
+    },
+    "getblob": {
+      "commandName": "Project",
+      "commandLineArgs": "getblob2 -b 123 -f 234 -i 222 -v"
+    }
+  }
+}
