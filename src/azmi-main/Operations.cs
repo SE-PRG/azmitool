@@ -215,15 +215,12 @@ namespace azmi_main
         private (Uri, string) validateAndParseSecretURL(string secretIdentifierUrl)
         {
             // Example of expected URL: https://my-key-vault.vault.azure.net/secrets/mySecret.pwd
-            if (!Uri.IsWellFormedUriString(secretIdentifierUrl, UriKind.Absolute))
-                throw new UriFormatException($"Provided URL '{secretIdentifierUrl}' is not well formed URL.");
-
             Uri secretIdentifierUri = new Uri(secretIdentifierUrl);
 
             if (secretIdentifierUri.Scheme != Uri.UriSchemeHttps)
                 throw new UriFormatException($"Only '{Uri.UriSchemeHttps}' protocol is supported.");
 
-            // e.g. http://my-key-vault.vault.azure.net
+            // e.g. https://my-key-vault.vault.azure.net
             Uri keyVaultUri = new Uri(secretIdentifierUri.GetLeftPart(UriPartial.Authority));
             // Segments = /, secrets/, mySecret.pwd
             if (secretIdentifierUri.Segments.Count() <= 2)
