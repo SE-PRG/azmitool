@@ -93,7 +93,7 @@ namespace azmi_commandline
             getTokenCommand.AddOption(shared_identityOption);
             getTokenCommand.AddOption(shared_verboseOption);
 
-            rootCommand.AddCommand(getTokenCommand);
+            //rootCommand.AddCommand(getTokenCommand);
 
             //
             // getblob
@@ -130,7 +130,7 @@ namespace azmi_commandline
             getBlobCommand.AddOption(shared_identityOption);
             getBlobCommand.AddOption(shared_verboseOption);
 
-            rootCommand.AddCommand(getBlobCommand);
+            //rootCommand.AddCommand(getBlobCommand);
 
             //
             // getblobs

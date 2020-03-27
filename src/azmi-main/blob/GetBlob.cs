@@ -17,7 +17,7 @@ namespace azmi_main
             return new SubCommandDefinition
             {
 
-                name = "getblob2",
+                name = "getblob",
                 description = "test for classified getblob subcommand",
 
                 arguments = new AzmiOption[] {
@@ -59,7 +59,7 @@ namespace azmi_main
             bool deleteAfterCopy = options.deleteAfterCopy;
 
             // method start
-            return $"id: {identity}, blob: {blobURL}, file: {filePath}";
+            // return $"id: {identity}, blob: {blobURL}, file: {filePath}";
 
             // Connection
             var Cred = new ManagedIdentityCredential(identity);

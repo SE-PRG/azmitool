@@ -15,7 +15,7 @@ namespace azmi_main
         public SubCommandDefinition Definition() {
             return new SubCommandDefinition {
                 
-                name = "gettoken2",
+                name = "gettoken",
                 description = "test for classified gettoken subcommand",
                 
                 arguments = new AzmiOption[] {
@@ -45,7 +45,7 @@ namespace azmi_main
             string endpoint = options.endpoint ?? "management";
             bool jwt_format = options.jwtformat;
 
-            return $"id: {identity}, endpoint: {endpoint}, jwt: {jwt_format}";
+            //return $"id: {identity}, endpoint: {endpoint}, jwt: {jwt_format}";
             
             // method start
             var Cred = new ManagedIdentityCredential(identity);
