@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Collections.Generic;
+
 using Azure.Core;
 using Azure.Identity;
 
@@ -26,33 +28,48 @@ namespace azmi_main
                 }
             };
         }
-        
-        public class Options : SharedOptions {
+
+        public class Options : SharedOptions
+        {
             public string endpoint { get; set; }
             public bool jwtformat { get; set; }
+        }
+
+        public List<string> Execute(object options)
+        {
+            Options opt;
+            try
+            {
+                opt = (Options)options;
+            } catch
+            {
+                throw new Exception("Cannot convert object to proper class");
+            }
+
+            return Execute(opt.endpoint, opt.identity, opt.jwtformat).ToStringList();
         }
 
         //
         // Execute GetToken
         //
 
-        public string Execute(object options) {return Execute((Options)options);}
-
-        public string Execute(Options options)
+        public string Execute(string endpoint = "management", string identity = null, bool JWTformat = false)
         {
-            // parse arguments
-            string identity = options.identity;
-            string endpoint = options.endpoint ?? "management";
-            bool jwt_format = options.jwtformat;
 
-            //return $"id: {identity}, endpoint: {endpoint}, jwt: {jwt_format}";
+            return $"id: {identity}, endpoint: {endpoint}, jwt: {JWTformat}";
             
             // method start
             var Cred = new ManagedIdentityCredential(identity);
             var Scope = new String[] { $"https://{endpoint}.azure.com" };
             var Request = new TokenRequestContext(Scope);
-            var Token = Cred.GetToken(Request);
-            return (jwt_format) ? Decode_JWT(Token.Token) : Token.Token;
+            try
+            {
+                var Token = Cred.GetToken(Request);
+                return (JWTformat) ? Decode_JWT(Token.Token) : Token.Token;
+            } catch (Exception ex)
+            {
+                throw AzmiException.IDCheck(identity, ex);
+            }
         }
 
         //

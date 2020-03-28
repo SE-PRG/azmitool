@@ -15,8 +15,10 @@ namespace azmi_main
     {
         public SubCommandDefinition Definition();
 
-        public string Execute(object options);
-        
-    }
+        public List<string> Execute(object options);        
 
+        // public class Options { };
+        // TODO: Like this it is not visible inside extensions class
+
+    }
 }

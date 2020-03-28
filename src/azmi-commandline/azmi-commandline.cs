@@ -68,8 +68,9 @@ namespace azmi_commandline
 
             rootCommand.AddCommand(AzmiOptionExtensions.ToCommand<GetToken, GetToken.Options>());
             rootCommand.AddCommand(AzmiOptionExtensions.ToCommand<GetBlob, GetBlob.Options>());
-
+            rootCommand.AddCommand(AzmiOptionExtensions.ToCommand<ListBlobs, ListBlobs.Options>());
             
+
 
             //
             // gettoken
@@ -251,7 +252,7 @@ namespace azmi_commandline
             listBlobsCommand.AddOption(shared_identityOption);
             listBlobsCommand.AddOption(shared_verboseOption);
 
-            rootCommand.AddCommand(listBlobsCommand);
+            //rootCommand.AddCommand(listBlobsCommand);
 
             //
             // define actual subcommand handlers

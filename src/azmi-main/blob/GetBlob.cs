@@ -1,8 +1,10 @@
 ﻿using System;
 using System.IO;
+using System.Collections.Generic;
 
 using Azure.Identity;
 using Azure.Storage.Blobs;
+using System.Linq;
 
 namespace azmi_main
 {
@@ -21,7 +23,7 @@ namespace azmi_main
                 description = "test for classified getblob subcommand",
 
                 arguments = new AzmiOption[] {
-                    new AzmiOption("blobURL", required: true,
+                    new AzmiOption("blobURL", required: true, type: ArgType.url,
                         description: "URL of blob which will be downloaded. Example: https://myaccount.blob.core.windows.net/mycontainer/myblob"),
                     new AzmiOption("filePath", required: true,
                         description: "Path to local file to which content will be downloaded. Examples: /tmp/1.txt, ./1.xml"),
@@ -43,40 +45,37 @@ namespace azmi_main
             public bool deleteAfterCopy { get; set; }
         }
 
+        public List<string> Execute(object options) {
+            Options opt;
+            try
+            {
+                opt = (Options)options;
+            } catch
+            {
+                throw new Exception("Cannot convert object to proper class");
+            }
+
+            return Execute(opt.blobURL, opt.filePath, opt.identity, opt.ifNewer, opt.deleteAfterCopy).ToStringList();
+        }
+
         //
-        // Execute GetToken
+        // Execute GetBlob
         //
 
-        public string Execute(object options) { return Execute((Options)options); }
-
-        public string Execute(Options options)
+        public string Execute(string blobURL, string filePath, string identity = null, bool ifNewer = false, bool deleteAfterCopy = false)
         {
-            // parse arguments
-            string identity = options.identity;
-            string blobURL = options.blobURL;
-            string filePath = options.filePath;
-            bool ifNewer = options.ifNewer;
-            bool deleteAfterCopy = options.deleteAfterCopy;
 
             // method start
-            // return $"id: {identity}, blob: {blobURL}, file: {filePath}";
+            return $"id: {identity}, blob: {blobURL}, file: {filePath}";
+
 
             // Connection
             var Cred = new ManagedIdentityCredential(identity);
             var blobClient = new BlobClient(new Uri(blobURL), Cred);
 
-            if (ifNewer && File.Exists(filePath))
+            if (ifNewer && File.Exists(filePath) && IsNewer(blobClient, filePath))
             {
-                var blobProperties = blobClient.GetProperties();
-                // Any operation that modifies a blob, including an update of the blob's metadata or properties, changes the last modified time of the blob
-                var blobLastModified = blobProperties.Value.LastModified.UtcDateTime;
-
-                // returns date of local file was last written to
-                DateTime fileLastWrite = File.GetLastWriteTimeUtc(filePath);
-
-                int value = DateTime.Compare(blobLastModified, fileLastWrite);
-                if (value < 0)
-                    return "Skipped. Blob is not newer than file.";
+                return "Skipped. Blob is not newer than file.";
             }
 
             try
@@ -92,15 +91,26 @@ namespace azmi_main
                     blobClient.Delete();
                 }
                 return "Success";
+
             } catch (Azure.RequestFailedException)
             {
                 throw;
             } catch (Exception ex)
             {
-                throw ex;
-                // TODO: Roll back this
+                throw AzmiException.IDCheck(identity, ex);
             }
+        }
 
+        private bool IsNewer(BlobClient blob, string filePath)
+        {
+            var blobProperties = blob.GetProperties();
+            // Any operation that modifies a blob, including an update of the blob's metadata or properties, changes the last modified time of the blob
+            var blobLastModified = blobProperties.Value.LastModified.UtcDateTime;
+
+            // returns date of local file was last written to
+            DateTime fileLastWrite = File.GetLastWriteTimeUtc(filePath);
+
+            return blobLastModified < fileLastWrite;
         }
     }
 }
