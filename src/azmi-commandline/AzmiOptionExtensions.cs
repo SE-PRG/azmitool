@@ -28,7 +28,7 @@ namespace azmi_commandline
                 case ArgType.flag: return new Argument<bool>("bool");
                 case ArgType.url: return new Argument<string>("url");                
                 
-                default: throw new Exception($"Unsupported option type: {option.type}");
+                default: throw new ArgumentException($"Unsupported option type: {option.type}");
             }
         }
 
@@ -63,7 +63,6 @@ namespace azmi_commandline
             foreach (var op in cmd.Definition().arguments)
             {
                 commandLineSubCommand.AddOption(op.ToOption());
-                // TODO: Implement sorting: 1st required, then strings, then alphabet
             }
             commandLineSubCommand.Handler = CommandHandler.Create<TOptions>(
                 op => { 

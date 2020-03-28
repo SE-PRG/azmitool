@@ -27,9 +27,6 @@ namespace azmi_main
             this.type = type;
         }
 
-        //public AzmiOption(string name)
-        //: this(name, name[0], $"Description for {name}", false, AcceptedTypes.stringType ) { }
-
         // constructor NAME with one string
         public AzmiOption(string name, 
             ArgType type = ArgType.str, bool required = false)

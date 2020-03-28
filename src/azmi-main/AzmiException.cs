@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace azmi_main
 {
-    public class AzmiException : Exception
+    public static class AzmiException
     {
         public static Exception IDCheck(string identity, Exception ex)
         {

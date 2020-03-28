@@ -46,7 +46,7 @@ namespace azmi_main
                 opt = (Options)options;
             } catch
             {
-                throw new Exception("Cannot convert object to proper class");
+                throw new ArgumentException("Cannot convert object to proper class");
             }
 
             return Execute(opt.container, opt.identity, opt.prefix, opt.exclude);
@@ -68,12 +68,12 @@ namespace azmi_main
 
             try
             {
-                List<string> blobListing = new List<string>();
+                List<string> blobListing;
                 if (exclude != null)
                 { // apply --exclude regular expression
                     var rx = new Regex(exclude);
                     blobListing = containerClient.GetBlobs(prefix: prefix).Select(i => rx.IsMatch(i.Name) ? null : i.Name).ToList();
-                    while (blobListing.Remove(null)) { };
+                    blobListing.Remove(null);
                 } else
                 { // return full list
                     blobListing = containerClient.GetBlobs(prefix: prefix).Select(i => i.Name).ToList();

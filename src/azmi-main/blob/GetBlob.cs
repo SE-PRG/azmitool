@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 using Azure.Identity;
 using Azure.Storage.Blobs;
-using System.Linq;
+
 
 namespace azmi_main
 {
@@ -52,7 +52,7 @@ namespace azmi_main
                 opt = (Options)options;
             } catch
             {
-                throw new Exception("Cannot convert object to proper class");
+                throw new ArgumentException("Cannot convert object to proper class");
             }
 
             return Execute(opt.blobURL, opt.filePath, opt.identity, opt.ifNewer, opt.deleteAfterCopy).ToStringList();

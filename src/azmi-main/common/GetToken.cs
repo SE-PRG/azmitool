@@ -43,7 +43,7 @@ namespace azmi_main
                 opt = (Options)options;
             } catch
             {
-                throw new Exception("Cannot convert object to proper class");
+                throw new ArgumentException("Cannot convert object to proper class");
             }
 
             return Execute(opt.endpoint, opt.identity, opt.jwtformat).ToStringList();
