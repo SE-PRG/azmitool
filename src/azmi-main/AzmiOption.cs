@@ -1,12 +1,4 @@
-﻿using Microsoft.VisualBasic.CompilerServices;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Dynamic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace azmi_main
 {
