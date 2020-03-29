@@ -28,9 +28,9 @@ namespace azmi_main
                     new AzmiOption("filePath", required: true,
                         description: "Path to local file to which content will be downloaded. Examples: /tmp/1.txt, ./1.xml"),
                     SharedAzmiOptions.identity,
-                    new AzmiOption("ifNewer", alias: null, type: ArgType.flag,
+                    new AzmiOption("if-newer", alias: null, type: ArgType.flag,
                         description: "Download a blob only if a newer version exists in a container."),
-                    new AzmiOption("deleteAfterCopy", type: ArgType.flag,
+                    new AzmiOption("delete-after-copy", type: ArgType.flag,
                         description: "Successfully downloaded blob is removed from a container."),
                     SharedAzmiOptions.verbose
                 }
