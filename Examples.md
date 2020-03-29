@@ -19,7 +19,7 @@ azmi gettoken --jwt-format
 
 Read more about [Azure storage accounts here](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview).
 
-```sh
+```bash
 # list all blobs in container
 azmi listblobs --container $CONTAINER
 
