@@ -19,7 +19,7 @@ azmi gettoken --jwt-format
 
 Read more about [Azure storage accounts here](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview).
 
-```bash
+```sh
 # list all blobs in container
 azmi listblobs --container $CONTAINER
 
@@ -98,6 +98,7 @@ while read servername; do
    echo "$servername : $secret" >> passwords.output
 done < passwords.input
 azmi setblob --blob $cont/passwords.output --file passwords.output
+rm passwords.output
 ```
 
 **Note:** This is just example. It is not recommended to keep secrets in local file!
