@@ -18,4 +18,6 @@ Integration testing pipeline will take dev package build in previous step.
 Pipeline will upload it to a new VM and execute [integration tests](./test/integration/integration_test.sh) against it.
 It can also be executed against dev branch.
 
-
+Integration testing is using **Bash Testing Framework** (BTF).
+BTF is simplifying testing of bash scripts using modern techniques.
+It also provides seamless integration into Azure DevOps testing pages.
