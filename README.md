@@ -24,6 +24,8 @@ azmi setblob --file ~/info.txt --blob $CONTAINER_URL/myhostname/info.txt --ident
 
 For more explanations, see detailed [commands overview](./Commands.md).
 
+For more examples, see detailed [examples page](./Examples.md).
+
 ## Download
 
 To download executable / package, use following commands:
