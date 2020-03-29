@@ -110,7 +110,7 @@ namespace azmi_main
             // returns date of local file was last written to
             DateTime fileLastWrite = File.GetLastWriteTimeUtc(filePath);
 
-            return blobLastModified < fileLastWrite;
+            return blobLastModified > fileLastWrite;
         }
     }
 }

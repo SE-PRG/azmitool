@@ -37,16 +37,6 @@ namespace azmi_main
             required, 
             type) { }
 
-        // constructor NAME + ALIAS? with string and null, or string and char 
-        public AzmiOption(string name, char? alias, 
-            ArgType type = ArgType.str,bool required = false)
-        : this(
-              name, 
-              alias, 
-              $"Description for {name}", 
-              required, 
-              type) { }
-
         // constructor NAME + ALIAS? + DESCRIPTION 
         public AzmiOption(string name, char? alias, string description,
             ArgType type = ArgType.str, bool required = false)
@@ -58,7 +48,6 @@ namespace azmi_main
             type) { }
 
         // constructor NAME + DESCRIPTION
-        // TODO: Conflicting NAME + ALIAS? if alias is null
         public AzmiOption(string name, [DisallowNull]string description,
             ArgType type = ArgType.str, bool required = false)
         : this(
@@ -68,6 +57,5 @@ namespace azmi_main
             required,
             type)
         { }
-
     }
 }
