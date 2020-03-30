@@ -61,11 +61,18 @@ azmi setblob -f $UPLOADFILE --container $CONTAINER --force
 ```
 
 ### Comments
-- TODO: access rights data reader
-- `getblob` is overwriting file in destination
-- `setblob` fails if blob with same name exists, override it with `--force`
-- TODO: `--prefix` vs `--exclude` in `listblobs` and `getblobs`
+- To be able to read data from storage blob, managed identity would need one of [blob specific RBAC roles](https://docs.microsoft.com/en-us/azure/storage/common/storage-auth-aad-rbac-portal#rbac-roles-for-blobs-and-queues), for example:
+  - Storage Blob Data Reader
+  - Storage Blob Data Contributor
+- If file or blob in destination exists, following happens:
+  - `getblob` is overwriting file in destination
+  - `setblob` fails if blob with same name exists, override it with `--force`
 - `getblobs` will output one line for each blob operation and one more for overall result
+
+Commands `listblobs` and `getblobs` return upto 5,000 blobs filtered on Azure API side by argument `--prefix`.
+Filtering with `--exclude` though providing more flexibility with regex, is only client side filtering.
+This means it operates on server filtered set which can be already topped to first 5,000 blobs.
+If a container has more than 5,000 blobs, , it is required to use `--prefix`, otherwise results might be inconclusive.
 
 ## Key Vault Secret commands
 
@@ -85,21 +92,29 @@ If you need operation that will do more actions just use `azmi` multiple times!
 
 ### Example 1
 
+Following example is replacing secrets in predefined placeholders with actual values.
+It is calling three `azmi` commands: `getblob`, `getsecret` and `setblob`
 
 ```bash
 #!/bin/bash
 
 cont="https://myaccount.blob.core.windows.net/mycontainer"
 KV="https://myKV.vault.azure.net/secrets"
+templateFile="passwords.template"
+outputFile="passwords.output"
+pat='\$\{(.+)\}' # regex for replacement placeholder
 
-azmi getblob --blob $cont/passwords.template --file passwords.input
-while read servername; do
-   secret=`azmi getsecret --secret "$KV/$servername"`
-   echo "$servername : $secret" >> passwords.output
-done < passwords.input
-azmi setblob --blob $cont/passwords.output --file passwords.output
-rm passwords.output
+azmi getblob --blob $cont/$templateFile --file $templateFile
+while read line; do
+  if [[ $line =~ $pat ]] ; then
+    secretName="${BASH_REMATCH[1]}"
+    secretValue=`azmi getsecret --secret "$KV/secretName"`
+    # replace somehow >> $outputFile
+  fi
+done < templateFile
+azmi setblob --blob $cont/$outputFile --file $outputFile
+rm $outputFile
 ```
 
-**Note:** This is just example. It is not recommended to keep secrets in local file!
+**Note:** This is just example. It is not recommended to keep secrets in a file!
 
