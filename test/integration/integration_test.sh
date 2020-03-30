@@ -118,8 +118,19 @@ testing class "setblob force"
 test "setblob fails to overwrite on container" assert.Fail "azmi setblob -f $UPLOADFILE --container $CONTAINER_RW"
 test "setblob fails to overwrite on blob" assert.Fail "azmi setblob -f $UPLOADFILE --blob ${CONTAINER_RW}/${UPLOADFILE}"
 test "setblob overwrites blob on container" assert.Success "azmi setblob -f $UPLOADFILE --container $CONTAINER_RW --force"
-test "setblob overwrites blob on blob" assert.Success "azmi setblob -f $UPLOADFILE --blob ${CONTAINER_RW}/${UPLOADFILE} --force"
+test "setblob overwrites blob on blob" assert.Success "azmi setblob -f $UPLOADFILE --blob ${CONTAINER_RW}/${UPLOADFILE} --force --verbose"
 
+testing class "getsecret"
+KV_NA="https://azmi-itest-no-access.vault.azure.net"
+KV_RO="https://azmi-itest-r.vault.azure.net"
+test "getsecret fails on existing but foreign secret" assert.Fail "azmi getsecret --secret-identifier ${KV_NA}/secrets/buriedSecret"
+test "getsecret OK on RO secret" assert.Equals "azmi getsecret --secret-identifier ${KV_RO}/secrets/readMyPassword --identity $identity" "LikeThat"
+
+test "getsecret fails on missing secret" assert.Fail "azmi getsecret --secret-identifier ${KV_RO}/secrets/iDoNotExist --identity $identity"
+test "getsecret fails on invalid URL #1" assert.Fail "azmi getsecret --secret-identifier ${KV_RO}"
+test "getsecret fails on invalid URL #2" assert.Fail "azmi getsecret --secret-identifier ${KV_RO}/"
+test "getsecret fails on invalid URL #3" assert.Fail "azmi getsecret --secret-identifier http://azmi-itest-r.vault.azure.net/secrets/readMyPassword"   # http protocol
+test "getsecret fails on invalid URL #4" assert.Fail "azmi getsecret --secret-identifier https:\\\azmi-itest-r.vault.azure.net/secrets/readMyPassword" # backslashes
 
 # TODO: Add here setblobs tests
 
