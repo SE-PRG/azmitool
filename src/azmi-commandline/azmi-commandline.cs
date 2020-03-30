@@ -66,10 +66,11 @@ namespace azmi_commandline
             // commands version 2
             //
 
-            rootCommand.AddCommand(AzmiOptionExtensions.ToCommand<GetToken, GetToken.Options>());
-            rootCommand.AddCommand(AzmiOptionExtensions.ToCommand<GetBlob, GetBlob.Options>());
-            rootCommand.AddCommand(AzmiOptionExtensions.ToCommand<ListBlobs, ListBlobs.Options>());
-            
+            rootCommand.AddCommand(AzmiCommandLineExtensions.ToCommand<GetToken, GetToken.AzmiArgumentsClass>());
+            rootCommand.AddCommand(AzmiCommandLineExtensions.ToCommand<GetBlob, GetBlob.AzmiArgumentsClass>());
+            rootCommand.AddCommand(AzmiCommandLineExtensions.ToCommand<ListBlobs, ListBlobs.AzmiArgumentsClass>());
+            rootCommand.AddCommand(AzmiCommandLineExtensions.ToCommand<GetBlobs, GetBlobs.AzmiArgumentsClass>());
+
 
 
             //
@@ -182,7 +183,7 @@ namespace azmi_commandline
             getBlobsCommand.AddOption(shared_identityOption);
             getBlobsCommand.AddOption(shared_verboseOption);
 
-            rootCommand.AddCommand(getBlobsCommand);
+            //rootCommand.AddCommand(getBlobsCommand);
 
             //
             // setblob

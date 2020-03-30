@@ -18,20 +18,20 @@ namespace azmi_main
                 name = "listblobs",
                 description = "test for classified listblobs subcommand",
 
-                arguments = new AzmiOption[] {
-                    new AzmiOption("container", required: true, type: ArgType.url,
+                arguments = new AzmiArgument[] {
+                    new AzmiArgument("container", required: true, type: ArgType.url,
                         description: "URL of container for which to list blobs. Example: https://myaccount.blob.core.windows.net/mycontainer"),
-                    new AzmiOption("prefix",
+                    new AzmiArgument("prefix",
                         description: "Specifies a string that filters the results to return only blobs whose name begins with the specified prefix"),
-                    new AzmiOption("exclude",
+                    new AzmiArgument("exclude",
                         description: "Exclude blobs that match given regular expression."),
-                    SharedAzmiOptions.identity,
-                    SharedAzmiOptions.verbose
+                    SharedAzmiArguments.identity,
+                    SharedAzmiArguments.verbose
                 }
             };
         }
 
-        public class Options : SharedOptions
+        public class AzmiArgumentsClass : SharedAzmiArgumentsClass
         {
             public string container { get; set; }
             public string prefix { get; set; }
@@ -40,10 +40,10 @@ namespace azmi_main
 
         public List<string> Execute(object options)
         {
-            Options opt;
+            AzmiArgumentsClass opt;
             try
             {
-                opt = (Options)options;
+                opt = (AzmiArgumentsClass)options;
             } catch
             {
                 throw new ArgumentException("Cannot convert object to proper class");

@@ -10,15 +10,15 @@ namespace azmi_main
     // url fails back to string, its just different in description
 
     
-    public class AzmiOption
+    public class AzmiArgument
     {
-        public string name; // "blob"
-        public char? alias; // "b" or null
-        public string description;
-        public bool required;
-        public ArgType type; // string or bool
+        public string name { get; set; } // "blob"
+        public char? alias { get; set; } // "b" or null
+        public string description { get; set; }
+        public bool required { get; set; }
+        public ArgType type { get; set; } // string, url or bool
 
-        public AzmiOption(string name, char? alias, string description, bool required, ArgType type)
+        internal AzmiArgument(string name, char? alias, string description, bool required, ArgType type)
         {
             this.name = name;
             this.alias = alias;
@@ -28,7 +28,7 @@ namespace azmi_main
         }
 
         // constructor NAME with one string
-        public AzmiOption(string name, 
+        internal AzmiArgument(string name, 
             ArgType type = ArgType.str, bool required = false)
         : this(
             name, 
@@ -38,7 +38,7 @@ namespace azmi_main
             type) { }
 
         // constructor NAME + ALIAS? + DESCRIPTION 
-        public AzmiOption(string name, char? alias, string description,
+        internal AzmiArgument(string name, char? alias, string description,
             ArgType type = ArgType.str, bool required = false)
         : this(
             name,
@@ -48,14 +48,13 @@ namespace azmi_main
             type) { }
 
         // constructor NAME + DESCRIPTION
-        public AzmiOption(string name, [DisallowNull]string description,
+        internal AzmiArgument(string name, [DisallowNull]string description,
             ArgType type = ArgType.str, bool required = false)
         : this(
             name,
             name[0],
             description,
             required,
-            type)
-        { }
+            type) { }
     }
 }

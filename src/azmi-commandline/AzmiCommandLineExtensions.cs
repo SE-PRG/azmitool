@@ -7,9 +7,9 @@ using System.CommandLine.Invocation;
 
 namespace azmi_commandline
 {
-    public static class AzmiOptionExtensions
+    internal static class AzmiCommandLineExtensions
     {
-        public static String[] OptionNames(this AzmiOption option)
+        internal static String[] OptionNames(this AzmiArgument option)
         {
             if (option.alias != null)
             {
@@ -20,7 +20,7 @@ namespace azmi_commandline
             }
         }
 
-        public static Argument OptionArgument(this AzmiOption option)
+        internal static Argument OptionArgument(this AzmiArgument option)
         {
             switch (option.type)
             {
@@ -32,7 +32,7 @@ namespace azmi_commandline
             }
         }
 
-        public static string OptionDescription(this AzmiOption option)
+        internal static string OptionDescription(this AzmiArgument option)
         {
             return 
                 (option.required 
@@ -42,7 +42,7 @@ namespace azmi_commandline
                 + option.description;
         }
 
-        public static Option ToOption(this AzmiOption option)
+        internal static Option ToOption(this AzmiArgument option)
         {
             return new Option(option.OptionNames())
             {
@@ -52,9 +52,9 @@ namespace azmi_commandline
             };
         }
 
-        public static Command ToCommand<T, TOptions>() 
+        internal static Command ToCommand<T, TOptions>() 
             where T : IAzmiCommand, new()
-            where TOptions : SharedOptions
+            where TOptions : SharedAzmiArgumentsClass
         {
 
             T cmd = new T();
@@ -75,7 +75,7 @@ namespace azmi_commandline
             return commandLineSubCommand;
         }
 
-        public static void DisplayError(string subCommand, Exception ex, bool verbose)
+        internal static void DisplayError(string subCommand, Exception ex, bool verbose)
         {
             var oldColor = Console.ForegroundColor;
             Console.ForegroundColor = ConsoleColor.Red;
@@ -90,7 +90,7 @@ namespace azmi_commandline
             // invocation returns exit code 2, parser errors will return exit code 1
         }
 
-        public static void WriteLines(this List<string> str)
+        internal static void WriteLines(this List<string> str)
         {
             if (str != null)
             {

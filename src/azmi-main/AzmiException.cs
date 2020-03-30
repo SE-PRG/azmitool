@@ -2,9 +2,9 @@
 
 namespace azmi_main
 {
-    public static class AzmiException
+    internal static class AzmiException
     {
-        public static Exception IDCheck(string identity, Exception ex)
+        internal static Exception IDCheck(string identity, Exception ex)
         {
             if (string.IsNullOrEmpty(identity))
             {
@@ -18,6 +18,11 @@ namespace azmi_main
             {
                 return ex;
             }
+        }
+
+        internal static Exception WrongObject()
+        {
+            return new ArgumentException("Cannot convert object to proper class");
         }
     }
 }

@@ -20,16 +20,16 @@ namespace azmi_main
                 name = "gettoken",
                 description = "test for classified gettoken subcommand",
                 
-                arguments = new AzmiOption[] {
-                    new AzmiOption("endpoint","Endpoint against which to authenticate. Examples: management, storage. Default 'management'"),
-                    SharedAzmiOptions.identity,
-                    new AzmiOption("jwt-format", "Print token in JSON Web Token (JWT) format.", ArgType.flag),
-                    SharedAzmiOptions.verbose
+                arguments = new AzmiArgument[] {
+                    new AzmiArgument("endpoint","Endpoint against which to authenticate. Examples: management, storage. Default 'management'"),
+                    SharedAzmiArguments.identity,
+                    new AzmiArgument("jwt-format", "Print token in JSON Web Token (JWT) format.", ArgType.flag),
+                    SharedAzmiArguments.verbose
                 }
             };
         }
 
-        public class Options : SharedOptions
+        public class AzmiArgumentsClass : SharedAzmiArgumentsClass
         {
             public string endpoint { get; set; }
             public bool jwtformat { get; set; }
@@ -37,13 +37,13 @@ namespace azmi_main
 
         public List<string> Execute(object options)
         {
-            Options opt;
+            AzmiArgumentsClass opt;
             try
             {
-                opt = (Options)options;
+                opt = (AzmiArgumentsClass)options;
             } catch
             {
-                throw new ArgumentException("Cannot convert object to proper class");
+                throw AzmiException.WrongObject();                    
             }
 
             return Execute(opt.endpoint, opt.identity, opt.jwtformat).ToStringList();

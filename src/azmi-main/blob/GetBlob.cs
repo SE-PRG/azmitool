@@ -22,22 +22,22 @@ namespace azmi_main
                 name = "getblob",
                 description = "test for classified getblob subcommand",
 
-                arguments = new AzmiOption[] {
-                    new AzmiOption("blobURL", required: true, type: ArgType.url,
+                arguments = new AzmiArgument[] {
+                    new AzmiArgument("blobURL", required: true, type: ArgType.url,
                         description: "URL of blob which will be downloaded. Example: https://myaccount.blob.core.windows.net/mycontainer/myblob"),
-                    new AzmiOption("filePath", required: true,
+                    new AzmiArgument("filePath", required: true,
                         description: "Path to local file to which content will be downloaded. Examples: /tmp/1.txt, ./1.xml"),
-                    SharedAzmiOptions.identity,
-                    new AzmiOption("if-newer", alias: null, type: ArgType.flag,
+                    SharedAzmiArguments.identity,
+                    new AzmiArgument("if-newer", alias: null, type: ArgType.flag,
                         description: "Download a blob only if a newer version exists in a container."),
-                    new AzmiOption("delete-after-copy", type: ArgType.flag,
+                    new AzmiArgument("delete-after-copy", type: ArgType.flag,
                         description: "Successfully downloaded blob is removed from a container."),
-                    SharedAzmiOptions.verbose
+                    SharedAzmiArguments.verbose
                 }
             };
         }
 
-        public class Options : SharedOptions
+        public class AzmiArgumentsClass : SharedAzmiArgumentsClass
         {
             public string blobURL { get; set; }
             public string filePath { get; set; }
@@ -46,10 +46,10 @@ namespace azmi_main
         }
 
         public List<string> Execute(object options) {
-            Options opt;
+            AzmiArgumentsClass opt;
             try
             {
-                opt = (Options)options;
+                opt = (AzmiArgumentsClass)options;
             } catch
             {
                 throw new ArgumentException("Cannot convert object to proper class");
@@ -66,14 +66,14 @@ namespace azmi_main
         {
 
             // method start
-            return $"id: {identity}, blob: {blobURL}, file: {filePath}";
+            //return $"id: {identity}, blob: {blobURL}, file: {filePath}";
 
 
             // Connection
             var Cred = new ManagedIdentityCredential(identity);
             var blobClient = new BlobClient(new Uri(blobURL), Cred);
 
-            if (ifNewer && File.Exists(filePath) && IsNewer(blobClient, filePath))
+            if (ifNewer && File.Exists(filePath) && !IsNewer(blobClient, filePath))
             {
                 return "Skipped. Blob is not newer than file.";
             }

@@ -2,11 +2,12 @@
 
 namespace azmi_main
 {
-    public static class AzmiExtensions
+    internal static class AzmiExtensions
     {
-        public static List<string> ToStringList(this string str)
+        internal static List<string> ToStringList(this string str)
         {
             return new List<string> { str };
         }
+
     }
 }
