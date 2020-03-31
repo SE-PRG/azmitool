@@ -102,14 +102,15 @@ cont="https://myaccount.blob.core.windows.net/mycontainer"
 KV="https://myKV.vault.azure.net/secrets"
 templateFile="passwords.template"
 outputFile="passwords.output"
-pat='\$\{(.+)\}' # regex for replacement placeholder
+pattern='\$\{(.+)\}' # regex for replacement placeholder, as ${name}
 
 azmi getblob --blob $cont/$templateFile --file $templateFile
 while read line; do
-  if [[ $line =~ $pat ]] ; then
+  if [[ $line =~ $pattern ]] ; then
+    placeholder="${BASH_REMATCH[0]}"
     secretName="${BASH_REMATCH[1]}"
-    secretValue=`azmi getsecret --secret "$KV/secretName"`
-    # replace somehow >> $outputFile
+    secretValue=`azmi getsecret --secret "$KV/$secretName"`
+    echo ${line/$placeholder/$secretValue} >> $outputFile
   fi
 done < templateFile
 azmi setblob --blob $cont/$outputFile --file $outputFile
