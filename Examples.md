@@ -68,8 +68,7 @@ azmi setblob -f $UPLOADFILE --container $CONTAINER --force
   - `getblob` is overwriting file in destination
   - `setblob` fails if blob with same name exists, override it with `--force`
 - `getblobs` will output one line for each blob operation and one more for overall result
-
-Commands `listblobs` and `getblobs` return upto 5,000 blobs filtered on Azure API side by argument `--prefix`.
+- Commands `listblobs` and `getblobs` return upto 5,000 blobs filtered on Azure API side by argument `--prefix`.
 Filtering with `--exclude` though providing more flexibility with regex, is only client side filtering.
 This means it operates on server filtered set which can be already topped to first 5,000 blobs.
 If a container has more than 5,000 blobs, , it is required to use `--prefix`, otherwise results might be inconclusive.
@@ -104,15 +103,18 @@ templateFile="passwords.template"
 outputFile="passwords.output"
 pattern='\$\{(.+)\}' # regex for replacement placeholder, as ${name}
 
+# get template file from blob
 azmi getblob --blob $cont/$templateFile --file $templateFile
 while read line; do
   if [[ $line =~ $pattern ]] ; then
     placeholder="${BASH_REMATCH[0]}"
     secretName="${BASH_REMATCH[1]}"
+    # get secret from key vault
     secretValue=`azmi getsecret --secret "$KV/$secretName"`
     echo ${line/$placeholder/$secretValue} >> $outputFile
   fi
 done < templateFile
+# save updated file to blob
 azmi setblob --blob $cont/$outputFile --file $outputFile
 rm $outputFile
 ```
