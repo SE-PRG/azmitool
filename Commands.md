@@ -118,7 +118,7 @@ If storage account has more than 5,000 blobs, it is required to use `--prefix`, 
 
 |**command**|source|destination|other arguments|
 |-|-|-|-|
-|**`azmi getsecret`**|`--secret-identifier`| `--file` or `--stdout` or `--variable` | |
+|**`azmi getsecret`**|`--secret`| `--file` or `--stdout` or `--variable` | |
 | T.B.D. | | | |
 
 # Key Vault Certificate commands
@@ -132,5 +132,5 @@ If storage account has more than 5,000 blobs, it is required to use `--prefix`, 
 
 |**command**|source|destination|other arguments|
 |-|-|-|-|
-|**`azmi getcertificate`**|`--url`| `--file` | |
+|**`azmi getcertificate`**|`--certificate`| `--file` | |
 | T.B.D. | | | |
