@@ -1,23 +1,12 @@
 {
   "profiles": {
-    "azmi-commandline": {
-      "commandName": "Project"
-    },
-    "help": {
+    "--help": {
       "commandName": "Project",
       "commandLineArgs": "--help"
     },
-    "gettoken": {
+    "gettoken --help": {
       "commandName": "Project",
-      "commandLineArgs": "gettoken -i 123 -j"
-    },
-    "getblob": {
-      "commandName": "Project",
-      "commandLineArgs": "getblob -b 123 -f 234"
-    },
-    "listBlobs": {
-      "commandName": "Project",
-      "commandLineArgs": "listblobs -c 123 -i 234"
+      "commandLineArgs": "gettoken --help"
     }
   }
 }
