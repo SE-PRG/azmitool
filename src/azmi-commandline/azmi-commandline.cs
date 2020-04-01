@@ -5,7 +5,7 @@ using System.CommandLine;
 using System.CommandLine.Invocation;
 
 namespace azmi_commandline
-{    
+{ 
     class Program
     {
         // https://github.com/dotnet/command-line-api/issues/458
@@ -28,7 +28,7 @@ namespace azmi_commandline
         {
             var rootCommand = ConfigureArguments();
             var parseResult = rootCommand.Invoke(args);
-            Environment.Exit(parseResult);            
+            Environment.Exit(parseResult);    
         }
 
         static RootCommand ConfigureArguments()

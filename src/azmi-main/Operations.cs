@@ -19,7 +19,6 @@ namespace azmi_main
         public Operations() { }
         // Destructor
         ~Operations() { }
-
         private Exception IdentityError(string identity, Exception ex)
         {
             // if no identity, then append identity missing error, otherwise just return existing exception
