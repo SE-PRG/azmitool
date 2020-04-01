@@ -3,28 +3,27 @@
 # AzMiTool Integration tests
 # It requires Bash Testing Framework
 
+
+#
 # setup variables
+#
+
+# this script is called from testing framework script, therefore arguments are shifted
+STORAGEACCOUNTNAME=$2
+identity=$3
+
+
 export DEBIAN_FRONTEND=noninteractive
 PACKAGENAME=azmi
 PACKAGEFILE=/tmp/azmiX.deb
+declare -a subCommands=("gettoken" "getblob" "getblobs" "setblob" "listblobs")
+identity_foreign=017dc05c-4d12-4ac2-b5f8-5e239dc8bc54
 
-# define function(s)
-function install_azmi() { # installs/upgrades package from file if exists; otherwise APT repository
-  if $(dpkg-query --show $PACKAGENAME > /dev/null 2>&1); then
-    EVENT="Upgrade"
-  else
-    EVENT="Install"
-  fi
 
-  if [ -f $PACKAGEFILE ]; then
-      test "$EVENT $PACKAGENAME package from file" assert.Success "dpkg -i $PACKAGEFILE"
-  else
-      test "$EVENT $PACKAGENAME package from repository" assert.Success "apt --assume-yes install $PACKAGENAME"
-  fi  
-  dpkg-query --showformat='  - ${Package} ${Version} installed\n' --show $PACKAGENAME
-}
-
+#
 # start testing
+#
+
 testing start "$PACKAGENAME"
 testing class "package"
 test "Install fake package should fail" assert.Fail "apt --assume-yes install somenonexistingpackage"
@@ -32,163 +31,156 @@ test "Install fake package should fail" assert.Fail "apt --assume-yes install so
 # dependencies installed?
 test "Check all dependencies are installed" assert.Success "dpkg -s libstdc++6"
 
-install_azmi
+test "Install $PACKAGENAME package from file" assert.Success "dpkg -i $PACKAGEFILE"
 test "Verify azmi binary exists and is executable" assert.Success "[ -x /usr/bin/azmi ]"
 
-
 testing class "help"
-test "Should fail if no arguments are provided" assert.Fail "azmi"
+test "Fail if no arguments are provided" assert.Fail "azmi"
 test "Print help and return success status" assert.Success "azmi --help"
 
-test "Print help for gettoken" assert.Success "azmi gettoken --help"
-test "Fail gettoken with wrong args" assert.Fail "azmi gettoken blahblah"
-
-test "Print help for getblob" assert.Success "azmi getblob --help"
-test "Fail getblob with wrong args" assert.Fail "azmi getblob blahblah"
-
-test "Print help for setblob" assert.Success "azmi setblob --help"
-test "Fail setblob with wrong args" assert.Fail "azmi setblob blahblah"
-# TODO Automate above using list of supported subcommands
+for subCommand in "${subCommands[@]}"
+do
+  test "Print help for $subCommand" assert.Success "azmi $subCommand --help"
+  test "$subCommand verbose option" assert.Success "azmi $subCommand --help | grep verbose"
+  test "Fail $subCommand with wrong args" assert.Fail "azmi $subCommand blahblah"
+done
 
 
-testing class "application"
+testing class "gettoken"
 
-test "Authenticate to Azure using a managed identity and get access token" assert.Success "azmi gettoken"
-test "Authenticate to Azure using a managed identity and get access token in JWT format" assert.Success "azmi gettoken --jwt-format | grep typ | grep JWT"
+test "gettoken basic" assert.Success "azmi gettoken"
+test "gettoken in JWT format" assert.Success "azmi gettoken --jwt-format | grep typ | grep JWT"
+test "gettoken fails with wrong args" assert.Fail "azmi gettoken blahblah"
 
-# URL structure
-# https://azmitest.blob.core.windows.net/azmi-itest-rw/azmi_itest_2020-02-03_15:53:38.txt
-# https://azmitest.blob.core.windows.net/azmi-itest-rw//tmp/azmi_itest_20200206_091521.txt
-#         storage account URL           |containerName|          blob name
+#
+# storage subcommands testing
+#
 
-### no-access container ###
-CONTAINER_URL="https://azmitest.blob.core.windows.net/azmi-itest-no-access"
-BLOB="restricted_access_blob.txt"
-test "Should fail: Read blob contents from restricted Azure storage container" assert.Fail "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt"
-date > upload.txt # generate unique file contents
-test "Should fail: Save file contents to restricted Azure storage container" assert.Fail "azmi setblob --file upload.txt --container $CONTAINER_URL"
-rm upload.txt
+CONTAINER_NA="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-no-access"
+CONTAINER_RO="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-r"
+CONTAINER_RW="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-rw"
+CONTAINER_LB="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-listblobs"
 
-### read-only container ###
-# Role(s):    Storage Blob Data Reader
-# Profile(s): bt-seu-test-id (obj. ID: d1c05b65-ccf9-47bd-870d-4e44d209ee7a), kotipoiss-identity (obj. ID: ccb781af-a4eb-4ecc-b183-cef74b3cc717)
-CONTAINER_URL="https://azmitest.blob.core.windows.net/azmi-itest-r"
-BLOB="read_only_blob.txt"
-test "Read blob contents from read-only Azure storage container" assert.Success "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt"
-test "Should fail: Save file contents to read-only Azure storage container" assert.Fail "azmi setblob --file download.txt --container $CONTAINER_URL"
-# --delete-after-copy option
-test "Should fail: Remove blob after download from read-only Azure storage container" assert.Fail "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt --delete-after-copy"
-# --identity option
-test "Read blob contents from read-only Azure storage container using right identity"                     assert.Success "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt --identity 354800af-354e-42e0-906b-5b96e02c4e1c"
-test "Should fail: Read blob contents from read-only Azure storage container using foreign identity"      assert.Fail    "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt --identity 017dc05c-4d12-4ac2-b5f8-5e239dc8bc54"
-test "Should fail: Read blob contents from read-only Azure storage container using non-existing identity" assert.Fail    "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt --identity non-existing"
+BLOB_NA="restricted_access_blob.txt"
+BLOB_RO="read_only_blob.txt"
+DOWNLOAD_FILE="download.txt"
+DOWNLOAD_DIR="./Download"
+# prepare test upload file
+DATE1=$(date +%s)   # used in file name
+DATE2=$(date +%s%N) # used in file content
+UPLOADFILE="upload$DATE1.txt"
+echo "$DATE2" > "$UPLOADFILE"
 
-### read-write container ###
-# Role(s):    Storage Blob Data Contributor
-# Profile(s): bt-seu-test-id (obj. ID: d1c05b65-ccf9-47bd-870d-4e44d209ee7a), kotipoiss-identity (obj. ID: ccb781af-a4eb-4ecc-b183-cef74b3cc717)
-CONTAINER_URL="https://azmitest.blob.core.windows.net/azmi-itest-rw"
-TIMESTAMP=`date "+%Y%m%d_%H%M%S"` # e.g. 20200107_144102
-RANDOM_BLOB_TO_STORE="azmi_itest_${TIMESTAMP}.txt"
-CHARS="012345689abcdefghiklmnopqrstuvwxyz"
-test "Generate random blob (file) contents" assert.Success "for i in {1..32}; do echo -n \"\${CHARS:RANDOM%\${#CHARS}:1}\"; done > $RANDOM_BLOB_TO_STORE"
-test "Save file contents   to read-write Azure storage container" assert.Success "azmi setblob --file $RANDOM_BLOB_TO_STORE --container $CONTAINER_URL"
-DOWNLOADED_BLOB="azmi_itest_downloaded.txt"
-test "Read blob contents from read-write Azure storage container" assert.Success "azmi getblob --blob ${CONTAINER_URL}/${RANDOM_BLOB_TO_STORE} --file $DOWNLOADED_BLOB"
-test "Blobs have to have same contents" assert.Success "diff $RANDOM_BLOB_TO_STORE $DOWNLOADED_BLOB"
-RANDOM_BLOB_TO_STORE_SHA256=$(sha256sum $RANDOM_BLOB_TO_STORE | awk '{ print $1 }')
-DOWNLOADED_BLOB_SHA256=$(sha256sum $DOWNLOADED_BLOB | awk '{ print $1 }')
-test "Blobs have to have equal SHA256 checksums" assert.Success "[ $RANDOM_BLOB_TO_STORE_SHA256 = $DOWNLOADED_BLOB_SHA256 ]"
-# --delete-after-copy option
-BLOB="azmi_itest_${TIMESTAMP}_delete_after_copy.txt"
-date > $BLOB # generate unique file contents
-test "Save file contents to read-write Azure storage container (preparation --delete-after-copy option)" assert.Success "azmi setblob --file $BLOB --container $CONTAINER_URL"
-test "Remove blob after download from read-write Azure storage container" assert.Success "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt --delete-after-copy"
-test "Should fail: try to download just removed blob." assert.Fail "azmi getblob --blob $CONTAINER_URL/$BLOB --file download.txt"
-
-# there should be no <noname> folder in Azure
-testing class "noname"
-test "Prepare tmp file" assert.Success "rm -f /tmp/${RANDOM_BLOB_TO_STORE} && echo sometext > /tmp/${RANDOM_BLOB_TO_STORE}"
-test "Upload tmp file" assert.Success "azmi setblob -f /tmp/${RANDOM_BLOB_TO_STORE} --container ${CONTAINER_URL}"
-test "There is no noname folder after upload" assert.Fail "azmi getblob -f /dev/null -b ${CONTAINER_URL}//tmp/${RANDOM_BLOB_TO_STORE}"
 
 testing class "listblobs"
-### list-blobs container
-# Role(s):    Storage Blob Data Contributor
-# Profile(s): bt-seu-test-id (obj. ID: d1c05b65-ccf9-47bd-870d-4e44d209ee7a), kotipoiss-identity (obj. ID: ccb781af-a4eb-4ecc-b183-cef74b3cc717)
-CONTAINER_URL="https://azmitest.blob.core.windows.net/azmi-itest-listblobs"
-test "List all blobs in listblobs container" assert.Success "azmi listblobs --container $CONTAINER_URL"
-EXPECTED_BLOB_COUNT=5
-test "There should be $EXPECTED_BLOB_COUNT listed blobs in listblobs container" assert.Equals "azmi listblobs --container $CONTAINER_URL | wc -l" $EXPECTED_BLOB_COUNT
-# listing with an optional --prefix
-EXPECTED_BLOB_COUNT=3; PREFIX="neu-pre"
-test "There should be $EXPECTED_BLOB_COUNT listed blobs with prefix '$PREFIX' in listblobs container" assert.Equals "azmi listblobs --container $CONTAINER_URL --prefix $PREFIX | wc -l" $EXPECTED_BLOB_COUNT
-EXPECTED_BLOB_COUNT=1; PREFIX="neu-pre-show-me-only"
-test "There should be $EXPECTED_BLOB_COUNT listed blob with prefix '$PREFIX' in listblobs container" assert.Equals "azmi listblobs --container $CONTAINER_URL --prefix $PREFIX | wc -l" $EXPECTED_BLOB_COUNT
-EXPECTED_BLOB_COUNT=0; PREFIX="noBlobsShouldDownload"
-test "There should be $EXPECTED_BLOB_COUNT listed blob with prefix '$PREFIX' in listblobs container" assert.Equals "azmi listblobs --container $CONTAINER_URL --prefix $PREFIX | wc -l" $EXPECTED_BLOB_COUNT
-# --exclude
-EXPECTED_BLOB_COUNT=4; EXCLUDE="HelloWorld.txt"
-test "There should be $EXPECTED_BLOB_COUNT listed blobs (--exclude $EXCLUDE applied) in listblobs container" assert.Equals "azmi listblobs --container $CONTAINER_URL --exclude $EXCLUDE | wc -l" $EXPECTED_BLOB_COUNT
+BC=5 # blob count
+test "listblobs basic" assert.Success "azmi listblobs --container $CONTAINER_LB"
+test "listblobs finds $BC blobs" assert.Equals "azmi listblobs --container $CONTAINER_LB | wc -l" $BC
+BC=3; PREFIX="neu-pre"
+test "listblobs finds $BC blobs with prefix $PREFIX" assert.Equals "azmi listblobs -c $CONTAINER_LB --prefix $PREFIX | wc -l" $BC
+BC=1; PREFIX="neu-pre-show-me-only"
+test "listblobs finds $BC blobs with prefix $PREFIX" assert.Equals "azmi listblobs -c $CONTAINER_LB --prefix $PREFIX | wc -l" $BC
+BC=0; PREFIX="noBlobsShouldDownload"
+test "listblobs finds $BC blobs with prefix $PREFIX" assert.Equals "azmi listblobs -c $CONTAINER_LB --prefix $PREFIX | wc -l" $BC
+BC=4; EXCLUDE="HelloWorld.txt"
+test "listblobs finds $BC blobs excluding $EXCLUDE" assert.Equals "azmi listblobs -c $CONTAINER_LB --exclude $EXCLUDE | wc -l" $BC
 
-# getblobs subcommand
+
+testing class "getblob"
+test "getblob fails on NA container" assert.Fail "azmi getblob --blob $CONTAINER_NA/$BLOB_NA --file $DOWNLOAD_FILE"
+test "getblob OK on RO container" assert.Success "azmi getblob --blob $CONTAINER_RO/$BLOB_RO --file $DOWNLOAD_FILE"
+test "getblob fails to delete from RO container" assert.Fail "azmi getblob --blob $CONTAINER_RO/$BLOB_RO --file $DOWNLOAD_FILE --delete-after-copy"
+
+testing class "getblob identity"
+test "getblob OK on RO container using right identity"        assert.Success "azmi getblob --blob $CONTAINER_RO/$BLOB_RO --file download.txt --identity $identity"
+test "getblob fails on RO container using foreign identity"      assert.Fail "azmi getblob --blob $CONTAINER_RO/$BLOB_RO --file download.txt --identity $identity_foreign"
+test "getblob fails on RO container using non-existing identity" assert.Fail "azmi getblob --blob $CONTAINER_RO/$BLOB_RO --file download.txt --identity non-existing"
+
+
 testing class "getblobs"
-CONTAINER_URL="https://azmitest.blob.core.windows.net/azmi-itest-listblobs"
-DOWNLOAD_DIR="./Download"; EXPECTED_BLOB_COUNT=5; EXPECTED_SUCCESSES=6 # last one is summary
-rm -rf $DOWNLOAD_DIR
-test "We should successfully download $EXPECTED_BLOB_COUNT blobs from listblobs container" assert.Equals "azmi getblobs --container $CONTAINER_URL --directory $DOWNLOAD_DIR | grep Success | wc -l" $EXPECTED_SUCCESSES
+BC=5; rm -rf $DOWNLOAD_DIR
+test "getblobs downloads $BC blobs" assert.Equals "azmi getblobs --container $CONTAINER_LB --directory $DOWNLOAD_DIR | grep Success | wc -l" $((BC+1))
+# there is one extra line for summary
+BC=3; PREFIX="neu-pre"; rm -rf $DOWNLOAD_DIR
+test "getblobs downloads $BC blobs with prefix $PREFIX" assert.Equals "azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --prefix $PREFIX | grep Success | wc -l" $((BC+1))
+BC=0; PREFIX="noBlobsShouldDownload"; rm -rf $DOWNLOAD_DIR
+test "getblobs downloads $BC blobs with prefix $PREFIX" assert.Equals "azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --prefix $PREFIX | wc -l" $BC
+BC=4; EXCLUDE="neu-pre-logboxA1"; rm -rf $DOWNLOAD_DIR
+test "getblobs downloads $BC blobs excluding $EXCLUDE" assert.Equals "azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --exclude $EXCLUDE | grep Success | wc -l" $((BC+1))
 
-EXPECTED_BLOB_COUNT=3; PREFIX="neu-pre"; EXPECTED_SUCCESSES=4
-rm -rf $DOWNLOAD_DIR
-test "We should successfully download $EXPECTED_BLOB_COUNT blobs with prefix '$PREFIX' from listblobs container" assert.Equals "azmi getblobs --container $CONTAINER_URL --directory $DOWNLOAD_DIR --prefix $PREFIX | grep Success | wc -l" $EXPECTED_SUCCESSES
 
-EXPECTED_BLOB_COUNT=4; EXCLUDE="neu-pre-logboxA1"; EXPECTED_SUCCESSES=5
-rm -rf $DOWNLOAD_DIR
-test "We should successfully download $EXPECTED_BLOB_COUNT blobs (--exclude $EXCLUDE applied) from listblobs container" assert.Equals "azmi getblobs --container $CONTAINER_URL --directory $DOWNLOAD_DIR --exclude $EXCLUDE | grep Success | wc -l" $EXPECTED_SUCCESSES
+testing class "setblob"
+test "setblob fails on NA container" assert.Fail "azmi setblob --file $UPLOADFILE --container $CONTAINER_NA"
+test "setblob fails on RO container" assert.Fail "azmi setblob --file $UPLOADFILE --container $CONTAINER_RO"
+test "setblob OK on RW container" assert.Success "azmi setblob --file $UPLOADFILE --container $CONTAINER_RW"
 
-EXPECTED_BLOB_COUNT=0; PREFIX="noBlobsShouldDownload"; EXPECTED_ROWS=0
-rm -rf $DOWNLOAD_DIR
-test "We should successfully download $EXPECTED_BLOB_COUNT blobs with prefix '$PREFIX' from listblobs container" assert.Equals "azmi getblobs --container $CONTAINER_URL --directory $DOWNLOAD_DIR --prefix $PREFIX | wc -l" $EXPECTED_ROWS
+testing class "setblob force"
+test "setblob fails to overwrite on container" assert.Fail "azmi setblob -f $UPLOADFILE --container $CONTAINER_RW"
+test "setblob fails to overwrite on blob" assert.Fail "azmi setblob -f $UPLOADFILE --blob ${CONTAINER_RW}/${UPLOADFILE}"
+test "setblob overwrites blob on container" assert.Success "azmi setblob -f $UPLOADFILE --container $CONTAINER_RW --force"
+test "setblob overwrites blob on blob" assert.Success "azmi setblob -f $UPLOADFILE --blob ${CONTAINER_RW}/${UPLOADFILE} --force --verbose"
 
-# testing setblob-byblob 
-testing class "setblob-byblob"
-CONTAINER_URL="https://azmitest.blob.core.windows.net/azmi-itest-rw"
-test "Upload tmp file by blob" assert.Success "azmi setblob -f /tmp/${RANDOM_BLOB_TO_STORE} --blob ${CONTAINER_URL}/byblob/${RANDOM_BLOB_TO_STORE}"
+testing class "getsecret"
+KV_NA="https://azmi-itest-no-access.vault.azure.net"
+KV_RO="https://azmi-itest-r.vault.azure.net"
+test "getsecret fails on existing but foreign secret" assert.Fail "azmi getsecret --secret ${KV_NA}/secrets/buriedSecret"
+test "getsecret OK on RO secret" assert.Equals "azmi getsecret --secret ${KV_RO}/secrets/readMyPassword --identity $identity" "LikeThat"
 
-# --force option
-testing class "--force option"
-test "Should fail: attempt to overwrite existing blob using --container option" assert.Fail "azmi setblob -f /tmp/${RANDOM_BLOB_TO_STORE} --container ${CONTAINER_URL}"
-test "Should fail: attempt to overwrite existing blob using --blob option" assert.Fail "azmi setblob -f /tmp/${RANDOM_BLOB_TO_STORE} --blob ${CONTAINER_URL}/byblob/${RANDOM_BLOB_TO_STORE}"
-test "Overwrite existing blob using --container option" assert.Success "azmi setblob -f /tmp/${RANDOM_BLOB_TO_STORE} --container ${CONTAINER_URL} --force"
-test "Overwrite existing blob using --blob option" assert.Success "azmi setblob -f /tmp/${RANDOM_BLOB_TO_STORE} --blob ${CONTAINER_URL}/byblob/${RANDOM_BLOB_TO_STORE} --force"
+test "getsecret fails on missing secret" assert.Fail "azmi getsecret --secret ${KV_RO}/secrets/iDoNotExist --identity $identity"
+test "getsecret fails on invalid URL #1" assert.Fail "azmi getsecret --secret ${KV_RO}"
+test "getsecret fails on invalid URL #2" assert.Fail "azmi getsecret --secret ${KV_RO}/"
+test "getsecret fails on invalid URL #3" assert.Fail "azmi getsecret --secret http://azmi-itest-r.vault.azure.net/secrets/readMyPassword"   # http protocol
+test "getsecret fails on invalid URL #4" assert.Fail "azmi getsecret --secret https:\\\azmi-itest-r.vault.azure.net/secrets/readMyPassword" # backslashes
 
-# --if-newer option
-testing class "--if-newer option"
-test "Should skip: Download blob and write to file only if difference has been spotted (--if-newer option)" assert.Equals \
-  "azmi getblob --blob ${CONTAINER_URL}/${RANDOM_BLOB_TO_STORE} --file /tmp/${RANDOM_BLOB_TO_STORE} --if-newer" "Skipped. Blob is not newer than file."
-sleep 1s
-test "Alter blob's modification time" assert.Success "azmi setblob --file /tmp/${RANDOM_BLOB_TO_STORE} --blob ${CONTAINER_URL}/${RANDOM_BLOB_TO_STORE} --force"
-test "Download blob and write to file only if difference has been spotted (--if-newer option)" assert.Equals \
-  "azmi getblob --blob ${CONTAINER_URL}/${RANDOM_BLOB_TO_STORE} --file /tmp/${RANDOM_BLOB_TO_STORE} --if-newer" "Success"
-TIMESTAMP=`date "+%Y%m%d_%H%M%S"` # e.g. 20200107_144102
-test "Download blob and write to file which does not exist yet (--if-newer option)" assert.Equals \
-  "azmi getblob --blob ${CONTAINER_URL}/${RANDOM_BLOB_TO_STORE} --file /tmp/unique-file.${TIMESTAMP} --if-newer" "Success"
+# TODO: Add here setblobs tests
 
-# it should support verbose option for commands
-testing class "verbose"
-test "gettoken verbose option" assert.Success "azmi gettoken --help | grep verbose"
-test "getblob verbose option" assert.Success "azmi getblob --help | grep verbose"
-test "setblob verbose option" assert.Success "azmi setblob --help | grep verbose"
+# mixed commands tests
+testing class "SHA256"
+test "setblob SHA256 upload" assert.Success "azmi setblob -f $UPLOADFILE --blob ${CONTAINER_RW}/${UPLOADFILE} --force"
+test "getblob SHA256 download" assert.Success "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file $DOWNLOAD_FILE"
+test "SHA256 same contents" assert.Success "diff $UPLOADFILE $DOWNLOAD_FILE"
+UPLOADFILE_SHA256=$(sha256sum "$UPLOADFILE" | awk '{ print $1 }')
+DOWNLOADFILE_SHA256=$(sha256sum $DOWNLOAD_FILE | awk '{ print $1 }')
+test "SHA256 same checksums" assert.Success "[ $UPLOADFILE_SHA256 = $DOWNLOADFILE_SHA256 ]"
+
+testing class "noname"
+test "prepare tmp file" assert.Success "rm -f /tmp/${UPLOADFILE} && echo sometext > /tmp/${UPLOADFILE}"
+test "upload tmp file" assert.Success "azmi setblob -f /tmp/${UPLOADFILE} --container ${CONTAINER_RW}"
+test "there is no noname folder" assert.Fail "azmi getblob -f /dev/null -b ${CONTAINER_RW}//tmp/${UPLOADFILE}"
+
+testing class "if-newer"
+SKIPMSG="Skipped. Blob is not newer than file."
+test "setblob if-newer upload" assert.Equals "azmi setblob -f $UPLOADFILE -c $CONTAINER_RW"
+touch "$UPLOADFILE"
+test "getblob skips if not newer" assert.Equals "azmi getblob -b ${CONTAINER_RW}/${UPLOADFILE} -f $UPLOADFILE --if-newer" "$SKIPMSG"
+test "setblob updates blob" assert.Success "azmi setblob -f $UPLOADFILE -c $CONTAINER_RW --force"
+sleep 1
+test "getblob downloads if newer" assert.Equals "azmi getblob -b ${CONTAINER_RW}/${UPLOADFILE} -f $UPLOADFILE --if-newer" "Success"
+rm -rf $DOWNLOAD_FILE
+test "getblob downloads newer than nonexisting" assert.Equals "azmi getblob -b ${CONTAINER_RW}/${UPLOADFILE} -f $DOWNLOAD_FILE --if-newer" "Success"
+
+testing class "delete-after-copy"
+test "setblob delete-after-copy upload" assert.Success "azmi setblob --file $UPLOADFILE --container $CONTAINER_RW --force"
+test "getblob remove blob with delete-after-copy" assert.Success "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file $DOWNLOAD_FILE --delete-after-copy"
+test "getblob fails with deleted file" assert.Fail "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file $DOWNLOAD_FILE"
+
 
 # uninstalling
 testing class "package"
 test "Uninstall packages" assert.Success "apt purge $PACKAGENAME -y"
-
 test "Verify azmi binary does not exist anymore" assert.Fail "[ -f /usr/bin/azmi ]"
+
+#
+#  Clean up actions
+#
+
+rm "$UPLOADFILE"
+rm -rf $DOWNLOAD_DIR
 
 #################################
 # display some diagnostic data
 ################################
 echo -e "\n=============="
-echo "Test running at '`hostname`' host"
+echo "Test running at '$(hostname)' host"
 
 testing end

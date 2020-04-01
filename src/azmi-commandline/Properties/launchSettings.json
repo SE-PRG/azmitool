@@ -1,5 +1,8 @@
 {
   "profiles": {
+    "azmi-commandline": {
+      "commandName": "Project"
+    },
     "--help": {
       "commandName": "Project",
       "commandLineArgs": "--help"

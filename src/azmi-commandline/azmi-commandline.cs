@@ -242,6 +242,23 @@ namespace azmi_commandline
             rootCommand.AddCommand(listBlobsCommand);
 
             //
+            // getsecret
+            //
+            var getSecretCommand = new Command("getsecret", "Fetches latest version of a secret from key vault.");
+
+            var getSecret_secretOption = new Option(new String[] { "--secret", "-s" })
+            {
+                Argument = new Argument<String>("URL"),
+                Description = "URL of a secret inside of key vault. Example: https://my-key-vault.vault.azure.net/secrets/mySecret.pwd",
+                Required = true
+            };
+            getSecretCommand.AddOption(getSecret_secretOption);
+            getSecretCommand.AddOption(shared_identityOption);
+            getSecretCommand.AddOption(shared_verboseOption);
+
+            rootCommand.AddCommand(getSecretCommand);
+
+            //
             // define actual subcommand handlers
             //
 
@@ -325,6 +342,19 @@ namespace azmi_commandline
                 } catch (Exception ex)
                 {
                     DisplayError("listblobs", ex, verbose);
+                }
+            });
+
+            // getsecret
+            getSecretCommand.Handler = CommandHandler.Create<string, string, bool>((secret, identity, verbose) =>
+            {
+                try
+                {
+                    Console.WriteLine(operations.getSecret(secret, identity));
+                }
+                catch (Exception ex)
+                {
+                    DisplayError("getsecret", ex, verbose);
                 }
             });
 
