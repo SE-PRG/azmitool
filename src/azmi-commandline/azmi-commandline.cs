@@ -66,10 +66,10 @@ namespace azmi_commandline
             // commands version 2
             //
 
-            rootCommand.AddCommand(AzmiCommandLineExtensions.ToCommand<GetToken, GetToken.AzmiArgumentsClass>());
-            rootCommand.AddCommand(AzmiCommandLineExtensions.ToCommand<GetBlob, GetBlob.AzmiArgumentsClass>());
-            rootCommand.AddCommand(AzmiCommandLineExtensions.ToCommand<ListBlobs, ListBlobs.AzmiArgumentsClass>());
-            rootCommand.AddCommand(AzmiCommandLineExtensions.ToCommand<GetBlobs, GetBlobs.AzmiArgumentsClass>());
+            // rootCommand.AddCommand(AzmiCommandLineExtensions.ToCommand<GetToken, GetToken.AzmiArgumentsClass>());
+            //rootCommand.AddCommand(AzmiCommandLineExtensions.ToCommand<GetBlob, GetBlob.AzmiArgumentsClass>());
+            //rootCommand.AddCommand(AzmiCommandLineExtensions.ToCommand<ListBlobs, ListBlobs.AzmiArgumentsClass>());
+            //rootCommand.AddCommand(AzmiCommandLineExtensions.ToCommand<GetBlobs, GetBlobs.AzmiArgumentsClass>());
 
 
 
@@ -95,7 +95,7 @@ namespace azmi_commandline
             getTokenCommand.AddOption(shared_identityOption);
             getTokenCommand.AddOption(shared_verboseOption);
 
-            //rootCommand.AddCommand(getTokenCommand);
+            rootCommand.AddCommand(getTokenCommand);
 
             //
             // getblob
@@ -132,7 +132,7 @@ namespace azmi_commandline
             getBlobCommand.AddOption(shared_identityOption);
             getBlobCommand.AddOption(shared_verboseOption);
 
-            //rootCommand.AddCommand(getBlobCommand);
+            rootCommand.AddCommand(getBlobCommand);
 
             //
             // getblobs
@@ -183,7 +183,7 @@ namespace azmi_commandline
             getBlobsCommand.AddOption(shared_identityOption);
             getBlobsCommand.AddOption(shared_verboseOption);
 
-            //rootCommand.AddCommand(getBlobsCommand);
+            rootCommand.AddCommand(getBlobsCommand);
 
             //
             // setblob
@@ -253,7 +253,7 @@ namespace azmi_commandline
             listBlobsCommand.AddOption(shared_identityOption);
             listBlobsCommand.AddOption(shared_verboseOption);
 
-            //rootCommand.AddCommand(listBlobsCommand);
+            rootCommand.AddCommand(listBlobsCommand);
 
             //
             // define actual subcommand handlers
