@@ -1,5 +1,4 @@
 using azmi_main;
-
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
@@ -7,8 +6,6 @@ using System.CommandLine.Invocation;
 
 namespace azmi_commandline
 { 
-
-    
     class Program
     {
         // https://github.com/dotnet/command-line-api/issues/458
@@ -26,12 +23,12 @@ namespace azmi_commandline
             public bool deleteAfterCopy { get; set; }
             public bool verbose { get; set; }
         }
-        
+
         static void Main(string[] args)
         {
             var rootCommand = ConfigureArguments();
             var parseResult = rootCommand.Invoke(args);
-            Environment.Exit(parseResult);
+            Environment.Exit(parseResult);    
         }
 
         static RootCommand ConfigureArguments()
