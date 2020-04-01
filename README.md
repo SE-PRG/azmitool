@@ -22,6 +22,10 @@ azmi setblob --file $FILE --container $CONTAINER_URL
 azmi setblob --file ~/info.txt --blob $CONTAINER_URL/myhostname/info.txt --identity 117dc05c-4d12-4ac2-b5f8-5e239dc8bc54
 ```
 
+For more explanations, see detailed [commands overview](./Commands.md).
+
+For more examples, see detailed [examples page](./Examples.md).
+
 ## Download
 
 To download executable / package, use following commands:
@@ -86,3 +90,5 @@ If you used `--identity` argument, please verify if you used correct client / ap
 
 - Package build [![Build status](https://skype.visualstudio.com/SCC/_apis/build/status/SE-UP/azmi/build%20-%20azmi)](https://skype.visualstudio.com/SCC/_build/latest?definitionId=8166)
 - Integration tests [![Build status](https://skype.visualstudio.com/SCC/_apis/build/status/SE-UP/azmi/Integration%20-%20azmi)](https://skype.visualstudio.com/SCC/_build/latest?definitionId=8091)
+
+See [testing overview here](./Testing.md).
