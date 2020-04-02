@@ -38,7 +38,7 @@ namespace azmi_main
             public string prefix { get; set; }
             public string exclude { get; set; }
             public bool ifNewer { get; set; }
-            public bool deleteAfterCopy { get; set; }            
+            public bool deleteAfterCopy { get; set; }
         }
 
         public List<string> Execute(object options)
@@ -84,6 +84,5 @@ namespace azmi_main
             results.Add(failures == 0 ? "Success" : $"Failed {failures} blobs");
             return results;
         }
-
     }
 }

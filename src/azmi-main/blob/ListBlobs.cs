@@ -59,8 +59,6 @@ namespace azmi_main
 
         public List<string> Execute(string containerUri, string identity = null, string prefix = null, string exclude = null)
         {
-            // just for testing
-            return $"cont={containerUri}, id={identity}".ToStringList();
 
             var Cred = new ManagedIdentityCredential(identity);
             var containerClient = new BlobContainerClient(new Uri(containerUri), Cred);
