@@ -58,13 +58,13 @@ namespace azmi_main
 
             // method start
             var Cred = new ManagedIdentityCredential(identity);
+            if (String.IsNullOrEmpty(endpoint)) { endpoint = "management"; }
             var Scope = new String[] { $"https://{endpoint}.azure.com" };
             var Request = new TokenRequestContext(Scope);
             try
             {
                 var Token = Cred.GetToken(Request);
-                //return (JWTformat) ? Decode_JWT(Token.Token) : Token.Token;
-                return Token.Token;
+                return (JWTformat) ? Decode_JWT(Token.Token) : Token.Token;
             } catch (Exception ex)
             {
                 throw AzmiException.IDCheck(identity, ex);
