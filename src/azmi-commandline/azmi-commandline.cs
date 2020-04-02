@@ -65,12 +65,17 @@ namespace azmi_commandline
             //
 
 
+            // common
             rootCommand.AddCommand(AzmiCommandLineExtensions.ToCommand<GetToken, GetToken.AzmiArgumentsClass>());
 
+            // blob
             rootCommand.AddCommand(AzmiCommandLineExtensions.ToCommand<ListBlobs, ListBlobs.AzmiArgumentsClass>());
             rootCommand.AddCommand(AzmiCommandLineExtensions.ToCommand<GetBlob, GetBlob.AzmiArgumentsClass>());
             rootCommand.AddCommand(AzmiCommandLineExtensions.ToCommand<GetBlobs, GetBlobs.AzmiArgumentsClass>());
             rootCommand.AddCommand(AzmiCommandLineExtensions.ToCommand<SetBlob, SetBlob.AzmiArgumentsClass>());
+
+            // secret
+            rootCommand.AddCommand(AzmiCommandLineExtensions.ToCommand<GetSecret, GetSecret.AzmiArgumentsClass>());
 
             //
             // gettoken
@@ -269,7 +274,7 @@ namespace azmi_commandline
             getSecretCommand.AddOption(shared_identityOption);
             getSecretCommand.AddOption(shared_verboseOption);
 
-            rootCommand.AddCommand(getSecretCommand);
+            //rootCommand.AddCommand(getSecretCommand);
 
             //
             // define actual subcommand handlers
