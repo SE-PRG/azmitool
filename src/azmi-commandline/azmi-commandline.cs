@@ -1,12 +1,11 @@
 using azmi_main;
 using System;
-using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 
 namespace azmi_commandline
 {
-    class Program
+    static class Program
     {
 
         static void Main(string[] args)

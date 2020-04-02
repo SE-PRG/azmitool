@@ -9,7 +9,7 @@ namespace azmi_main
     // str is string type
     // url fails back to string, its just different in description
 
-    
+
     public class AzmiArgument
     {
         public string name { get; set; } // "blob"
@@ -28,16 +28,16 @@ namespace azmi_main
         }
 
         // constructor NAME with one string
-        internal AzmiArgument(string name, 
+        internal AzmiArgument(string name,
             ArgType type = ArgType.str, bool required = false)
         : this(
-            name, 
-            name[0], 
-            $"Description for {name}", 
-            required, 
+            name,
+            name[0],
+            $"Description for {name}",
+            required,
             type) { }
 
-        // constructor NAME + ALIAS? + DESCRIPTION 
+        // constructor NAME + ALIAS? + DESCRIPTION
         internal AzmiArgument(string name, char? alias, string description,
             ArgType type = ArgType.str, bool required = false)
         : this(
