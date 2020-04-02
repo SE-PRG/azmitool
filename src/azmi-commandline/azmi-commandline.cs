@@ -5,7 +5,7 @@ using System.CommandLine;
 using System.CommandLine.Invocation;
 
 namespace azmi_commandline
-{ 
+{
     class Program
     {
         // https://github.com/dotnet/command-line-api/issues/458
@@ -28,7 +28,7 @@ namespace azmi_commandline
         {
             var rootCommand = ConfigureArguments();
             var parseResult = rootCommand.Invoke(args);
-            Environment.Exit(parseResult);    
+            Environment.Exit(parseResult);
         }
 
         static RootCommand ConfigureArguments()
@@ -48,7 +48,7 @@ namespace azmi_commandline
             };
 
             var shared_verboseOption = new Option(new String[] { "--verbose", "-v" })
-            {                
+            {
                 Description = "Optional. If enabled, commands will produce more verbose error output.",
                 Required = false
             };
@@ -58,6 +58,14 @@ namespace azmi_commandline
                 Description = "Optional. Client or application ID of managed identity used to authenticate. Example: 117dc05c-4d12-4ac2-b5f8-5e239dc8bc54",
                 Required = false
             };
+
+
+            //
+            // subcommands v2
+            //
+
+
+            rootCommand.AddCommand(AzmiCommandLineExtensions.ToCommand<GetToken, GetToken.AzmiArgumentsClass>());
 
             //
             // gettoken
@@ -72,7 +80,7 @@ namespace azmi_commandline
                 Required = false
             };
             var getToken_JWTOption = new Option("--jwt-format")
-            {                
+            {
                 Description = "Optional. Print token in JSON Web Token (JWT) format.",
                 Required = false
             };
@@ -81,7 +89,7 @@ namespace azmi_commandline
             getTokenCommand.AddOption(shared_identityOption);
             getTokenCommand.AddOption(shared_verboseOption);
 
-            rootCommand.AddCommand(getTokenCommand);
+            //rootCommand.AddCommand(getTokenCommand);
 
             //
             // getblob
@@ -94,7 +102,7 @@ namespace azmi_commandline
                 Argument = new Argument<String>("string"),
                 Description = "URL of blob which will be downloaded. Example: https://myaccount.blob.core.windows.net/mycontainer/myblob",
                 Required = true
-            };            
+            };
             var getBlob_fileOption = new Option(new String[] { "--file", "-f" })
             {
                 Argument = new Argument<String>("string"),
@@ -102,7 +110,7 @@ namespace azmi_commandline
                 Required = true
             };
             var getBlob_ifNewerOption = new Option("--if-newer")
-            {                
+            {
                 Description = "Optional. Download a blob only if a newer version exists in a container.",
                 Required = false
             };
@@ -182,7 +190,7 @@ namespace azmi_commandline
                 Argument = new Argument<String>("string"),
                 Description = "Path to local file which will be uploaded. Examples: /tmp/1.txt, ./1.xml",
                 Required = true
-            };            
+            };
             var setBlob_containerOption = new Option(new String[] { "--container", "-c" })
             {
                 Argument = new Argument<String>("string"),
@@ -196,7 +204,7 @@ namespace azmi_commandline
                 Required = false
             };
             var setBlob_forceOption = new Option("--force")
-            {                
+            {
                 Description = "Optional. Overwrite existing blob in Azure.",
                 Required = false
             };
@@ -315,7 +323,7 @@ namespace azmi_commandline
                 else if ( (!String.IsNullOrEmpty(blob)) && (!String.IsNullOrEmpty(container)))
                 {
                     throw new ArgumentException("Cannot use both container and blob url");
-                } 
+                }
 
                 try
                 {

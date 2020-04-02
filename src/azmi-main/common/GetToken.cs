@@ -6,7 +6,7 @@ using Azure.Core;
 using Azure.Identity;
 
 namespace azmi_main
-{    
+{
     public class GetToken : IAzmiCommand
     {
 
@@ -16,10 +16,10 @@ namespace azmi_main
 
         public SubCommandDefinition Definition() {
             return new SubCommandDefinition {
-                
+
                 name = "gettoken",
                 description = "test for classified gettoken subcommand",
-                
+
                 arguments = new AzmiArgument[] {
                     new AzmiArgument("endpoint","Endpoint against which to authenticate. Examples: management, storage. Default 'management'"),
                     SharedAzmiArguments.identity,
@@ -43,7 +43,7 @@ namespace azmi_main
                 opt = (AzmiArgumentsClass)options;
             } catch
             {
-                throw AzmiException.WrongObject();                    
+                throw AzmiException.WrongObject();
             }
 
             return Execute(opt.endpoint, opt.identity, opt.jwtformat).ToStringList();
@@ -56,8 +56,6 @@ namespace azmi_main
         public string Execute(string endpoint = "management", string identity = null, bool JWTformat = false)
         {
 
-            return $"id: {identity}, endpoint: {endpoint}, jwt: {JWTformat}";
-            
             // method start
             var Cred = new ManagedIdentityCredential(identity);
             var Scope = new String[] { $"https://{endpoint}.azure.com" };
@@ -65,7 +63,8 @@ namespace azmi_main
             try
             {
                 var Token = Cred.GetToken(Request);
-                return (JWTformat) ? Decode_JWT(Token.Token) : Token.Token;
+                //return (JWTformat) ? Decode_JWT(Token.Token) : Token.Token;
+                return Token.Token;
             } catch (Exception ex)
             {
                 throw AzmiException.IDCheck(identity, ex);
@@ -83,5 +82,5 @@ namespace azmi_main
             return tokenDecoded.ToString(); // decoded JSON Web Token
 
         }
-    }    
+    }
 }
