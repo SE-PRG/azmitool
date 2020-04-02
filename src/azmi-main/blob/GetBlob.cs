@@ -20,7 +20,7 @@ namespace azmi_main
             {
 
                 name = "getblob",
-                description = "test for classified getblob subcommand",
+                description = "Downloads blob from storage account to local file.",
 
                 arguments = new AzmiArgument[] {
                     new AzmiArgument("blob", required: true, type: ArgType.url,
@@ -50,9 +50,9 @@ namespace azmi_main
             try
             {
                 opt = (AzmiArgumentsClass)options;
-            } catch
+            } catch (Exception ex)
             {
-                throw new ArgumentException("Cannot convert object to proper class");
+                throw AzmiException.WrongObject(ex);
             }
 
             return Execute(opt.blob, opt.file, opt.identity, opt.ifNewer, opt.deleteAfterCopy).ToStringList();

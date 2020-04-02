@@ -16,7 +16,7 @@ namespace azmi_main
             {
 
                 name = "listblobs",
-                description = "test for classified listblobs subcommand",
+                description = "List all blobs in container and send to output.",
 
                 arguments = new AzmiArgument[] {
                     new AzmiArgument("container", required: true, type: ArgType.url,
@@ -44,9 +44,9 @@ namespace azmi_main
             try
             {
                 opt = (AzmiArgumentsClass)options;
-            } catch
+            } catch (Exception ex)
             {
-                throw new ArgumentException("Cannot convert object to proper class");
+                throw AzmiException.WrongObject(ex);
             }
 
             return Execute(opt.container, opt.identity, opt.prefix, opt.exclude);
