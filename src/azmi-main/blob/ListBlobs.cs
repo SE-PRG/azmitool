@@ -66,17 +66,13 @@ namespace azmi_main
 
             try
             {
-                List<string> blobListing;
+                List<string> blobListing = containerClient.GetBlobs(prefix: prefix).Select(i => i.Name).ToList();
+
                 if (exclude != null)
                 { // apply --exclude regular expression
                     var rx = new Regex(exclude);
-                    blobListing = containerClient.GetBlobs(prefix: prefix).Select(i => rx.IsMatch(i.Name) ? null : i.Name).ToList();
-                    blobListing.Remove(null);
-                } else
-                { // return full list
-                    blobListing = containerClient.GetBlobs(prefix: prefix).Select(i => i.Name).ToList();
+                    blobListing = blobListing.Where(b => !rx.IsMatch(b)).ToList();
                 }
-
                 return blobListing.Count == 0 ? null : blobListing;
             } catch (Exception ex)
             {
