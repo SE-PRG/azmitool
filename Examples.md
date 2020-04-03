@@ -46,7 +46,7 @@ azmi getblobs --container $CONTAINER --directory $DOWNLOAD_DIR
 # download blobs starting with given prefix
 azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --prefix $PREFIX
 
-# download blobs, but exclude ones matching given regex
+# download blobs, but exclude ones matching given regular expression
 azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --exclude $EXCLUDE
 
 
