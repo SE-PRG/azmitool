@@ -15,8 +15,7 @@ namespace azmi_gui
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Operations operations = new Operations();
-            TokenTextBlock.Text = operations.getToken();
+            TokenTextBlock.Text = (new GetToken()).Execute("management");
         }
     }
 }

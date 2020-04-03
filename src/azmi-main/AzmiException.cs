@@ -20,9 +20,9 @@ namespace azmi_main
             }
         }
 
-        internal static Exception WrongObject()
+        internal static Exception WrongObject(Exception ex)
         {
-            return new ArgumentException("Cannot convert object to proper class");
+            return new ArgumentException("Cannot convert input object to proper class", ex);
         }
     }
 }

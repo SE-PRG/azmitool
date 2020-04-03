@@ -16,7 +16,7 @@ namespace azmi_main
             {
 
                 name = "listblobs",
-                description = "test for classified listblobs subcommand",
+                description = "List all blobs in container and send to output.",
 
                 arguments = new AzmiArgument[] {
                     new AzmiArgument("container", required: true, type: ArgType.url,
@@ -44,9 +44,9 @@ namespace azmi_main
             try
             {
                 opt = (AzmiArgumentsClass)options;
-            } catch
+            } catch (Exception ex)
             {
-                throw new ArgumentException("Cannot convert object to proper class");
+                throw AzmiException.WrongObject(ex);
             }
 
             return Execute(opt.container, opt.identity, opt.prefix, opt.exclude);
@@ -59,8 +59,6 @@ namespace azmi_main
 
         public List<string> Execute(string containerUri, string identity = null, string prefix = null, string exclude = null)
         {
-            // just for testing
-            return $"cont={containerUri}, id={identity}".ToStringList();
 
             var Cred = new ManagedIdentityCredential(identity);
             var containerClient = new BlobContainerClient(new Uri(containerUri), Cred);
@@ -68,17 +66,13 @@ namespace azmi_main
 
             try
             {
-                List<string> blobListing;
+                List<string> blobListing = containerClient.GetBlobs(prefix: prefix).Select(i => i.Name).ToList();
+
                 if (exclude != null)
                 { // apply --exclude regular expression
                     var rx = new Regex(exclude);
-                    blobListing = containerClient.GetBlobs(prefix: prefix).Select(i => rx.IsMatch(i.Name) ? null : i.Name).ToList();
-                    blobListing.Remove(null);
-                } else
-                { // return full list
-                    blobListing = containerClient.GetBlobs(prefix: prefix).Select(i => i.Name).ToList();
+                    blobListing = blobListing.Where(b => !rx.IsMatch(b)).ToList();
                 }
-
                 return blobListing.Count == 0 ? null : blobListing;
             } catch (Exception ex)
             {

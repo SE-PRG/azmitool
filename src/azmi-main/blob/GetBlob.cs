@@ -20,12 +20,12 @@ namespace azmi_main
             {
 
                 name = "getblob",
-                description = "test for classified getblob subcommand",
+                description = "Downloads blob from storage account to local file.",
 
                 arguments = new AzmiArgument[] {
-                    new AzmiArgument("blobURL", required: true, type: ArgType.url,
+                    new AzmiArgument("blob", required: true, type: ArgType.url,
                         description: "URL of blob which will be downloaded. Example: https://myaccount.blob.core.windows.net/mycontainer/myblob"),
-                    new AzmiArgument("filePath", required: true,
+                    new AzmiArgument("file", required: true,
                         description: "Path to local file to which content will be downloaded. Examples: /tmp/1.txt, ./1.xml"),
                     SharedAzmiArguments.identity,
                     new AzmiArgument("if-newer", alias: null, type: ArgType.flag,
@@ -39,8 +39,8 @@ namespace azmi_main
 
         public class AzmiArgumentsClass : SharedAzmiArgumentsClass
         {
-            public string blobURL { get; set; }
-            public string filePath { get; set; }
+            public string blob { get; set; }
+            public string file { get; set; }
             public bool ifNewer { get; set; }
             public bool deleteAfterCopy { get; set; }
         }
@@ -50,12 +50,12 @@ namespace azmi_main
             try
             {
                 opt = (AzmiArgumentsClass)options;
-            } catch
+            } catch (Exception ex)
             {
-                throw new ArgumentException("Cannot convert object to proper class");
+                throw AzmiException.WrongObject(ex);
             }
 
-            return Execute(opt.blobURL, opt.filePath, opt.identity, opt.ifNewer, opt.deleteAfterCopy).ToStringList();
+            return Execute(opt.blob, opt.file, opt.identity, opt.ifNewer, opt.deleteAfterCopy).ToStringList();
         }
 
         //
@@ -66,8 +66,6 @@ namespace azmi_main
         {
 
             // method start
-            //return $"id: {identity}, blob: {blobURL}, file: {filePath}";
-
 
             // Connection
             var Cred = new ManagedIdentityCredential(identity);

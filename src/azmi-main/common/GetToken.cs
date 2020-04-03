@@ -6,7 +6,7 @@ using Azure.Core;
 using Azure.Identity;
 
 namespace azmi_main
-{    
+{
     public class GetToken : IAzmiCommand
     {
 
@@ -16,10 +16,10 @@ namespace azmi_main
 
         public SubCommandDefinition Definition() {
             return new SubCommandDefinition {
-                
+
                 name = "gettoken",
-                description = "test for classified gettoken subcommand",
-                
+                description = "Obtains Azure authorization token for usage in other command line tools.",
+
                 arguments = new AzmiArgument[] {
                     new AzmiArgument("endpoint","Endpoint against which to authenticate. Examples: management, storage. Default 'management'"),
                     SharedAzmiArguments.identity,
@@ -41,9 +41,9 @@ namespace azmi_main
             try
             {
                 opt = (AzmiArgumentsClass)options;
-            } catch
+            } catch (Exception ex)
             {
-                throw AzmiException.WrongObject();                    
+                throw AzmiException.WrongObject(ex);
             }
 
             return Execute(opt.endpoint, opt.identity, opt.jwtformat).ToStringList();
@@ -56,10 +56,9 @@ namespace azmi_main
         public string Execute(string endpoint = "management", string identity = null, bool JWTformat = false)
         {
 
-            return $"id: {identity}, endpoint: {endpoint}, jwt: {JWTformat}";
-            
             // method start
             var Cred = new ManagedIdentityCredential(identity);
+            if (String.IsNullOrEmpty(endpoint)) { endpoint = "management"; }
             var Scope = new String[] { $"https://{endpoint}.azure.com" };
             var Request = new TokenRequestContext(Scope);
             try
@@ -83,5 +82,5 @@ namespace azmi_main
             return tokenDecoded.ToString(); // decoded JSON Web Token
 
         }
-    }    
+    }
 }

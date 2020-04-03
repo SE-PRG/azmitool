@@ -26,19 +26,19 @@ namespace azmi_commandline
             {
                 case ArgType.str: return new Argument<string>("string");
                 case ArgType.flag: return new Argument<bool>("bool");
-                case ArgType.url: return new Argument<string>("url");                
-                
+                case ArgType.url: return new Argument<string>("url");
+
                 default: throw new ArgumentException($"Unsupported option type: {option.type}");
             }
         }
 
         internal static string OptionDescription(this AzmiArgument option)
         {
-            return 
-                (option.required 
-                    ? "Required. " 
+            return
+                (option.required
+                    ? "Required. "
                     : "Optional. "
-                ) 
+                )
                 + option.description;
         }
 
@@ -52,7 +52,7 @@ namespace azmi_commandline
             };
         }
 
-        internal static Command ToCommand<T, TOptions>() 
+        internal static Command ToCommand<T, TOptions>()
             where T : IAzmiCommand, new()
             where TOptions : SharedAzmiArgumentsClass
         {
@@ -65,9 +65,9 @@ namespace azmi_commandline
                 commandLineSubCommand.AddOption(op.ToOption());
             }
             commandLineSubCommand.Handler = CommandHandler.Create<TOptions>(
-                op => { 
-                    try { 
-                        cmd.Execute(op).WriteLines(); 
+                op => {
+                    try {
+                        cmd.Execute(op).WriteLines();
                     } catch (Exception ex) {
                         DisplayError(cmd.Definition().name, ex, op.verbose);
                     } });

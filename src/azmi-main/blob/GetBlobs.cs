@@ -12,7 +12,7 @@ namespace azmi_main
             {
 
                 name = "getblobs",
-                description = "test for classified gettoken subcommand",
+                description = "Downloads blobs from container to local directory.",
 
                 arguments = new AzmiArgument[] {
                     new AzmiArgument("container","URL of container blobs will be downloaded from. Example: https://myaccount.blob.core.windows.net/mycontainer",
@@ -38,7 +38,7 @@ namespace azmi_main
             public string prefix { get; set; }
             public string exclude { get; set; }
             public bool ifNewer { get; set; }
-            public bool deleteAfterCopy { get; set; }            
+            public bool deleteAfterCopy { get; set; }
         }
 
         public List<string> Execute(object options)
@@ -47,10 +47,11 @@ namespace azmi_main
             try
             {
                 opt = (AzmiArgumentsClass)options;
-            } catch
+            } catch (Exception ex)
             {
-                throw new ArgumentException("Cannot convert object to proper class");
+                throw AzmiException.WrongObject(ex);
             }
+
 
             return Execute(opt.container, opt.directory, opt.identity, opt.prefix, opt.exclude, opt.ifNewer, opt.deleteAfterCopy);
         }
@@ -84,6 +85,5 @@ namespace azmi_main
             results.Add(failures == 0 ? "Success" : $"Failed {failures} blobs");
             return results;
         }
-
     }
 }
