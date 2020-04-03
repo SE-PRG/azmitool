@@ -1,8 +1,17 @@
-azmi (0.3.0-1) stable; urgency=medium
+azmi (0.4.0-1) stable; urgency=medium
 
-  * TBD
+  * TBA
 
  -- SRE-PRG <NA@NA.com>  TBA
+
+ azmi (0.3.0-1) stable; urgency=medium
+
+  * Implemented new commands: getblobs, listblobs, getsecret
+  * Implemented new functionalities: JWT display of token, recursive folder copy, function delete-on-copy, function if-newer
+  * Internal improvements: documentation extended (examples, overview), commands split into separate classes
+  * Full list of issues: https://github.com/SRE-PRG/azmitool/milestone/3?closed=1
+
+ -- SRE-PRG <NA@NA.com>  Fri, 03 Apr 2020 16:11:52 +0200
 
 azmi (0.2.0-1) stable; urgency=medium
 
