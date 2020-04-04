@@ -5,9 +5,7 @@ namespace azmi_main
     [Serializable]
     public class AzmiException : Exception
     {
-        public AzmiException()
-        {
-        }
+        public AzmiException() { }
 
         public AzmiException(string message) : base(message) { }
 
@@ -18,17 +16,15 @@ namespace azmi_main
 
         internal static Exception IDCheck(string identity, Exception ex)
         {
-            if (string.IsNullOrEmpty(identity) && TryGetTokenFails())
+            if (string.IsNullOrEmpty(identity) && GetTokenFails())
             {
                 return new AzmiException("Missing identity argument", ex);
-            }
-            else if (ex.Message.Contains("See inner exception for details.") && (ex.InnerException != null))
+            } else if (ex.Message.Contains("See inner exception for details.") && (ex.InnerException != null))
             {
                 if (ex.InnerException.Message.Contains("Identity not found"))
                 {
                     return new AzmiException("Managed identity not found", ex);
-                }
-                else
+                } else
                 {
                     return ex.InnerException;
                 }
@@ -43,11 +39,11 @@ namespace azmi_main
             return new AzmiException("Cannot convert input object to proper class", ex);
         }
 
-        private static bool TryGetTokenFails()
+        private static bool GetTokenFails()
         {
             try
             {
-                (new GetToken()).Execute("");
+                (new GetToken()).Execute(identity: null);
                 return false;
             } catch
             {
