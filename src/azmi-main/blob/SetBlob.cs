@@ -52,12 +52,10 @@ namespace azmi_main
 
             if (String.IsNullOrEmpty(opt.blob) && String.IsNullOrEmpty(opt.container))
             {
-                // TODO: Setup AzmiExceptions
-                throw new ArgumentException("You must specify either blob or container url");
+                throw new AzmiException("You must specify either blob or container url");
             } else if ((!String.IsNullOrEmpty(opt.blob)) && (!String.IsNullOrEmpty(opt.container)))
             {
-                // TODO: Setup AzmiExceptions
-                throw new ArgumentException("Cannot use both container and blob url");
+                throw new AzmiException("Cannot use both container and blob url");
             }
 
             if (String.IsNullOrEmpty(opt.blob))
