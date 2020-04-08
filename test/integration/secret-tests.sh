@@ -1,10 +1,23 @@
+# AzMiTool Integration tests
+# It requires Bash Testing Framework
+#
+#   this file is part of set of files!
+#
+
+
+#
+# setup variables
+#
+
+identity=$3
+KV_BASENAME=$4
+KV_NA="https://${KV_BASENAME}-no-access.vault.azure.net"
+KV_RO="https://${KV_BASENAME}-r.vault.azure.net"
+
+
 #
 # secret subcommands testing
 #
-
-KV_BASENAME="azmi-itest"
-KV_NA="https://${KV_BASENAME}-no-access.vault.azure.net"
-KV_RO="https://${KV_BASENAME}-r.vault.azure.net"
 
 testing class "getsecret"
 test "getsecret fails on existing but foreign secret" assert.Fail "azmi getsecret --secret ${KV_NA}/secrets/buriedSecret"

@@ -1,7 +1,16 @@
+# AzMiTool Integration tests
+# It requires Bash Testing Framework
 #
-# storage subcommands testing
+#   this file is part of set of files!
 #
 
+
+#
+# setup variables
+#
+
+identity=$3
+STORAGEACCOUNTNAME=$2
 CONTAINER_NA="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-no-access"
 CONTAINER_RO="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-r"
 CONTAINER_RW="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-rw"
@@ -17,6 +26,10 @@ DATE2=$(date +%s%N) # used in file content
 UPLOADFILE="upload$DATE1.txt"
 echo "$DATE2" > "$UPLOADFILE"
 
+
+#
+# storage subcommands testing
+#
 
 testing class "listblobs"
 BC=5 # blob count
@@ -97,3 +110,10 @@ testing class "delete-after-copy"
 test "setblob delete-after-copy upload" assert.Success "azmi setblob --file $UPLOADFILE --container $CONTAINER_RW --force"
 test "getblob remove blob with delete-after-copy" assert.Success "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file $DOWNLOAD_FILE --delete-after-copy"
 test "getblob fails with deleted file" assert.Fail "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file $DOWNLOAD_FILE"
+
+#
+#  Clean up actions
+#
+
+rm "$UPLOADFILE"
+rm -rf $DOWNLOAD_DIR

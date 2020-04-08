@@ -2,6 +2,9 @@
 
 # AzMiTool Integration tests
 # It requires Bash Testing Framework
+#
+#   this file is part of set of files!
+#
 
 
 #
@@ -11,13 +14,16 @@
 # this script is called from testing framework script, therefore arguments are shifted
 STORAGEACCOUNTNAME=$2
 identity=$3
+KV_BASENAME=$4
+# do repeat this variables definition later in the script for clarity
 
 
+# fixed variables
 export DEBIAN_FRONTEND=noninteractive
 PACKAGENAME=azmi
 PACKAGEFILE=/tmp/azmiX.deb
-declare -a subCommands=("gettoken" "getblob" "getblobs" "setblob" "listblobs")
-identity_foreign=017dc05c-4d12-4ac2-b5f8-5e239dc8bc54
+declare -a subCommands=("gettoken" "getblob" "getblobs" "setblob" "listblobs","getsecret")
+identity_foreign=d8e2f047-99b7-48e8-89d1-0e9b6e0b2464
 
 
 #
@@ -46,8 +52,13 @@ do
 done
 
 
+#
+# gettoken testing
+#
+
 testing class "gettoken"
 
 test "gettoken basic" assert.Success "azmi gettoken"
+test "gettoken with identity" assert.Success "azmi gettoken --identity $identity"
 test "gettoken in JWT format" assert.Success "azmi gettoken --jwt-format | grep typ | grep JWT"
 test "gettoken fails with wrong args" assert.Fail "azmi gettoken blahblah"
