@@ -2,18 +2,32 @@
 
 namespace azmi_main
 {
-    internal static class AzmiException
+    [Serializable]
+    public class AzmiException : Exception
     {
+        public AzmiException() { }
+
+        public AzmiException(string message) : base(message) { }
+
+        public AzmiException(string message, Exception ex) : base(message, ex) { }
+
+        protected AzmiException(System.Runtime.Serialization.SerializationInfo serializationInfo, System.Runtime.Serialization.StreamingContext streamingContext)
+            : base(serializationInfo, streamingContext) { }
+
         internal static Exception IDCheck(string identity, Exception ex)
         {
-            if (string.IsNullOrEmpty(identity))
+            if (string.IsNullOrEmpty(identity) && GetTokenFails())
             {
-                return new ArgumentNullException("Missing identity argument", ex);
-            } else if (ex.Message.Contains("See inner exception for details.")
-                && (ex.InnerException != null)
-                && (ex.InnerException.Message.Contains("Identity not found")))
+                return new AzmiException("Missing identity argument", ex);
+            } else if (ex.Message.Contains("See inner exception for details.") && (ex.InnerException != null))
             {
-                return new ArgumentException("Managed identity not found", ex);
+                if (ex.InnerException.Message.Contains("Identity not found"))
+                {
+                    return new AzmiException("Managed identity not found", ex);
+                } else
+                {
+                    return ex.InnerException;
+                }
             } else
             {
                 return ex;
@@ -22,7 +36,19 @@ namespace azmi_main
 
         internal static Exception WrongObject(Exception ex)
         {
-            return new ArgumentException("Cannot convert input object to proper class", ex);
+            return new AzmiException("Cannot convert input object to proper class", ex);
+        }
+
+        private static bool GetTokenFails()
+        {
+            try
+            {
+                (new GetToken()).Execute(identity: null);
+                return false;
+            } catch
+            {
+                return true;
+            }
         }
     }
 }
