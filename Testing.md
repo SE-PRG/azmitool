@@ -15,7 +15,7 @@ Releasing official packages is done manually at the moment.
 [![Build status](https://skype.visualstudio.com/SCC/_apis/build/status/SE-UP/azmi/Integration%20-%20azmi?branchName=master)](https://skype.visualstudio.com/SCC/_build/latest?definitionId=8091)
 
 Integration testing pipeline will take dev package build in previous step.
-Pipeline will upload it to a new VM and execute [integration tests](./test/integration/integration_test.sh) against it.
+Pipeline will upload it to a new VM and execute [integration tests](./test/integration/) against it.
 It can also be executed against dev branch.
 
 Integration testing is using **Bash Testing Framework** (BTF).
