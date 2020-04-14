@@ -16,11 +16,11 @@ namespace azmi_main
             {
 
                 name = "getsecret",
-                description = "Fetches latest version of a secret from key vault.",
+                description = "Fetches latest or specific version of a secret from key vault.",
 
                 arguments = new AzmiArgument[] {
                     new AzmiArgument("secret", required: true, type: ArgType.url,
-                        description: "URL of a secret inside of key vault. Example: https://my-key-vault.vault.azure.net/secrets/mySecret.pwd"),
+                        description: "URL of a secret inside of key vault. Examples: https://my-key-vault.vault.azure.net/secrets/mySecret.pwd or https://my-key-vault.vault.azure.net/secrets/mySecret.pwd/67d1f6c499824607b81d5fa852f9865c ."),
                     SharedAzmiArguments.identity,
                     SharedAzmiArguments.verbose
                 }
@@ -52,7 +52,7 @@ namespace azmi_main
 
         public string Execute(string secretIdentifierUrl, string identity = null)
         {
-            (Uri keyVaultUri, string secretName) = ValidateAndParseSecretURL(secretIdentifierUrl);
+            (Uri keyVaultUri, string secretName, string secretVersion) = ValidateAndParseSecretURL(secretIdentifierUrl);
 
             var MIcredential = new ManagedIdentityCredential(identity);
             var secretClient = new SecretClient(keyVaultUri, MIcredential);
@@ -60,7 +60,7 @@ namespace azmi_main
             // Retrieve a secret
             try
             {
-                KeyVaultSecret secret = secretClient.GetSecret(secretName);
+                KeyVaultSecret secret = secretClient.GetSecret(secretName, secretVersion);
                 return secret.Value;
             } catch (Exception ex)
             {
@@ -72,9 +72,20 @@ namespace azmi_main
         // private methods
         //
 
-        private (Uri, string) ValidateAndParseSecretURL(string secretIdentifierUrl)
+        private enum SecretURLpattern
         {
-            // Example of expected URL: https://my-key-vault.vault.azure.net/secrets/mySecret.pwd
+            // https://my-key-vault.vault.azure.net/secrets/mySecret.pwd/67d1f6c499824607b81d5fa852f9865c
+            NoSlash = 0,       //
+            FirstSlash = 1,    // /
+            SecretFolder = 2,  // secrets/
+            SecretName = 3,    // mySecret.pwd/
+            SecretVersion = 4  // 67d1f6c499824607b81d5fa852f9865c
+        }
+
+        private (Uri, string, string) ValidateAndParseSecretURL(string secretIdentifierUrl)
+        {
+            // Example of expected URLs: https://my-key-vault.vault.azure.net/secrets/mySecret.pwd (latest version)
+            // or https://my-key-vault.vault.azure.net/secrets/mySecret.pwd/67d1f6c499824607b81d5fa852f9865c (specific version)
             Uri secretIdentifierUri = new Uri(secretIdentifierUrl);
 
             if (secretIdentifierUri.Scheme != Uri.UriSchemeHttps)
@@ -82,13 +93,34 @@ namespace azmi_main
 
             // e.g. https://my-key-vault.vault.azure.net
             Uri keyVaultUri = new Uri(secretIdentifierUri.GetLeftPart(UriPartial.Authority));
-            // Segments = /, secrets/, mySecret.pwd
-            if (secretIdentifierUri.Segments.Count() <= 2)
-                throw new UriFormatException($"URL '{secretIdentifierUrl}' is missing a path to secret.");
 
-            string secretName = secretIdentifierUri.Segments.Last();
+            // Segments = /, secrets/, mySecret.pwd/, 67d1f6c499824607b81d5fa852f9865c
+            SecretURLpattern segmentsCount = (SecretURLpattern)secretIdentifierUri.Segments.Count();
+            string secretName = null;
+            string secretVersion = null;
 
-            return (keyVaultUri, secretName);
+            switch (segmentsCount)
+            {
+                case SecretURLpattern.NoSlash:
+                case SecretURLpattern.FirstSlash:
+                case SecretURLpattern.SecretFolder:
+                    throw new UriFormatException($"URL '{secretIdentifierUrl}' is missing a path to Azure secret.");
+                // secret name only (no specific version)
+                case SecretURLpattern.SecretName:
+                    secretName = secretIdentifierUri.Segments.Last();
+                    secretVersion = null;
+                    break;
+                // secret including specific version
+                case SecretURLpattern.SecretVersion:
+                    int lastButOne = secretIdentifierUri.Segments.Length - 2;
+                    secretName = secretIdentifierUri.Segments[lastButOne];
+                    secretVersion = secretIdentifierUri.Segments.Last();
+                    break;
+                default:
+                    throw new InvalidOperationException("URL seems too long and does not seem to be a valid URL to Azure secret.");
+            }
+
+            return (keyVaultUri, secretName, secretVersion);
         }
     }
 }

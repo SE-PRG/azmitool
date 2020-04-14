@@ -164,6 +164,12 @@ test "setblob delete-after-copy upload" assert.Success "azmi setblob --file $UPL
 test "getblob remove blob with delete-after-copy" assert.Success "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file $DOWNLOAD_FILE --delete-after-copy"
 test "getblob fails with deleted file" assert.Fail "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file $DOWNLOAD_FILE"
 
+# TODO
+# getSecret fetch non-exisitng version
+# getSecret fetch specific version
+# getSecret fetch latest version
+# too big URL
+# both getSecret() and getCertificate() does ^^
 
 # uninstalling
 testing class "package"
