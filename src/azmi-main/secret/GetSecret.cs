@@ -72,7 +72,7 @@ namespace azmi_main
         // private methods
         //
 
-        private enum SecretURLpattern
+        private enum SecretURLsegmentsScheme
         {
             // https://my-key-vault.vault.azure.net/secrets/mySecret.pwd/67d1f6c499824607b81d5fa852f9865c
             NoSlash = 0,       //
@@ -84,9 +84,9 @@ namespace azmi_main
 
         private (Uri, string, string) ValidateAndParseSecretURL(string secretIdentifierUrl)
         {
-            // Example of expected URLs: https://my-key-vault.vault.azure.net/secrets/mySecret.pwd (latest version)
-            // or https://my-key-vault.vault.azure.net/secrets/mySecret.pwd/67d1f6c499824607b81d5fa852f9865c (specific version)
-            Uri secretIdentifierUri = new Uri(secretIdentifierUrl);
+        // Example of expected URLs: https://my-key-vault.vault.azure.net/secrets/mySecret.pwd (latest version)
+        // or https://my-key-vault.vault.azure.net/secrets/mySecret.pwd/67d1f6c499824607b81d5fa852f9865c (specific version)
+        Uri secretIdentifierUri = new Uri(secretIdentifierUrl);
 
             if (secretIdentifierUri.Scheme != Uri.UriSchemeHttps)
                 throw new UriFormatException($"Only '{Uri.UriSchemeHttps}' protocol is supported.");
@@ -95,23 +95,23 @@ namespace azmi_main
             Uri keyVaultUri = new Uri(secretIdentifierUri.GetLeftPart(UriPartial.Authority));
 
             // Segments = /, secrets/, mySecret.pwd/, 67d1f6c499824607b81d5fa852f9865c
-            SecretURLpattern segmentsCount = (SecretURLpattern)secretIdentifierUri.Segments.Count();
+            SecretURLsegmentsScheme segmentsCount = (SecretURLsegmentsScheme)secretIdentifierUri.Segments.Count();
             string secretName = null;
             string secretVersion = null;
 
             switch (segmentsCount)
             {
-                case SecretURLpattern.NoSlash:
-                case SecretURLpattern.FirstSlash:
-                case SecretURLpattern.SecretFolder:
+                case SecretURLsegmentsScheme.NoSlash:
+                case SecretURLsegmentsScheme.FirstSlash:
+                case SecretURLsegmentsScheme.SecretFolder:
                     throw new UriFormatException($"URL '{secretIdentifierUrl}' is missing a path to Azure secret.");
                 // secret name only (no specific version)
-                case SecretURLpattern.SecretName:
+                case SecretURLsegmentsScheme.SecretName:
                     secretName = secretIdentifierUri.Segments.Last();
                     secretVersion = null;
                     break;
                 // secret including specific version
-                case SecretURLpattern.SecretVersion:
+                case SecretURLsegmentsScheme.SecretVersion:
                     int lastButOne = secretIdentifierUri.Segments.Length - 2;
                     secretName = secretIdentifierUri.Segments[lastButOne];
                     secretVersion = secretIdentifierUri.Segments.Last();

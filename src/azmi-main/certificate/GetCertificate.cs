@@ -63,17 +63,17 @@ namespace azmi_main
             {
                 // certificate (and key) is stored as a secret at the end in Azure
                 string secretIdentifierUrl;
-                // certificate has no specific version:
-                // https://my-key-vault.vault.azure.net/certificates/readThisCertificate
                 if (String.IsNullOrEmpty(certificateVersion))
                 {
+                    // certificate has no specific version:
+                    // https://my-key-vault.vault.azure.net/certificates/readThisCertificate
                     KeyVaultCertificateWithPolicy certificateWithPolicy = certificateClient.GetCertificate(certificateName);
                     secretIdentifierUrl = certificateWithPolicy.SecretId.ToString();
                 }
-                // certificate has specific version:
-                // https://my-key-vault.vault.azure.net/certificates/readThisCertificate/103a7355c6094bc78307b2db7b85b3c2
                 else
                 {
+                    // certificate has specific version:
+                    // https://my-key-vault.vault.azure.net/certificates/readThisCertificate/103a7355c6094bc78307b2db7b85b3c2
                     KeyVaultCertificate certificate = certificateClient.GetCertificateVersion(certificateName, certificateVersion);
                     secretIdentifierUrl = certificate.SecretId.ToString();
                 }
@@ -87,7 +87,11 @@ namespace azmi_main
             }
         }
 
-        private enum CertificateURLpattern
+        //
+        // private methods
+        //
+
+        private enum CertificateURLsegmentsScheme
         {
             // https://my-key-vault.vault.azure.net/certificates/readThisCertificate/013a7355c6094bc78307b2db7b85b3c2
             NoSlash = 0,           //
@@ -110,23 +114,23 @@ namespace azmi_main
             Uri keyVaultUri = new Uri(certificateIdentifierUri.GetLeftPart(UriPartial.Authority));
 
             // Segments = /, certificates/, readThisCertificate/, 013a7355c6094bc78307b2db7b85b3c2
-            CertificateURLpattern segmentsCount = (CertificateURLpattern)certificateIdentifierUri.Segments.Count();
+            CertificateURLsegmentsScheme segmentsCount = (CertificateURLsegmentsScheme)certificateIdentifierUri.Segments.Count();
             string certificateName = null;
             string certificateVersion = null;
 
             switch (segmentsCount)
             {
-                case CertificateURLpattern.NoSlash:
-                case CertificateURLpattern.FirstSlash:
-                case CertificateURLpattern.CertificateFolder:
+                case CertificateURLsegmentsScheme.NoSlash:
+                case CertificateURLsegmentsScheme.FirstSlash:
+                case CertificateURLsegmentsScheme.CertificateFolder:
                     throw new UriFormatException($"URL '{certificateIdentifierUrl}' is missing a path to Azure certificate.");
                 // certificate name only (no specific version)
-                case CertificateURLpattern.CertificateName:
+                case CertificateURLsegmentsScheme.CertificateName:
                     certificateName = certificateIdentifierUri.Segments.Last();
                     certificateVersion = null;
                     break;
                 // certificate including specific version
-                case CertificateURLpattern.CertificateVersion:
+                case CertificateURLsegmentsScheme.CertificateVersion:
                     int lastButOne = certificateIdentifierUri.Segments.Length - 2;
                     certificateName = certificateIdentifierUri.Segments[lastButOne];
                     certificateVersion = certificateIdentifierUri.Segments.Last();
