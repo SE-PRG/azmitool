@@ -120,17 +120,37 @@ test "setblob fails to overwrite on blob" assert.Fail "azmi setblob -f $UPLOADFI
 test "setblob overwrites blob on container" assert.Success "azmi setblob -f $UPLOADFILE --container $CONTAINER_RW --force"
 test "setblob overwrites blob on blob" assert.Success "azmi setblob -f $UPLOADFILE --blob ${CONTAINER_RW}/${UPLOADFILE} --force --verbose"
 
+
+testing class "getcertificate"
+KV_NA="https://azmi-itest-no-access.vault.azure.net"
+KV_RO="https://azmi-itest-r.vault.azure.net"
+test "getcertificate fails on existing but foreign certificate" assert.Fail "azmi getcertificate --certificate ${KV_NA}/certificates/buriedCertificate"
+test "getcertificate OK on RO latest certificate" assert.Success "azmi getcertificate --certificate ${KV_RO}/certificates/readThisCertificate --identity $identity"
+test "getcertificate OK on RO specific version of certificate" assert.Success "azmi getcertificate --certificate ${KV_RO}/certificates/readThisCertificate/103a7355c6094bc78307b2db7b85b3c2 --identity $identity"
+test "getcertificate fails on non-existing specific version of certificate" assert.Fail "azmi getcertificate --certificate ${KV_RO}/certificates/readThisCertificate/xxxxxxxVersionDoesNotExistxxxxxx --identity $identity"
+
+test "getcertificate fails on missing certificate" assert.Fail "azmi getcertificate --certificate ${KV_RO}/certificates/iDoNotExist --identity $identity"
+test "getcertificate fails on invalid URL #1" assert.Fail "azmi getcertificate --certificate ${KV_RO}"
+test "getcertificate fails on invalid URL #2" assert.Fail "azmi getcertificate --certificate ${KV_RO}/"
+test "getcertificate fails on invalid URL #3" assert.Fail "azmi getcertificate --certificate http://azmi-itest-r.vault.azure.net/certificates/readThisCertificate"   # http protocol
+test "getcertificate fails on invalid URL #4" assert.Fail "azmi getcertificate --certificate https:\\\azmi-itest-r.vault.azure.net/certificates/readThisCertificate" # backslashes
+test "getcertificate fails on invalid URL #5" assert.Fail "azmi getcertificate --certificate ${KV_RO}/certificates/readThisCertificate/103a7355c6094bc78307b2db7b85b3c2/iAmTooLong" # too long URL
+
+
 testing class "getsecret"
 KV_NA="https://azmi-itest-no-access.vault.azure.net"
 KV_RO="https://azmi-itest-r.vault.azure.net"
 test "getsecret fails on existing but foreign secret" assert.Fail "azmi getsecret --secret ${KV_NA}/secrets/buriedSecret"
-test "getsecret OK on RO secret" assert.Equals "azmi getsecret --secret ${KV_RO}/secrets/readMyPassword --identity $identity" "LikeThat"
+test "getsecret OK on RO latest secret" assert.Equals "azmi getsecret --secret ${KV_RO}/secrets/ReadPassword --identity $identity" "LikeThat"
+test "getsecret OK on RO specific version of secret" assert.Equals "azmi getsecret --secret ${KV_RO}/secrets/ReadPassword/6f7c24526c4d489594ca27a85edf6176 --identity $identity" "LikeThatSpecifically"
+test "getsecret fails on non-existing specific version of secret" assert.Fail "azmi getsecret --secret ${KV_RO}/secrets/ReadPassword/xxxxxxxVersionDoesNotExistxxxxxx --identity $identity"
 
 test "getsecret fails on missing secret" assert.Fail "azmi getsecret --secret ${KV_RO}/secrets/iDoNotExist --identity $identity"
 test "getsecret fails on invalid URL #1" assert.Fail "azmi getsecret --secret ${KV_RO}"
 test "getsecret fails on invalid URL #2" assert.Fail "azmi getsecret --secret ${KV_RO}/"
-test "getsecret fails on invalid URL #3" assert.Fail "azmi getsecret --secret http://azmi-itest-r.vault.azure.net/secrets/readMyPassword"   # http protocol
-test "getsecret fails on invalid URL #4" assert.Fail "azmi getsecret --secret https:\\\azmi-itest-r.vault.azure.net/secrets/readMyPassword" # backslashes
+test "getsecret fails on invalid URL #3" assert.Fail "azmi getsecret --secret http://azmi-itest-r.vault.azure.net/secrets/ReadPassword"   # http protocol
+test "getsecret fails on invalid URL #4" assert.Fail "azmi getsecret --secret https:\\\azmi-itest-r.vault.azure.net/secrets/ReadPassword" # backslashes
+test "getsecret fails on invalid URL #5" assert.Fail "azmi getsecret --secret ${KV_RO}/secrets/ReadPassword/6f7c24526c4d489594ca27a85edf6176/iAmTooLong" # too long URL
 
 # TODO: Add here setblobs tests
 
@@ -163,13 +183,6 @@ testing class "delete-after-copy"
 test "setblob delete-after-copy upload" assert.Success "azmi setblob --file $UPLOADFILE --container $CONTAINER_RW --force"
 test "getblob remove blob with delete-after-copy" assert.Success "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file $DOWNLOAD_FILE --delete-after-copy"
 test "getblob fails with deleted file" assert.Fail "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file $DOWNLOAD_FILE"
-
-# TODO
-# getSecret fetch non-exisitng version
-# getSecret fetch specific version
-# getSecret fetch latest version
-# too big URL
-# both getSecret() and getCertificate() does ^^
 
 # uninstalling
 testing class "package"
