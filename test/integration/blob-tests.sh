@@ -1,61 +1,16 @@
-#!/bin/bash
-
 # AzMiTool Integration tests
 # It requires Bash Testing Framework
+#
+#   this file is part of set of files!
+#
 
 
 #
 # setup variables
 #
 
-# this script is called from testing framework script, therefore arguments are shifted
-STORAGEACCOUNTNAME=$2
 identity=$3
-
-
-export DEBIAN_FRONTEND=noninteractive
-PACKAGENAME=azmi
-PACKAGEFILE=/tmp/azmiX.deb
-declare -a subCommands=("gettoken" "getblob" "getblobs" "setblob" "listblobs")
-identity_foreign=017dc05c-4d12-4ac2-b5f8-5e239dc8bc54
-
-
-#
-# start testing
-#
-
-testing start "$PACKAGENAME"
-testing class "package"
-test "Install fake package should fail" assert.Fail "apt --assume-yes install somenonexistingpackage"
-
-# dependencies installed?
-test "Check all dependencies are installed" assert.Success "dpkg -s libstdc++6"
-
-test "Install $PACKAGENAME package from file" assert.Success "dpkg -i $PACKAGEFILE"
-test "Verify azmi binary exists and is executable" assert.Success "[ -x /usr/bin/azmi ]"
-
-testing class "help"
-test "Fail if no arguments are provided" assert.Fail "azmi"
-test "Print help and return success status" assert.Success "azmi --help"
-
-for subCommand in "${subCommands[@]}"
-do
-  test "Print help for $subCommand" assert.Success "azmi $subCommand --help"
-  test "$subCommand verbose option" assert.Success "azmi $subCommand --help | grep verbose"
-  test "Fail $subCommand with wrong args" assert.Fail "azmi $subCommand blahblah"
-done
-
-
-testing class "gettoken"
-
-test "gettoken basic" assert.Success "azmi gettoken"
-test "gettoken in JWT format" assert.Success "azmi gettoken --jwt-format | grep typ | grep JWT"
-test "gettoken fails with wrong args" assert.Fail "azmi gettoken blahblah"
-
-#
-# storage subcommands testing
-#
-
+STORAGEACCOUNTNAME=$2
 CONTAINER_NA="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-no-access"
 CONTAINER_RO="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-r"
 CONTAINER_RW="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-rw"
@@ -71,6 +26,10 @@ DATE2=$(date +%s%N) # used in file content
 UPLOADFILE="upload$DATE1.txt"
 echo "$DATE2" > "$UPLOADFILE"
 
+
+#
+# storage subcommands testing
+#
 
 testing class "listblobs"
 BC=5 # blob count
@@ -120,38 +79,6 @@ test "setblob fails to overwrite on blob" assert.Fail "azmi setblob -f $UPLOADFI
 test "setblob overwrites blob on container" assert.Success "azmi setblob -f $UPLOADFILE --container $CONTAINER_RW --force"
 test "setblob overwrites blob on blob" assert.Success "azmi setblob -f $UPLOADFILE --blob ${CONTAINER_RW}/${UPLOADFILE} --force --verbose"
 
-
-testing class "getcertificate"
-KV_NA="https://azmi-itest-no-access.vault.azure.net"
-KV_RO="https://azmi-itest-r.vault.azure.net"
-test "getcertificate fails on existing but foreign certificate" assert.Fail "azmi getcertificate --certificate ${KV_NA}/certificates/buriedCertificate"
-test "getcertificate OK on RO latest certificate" assert.Success "azmi getcertificate --certificate ${KV_RO}/certificates/readThisCertificate --identity $identity | grep MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCdJzK88AQzWXVO"
-test "getcertificate OK on RO specific version of certificate" assert.Success "azmi getcertificate --certificate ${KV_RO}/certificates/readThisCertificate/103a7355c6094bc78307b2db7b85b3c2 --identity $identity | grep MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCvga/z9gy4RG0S"
-test "getcertificate fails on non-existing specific version of certificate" assert.Fail "azmi getcertificate --certificate ${KV_RO}/certificates/readThisCertificate/xxxxxxxVersionDoesNotExistxxxxxx --identity $identity"
-
-test "getcertificate fails on missing certificate" assert.Fail "azmi getcertificate --certificate ${KV_RO}/certificates/iDoNotExist --identity $identity"
-test "getcertificate fails on invalid URL #1" assert.Fail "azmi getcertificate --certificate ${KV_RO}"
-test "getcertificate fails on invalid URL #2" assert.Fail "azmi getcertificate --certificate ${KV_RO}/"
-test "getcertificate fails on invalid URL #3" assert.Fail "azmi getcertificate --certificate http://azmi-itest-r.vault.azure.net/certificates/readThisCertificate"   # http protocol
-test "getcertificate fails on invalid URL #4" assert.Fail "azmi getcertificate --certificate https:\\\azmi-itest-r.vault.azure.net/certificates/readThisCertificate" # backslashes
-test "getcertificate fails on invalid URL #5" assert.Fail "azmi getcertificate --certificate ${KV_RO}/certificates/readThisCertificate/103a7355c6094bc78307b2db7b85b3c2/iAmTooLong" # too long URL
-
-
-testing class "getsecret"
-KV_NA="https://azmi-itest-no-access.vault.azure.net"
-KV_RO="https://azmi-itest-r.vault.azure.net"
-test "getsecret fails on existing but foreign secret" assert.Fail "azmi getsecret --secret ${KV_NA}/secrets/buriedSecret"
-test "getsecret OK on RO latest secret" assert.Equals "azmi getsecret --secret ${KV_RO}/secrets/ReadPassword --identity $identity" "LikeThat"
-test "getsecret OK on RO specific version of secret" assert.Equals "azmi getsecret --secret ${KV_RO}/secrets/ReadPassword/6f7c24526c4d489594ca27a85edf6176 --identity $identity" "LikeThatSpecifically"
-test "getsecret fails on non-existing specific version of secret" assert.Fail "azmi getsecret --secret ${KV_RO}/secrets/ReadPassword/xxxxxxxVersionDoesNotExistxxxxxx --identity $identity"
-
-test "getsecret fails on missing secret" assert.Fail "azmi getsecret --secret ${KV_RO}/secrets/iDoNotExist --identity $identity"
-test "getsecret fails on invalid URL #1" assert.Fail "azmi getsecret --secret ${KV_RO}"
-test "getsecret fails on invalid URL #2" assert.Fail "azmi getsecret --secret ${KV_RO}/"
-test "getsecret fails on invalid URL #3" assert.Fail "azmi getsecret --secret http://azmi-itest-r.vault.azure.net/secrets/ReadPassword"   # http protocol
-test "getsecret fails on invalid URL #4" assert.Fail "azmi getsecret --secret https:\\\azmi-itest-r.vault.azure.net/secrets/ReadPassword" # backslashes
-test "getsecret fails on invalid URL #5" assert.Fail "azmi getsecret --secret ${KV_RO}/secrets/ReadPassword/6f7c24526c4d489594ca27a85edf6176/iAmTooLong" # too long URL
-
 # TODO: Add here setblobs tests
 
 # mixed commands tests
@@ -184,22 +111,9 @@ test "setblob delete-after-copy upload" assert.Success "azmi setblob --file $UPL
 test "getblob remove blob with delete-after-copy" assert.Success "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file $DOWNLOAD_FILE --delete-after-copy"
 test "getblob fails with deleted file" assert.Fail "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file $DOWNLOAD_FILE"
 
-# uninstalling
-testing class "package"
-test "Uninstall packages" assert.Success "apt purge $PACKAGENAME -y"
-test "Verify azmi binary does not exist anymore" assert.Fail "[ -f /usr/bin/azmi ]"
-
 #
 #  Clean up actions
 #
 
 rm "$UPLOADFILE"
 rm -rf $DOWNLOAD_DIR
-
-#################################
-# display some diagnostic data
-################################
-echo -e "\n=============="
-echo "Test running at '$(hostname)' host"
-
-testing end
