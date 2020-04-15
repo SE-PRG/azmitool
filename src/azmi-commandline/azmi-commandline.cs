@@ -48,6 +48,9 @@ namespace azmi_commandline
             // secret
             rootCommand.AddCommand(AzmiCommandLineExtensions.ToCommand<GetSecret, GetSecret.AzmiArgumentsClass>());
 
+            // certificate
+            rootCommand.AddCommand(AzmiCommandLineExtensions.ToCommand<GetCertificate, GetCertificate.AzmiArgumentsClass>());
+
             // return generated command
             return rootCommand;
         }
