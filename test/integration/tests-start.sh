@@ -22,7 +22,7 @@ KV_BASENAME=$4
 export DEBIAN_FRONTEND=noninteractive
 PACKAGENAME=azmi
 PACKAGEFILE=/tmp/azmiX.deb
-declare -a subCommands=("gettoken" "getblob" "getblobs" "setblob" "listblobs" "getsecret")
+declare -a subCommands=("gettoken" "getblob" "getblobs" "setblob" "listblobs" "getsecret" "getcertificate")
 identity_foreign=d8e2f047-99b7-48e8-89d1-0e9b6e0b2464
 
 
