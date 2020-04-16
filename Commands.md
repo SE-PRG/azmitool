@@ -50,17 +50,15 @@ Print token in JSON Web Token (JWT) format.
 |**`azmi getblob`**|Downloads single blob from storage account to a local file.|
 |**`azmi getblobs`**|Downloads multiple blobs from container to a local directory.|
 |**`azmi setblob`**|Writes single local file to a storage account blob.|
-|**`azmi setblobs`** 🚧|Writes multiple local files to a storage account container.|
 
 ## Arguments overview
 
 |**command**|source|destination|other arguments|
 |-|-|-|-|
 |**`listblobs`**|`--container`| *n.a.* |`--prefix`, `--exclude`|
-|**`getblob`**|`--blob`|`--file`|`--if-newer`|
-|**`getblobs`**|`--container`|`--directory`|`--prefix`, `--if-newer`, `--delete-on-copy`, `--exclude`|
+|**`getblob`**|`--blob`|`--file`|`--if-newer`, `--delete-after-copy`|
+|**`getblobs`**|`--container`|`--directory`|`--prefix`, `--if-newer`, `--delete-after-copy`, `--exclude`|
 |**`setblob`**|`--file`|`--blob` or `--container`|`--force`|
-|**`setblobs`**|`--directory`|`--container`| `--force` |
 
 All commands support arguments `--identity` and `--verbose`.
 
@@ -97,12 +95,12 @@ String. Filters results to return only blobs whose name begins with the specifie
 *`--exclude`*
 String. Specifies which blob to exclude from list or download operation.
 
-*`--delete-on-copy`*
+*`--delete-after-copy`*
 Bool. Deletes blob after successful copy. Similar to "move" operations on file system.
 
 ## Known limitations
 
-Commands `listblobs` and `getblobs` return upto 5,000 blobs filtered on Azure API side by argument `--prefix`.
+Commands `listblobs` and `getblobs` return up to 5,000 blobs filtered on Azure API side by argument `--prefix`.
 Filtering with `--exclude` though providing more flexibility with regex, is only client side filtering.
 This means it operates on server filtered set which can be already topped to first 5,000 blobs.
 If storage account has more than 5,000 blobs, it is required to use `--prefix`, otherwise results might be inconclusive.
@@ -111,26 +109,22 @@ If storage account has more than 5,000 blobs, it is required to use `--prefix`, 
 
 |**command**|description|
 |-|-|
-|**`azmi getsecret`** 🚧|Downloads single secret from Azure Key Vault.|
-| T.B.D. | |
+|**`azmi getsecret`**|Downloads single secret from Azure Key Vault.|
 
 ## Arguments overview
 
 |**command**|source|destination|other arguments|
 |-|-|-|-|
-|**`azmi getsecret`**|`--secret`| `--file` or `--stdout` or `--variable` | |
-| T.B.D. | | | |
+|**`azmi getsecret`**|`--secret`| *n.a.* | |
 
 # Key Vault Certificate commands
 
 |**command**|description|
 |-|-|
-|**`azmi getcertificate`** 🚧|Downloads single certificate from Azure Key Vault.|
-| T.B.D. | |
+|**`azmi getcertificate`**|Downloads single certificate from Azure Key Vault.|
 
 ## Arguments overview
 
 |**command**|source|destination|other arguments|
 |-|-|-|-|
-|**`azmi getcertificate`**|`--certificate`| `--file` | |
-| T.B.D. | | | |
+|**`azmi getcertificate`**|`--certificate`| *n.a.* | |
