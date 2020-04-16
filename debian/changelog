@@ -1,8 +1,10 @@
 azmi (0.4.0-1) stable; urgency=medium
 
-  * TBA
+  * Implemented new command: getcertificate
+  * Implemented new functionalities: fetch old versions of secrets and certificates, improved error handling
+  * Full list of issues: https://github.com/SRE-PRG/azmitool/milestone/4?closed=1
 
- -- SRE-PRG <NA@NA.com>  TBA
+ -- SRE-PRG <NA@NA.com>  Thu, 16 Apr 2020 18:27:52 +0200
 
  azmi (0.3.0-1) stable; urgency=medium
 
