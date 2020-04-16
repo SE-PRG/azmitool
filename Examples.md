@@ -76,12 +76,21 @@ If a container has more than 5,000 blobs, , it is required to use `--prefix`, ot
 ## Key Vault Secret commands
 
 ```bash
-azmi getsecret --secret-identifier ${KV_NA}/secrets/buriedSecret
-azmi getsecret --secret-identifier ${KV_RO}/secrets/readMyPassword --identity $identity
+azmi getsecret --secret ${KV_URL}/secrets/buriedSecret
+azmi getsecret --secret ${KV_URL}/secrets/ReadPassword --identity $identity
+azmi getsecret --secret ${KV_URL}/secrets/ReadPassword/6f7c24526c4d489594ca27a85edf6176 --identity $identity
+```
+
+## Key Vault Certificate commands
+
+```bash
+azmi getcertificate --certificate ${KV_URL}/certificates/buriedCertificate
+azmi getcertificate --certificate ${KV_URL}/certificates/readThisCertificate --identity $identity
+azmi getcertificate --certificate ${KV_URL}/certificates/readThisCertificate/103a7355c6094bc78307b2db7b85b3c2
 ```
 
 ### Comments
-Command `getsecret` is currently being built.
+Commands `getsecret` and `getcertificate` are currently being built.
 It may have some changes or new features in near future.
 
 ## Complex examples
