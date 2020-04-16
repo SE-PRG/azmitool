@@ -9,7 +9,7 @@
 #
 
 
-files="tests-start.sh blob-tests.sh secret-tests.sh tests-end.sh"
+files="tests-start.sh blob-tests.sh secret-tests.sh certificate-tests.sh tests-end.sh"
 
 echo prepare test script
 temp_file=$(mktemp /tmp/azmi.XXXXX.sh)
