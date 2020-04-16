@@ -12,14 +12,28 @@ Azure Managed Identity tool - **azmi** - simplifies authentication to Azure reso
 # get token from Azure infrastructure
 azmi gettoken
 
+# list all blobs in a container
+azmi listblobs --container $CONTAINER_URL
+
 # download blob from a storage account container and save to a file
 azmi getblob --blob $BLOB_URL --file $FILE
+
+# download blobs from a storage account container and save them to folder
+azmi getblobs --container $CONTAINER_URL --directory ./downloadBlobsHere  
 
 # upload file as a blob to storage account container
 azmi setblob --file $FILE --container $CONTAINER_URL
 
 # upload file by specifying blob url and identity
 azmi setblob --file ~/info.txt --blob $CONTAINER_URL/myhostname/info.txt --identity 117dc05c-4d12-4ac2-b5f8-5e239dc8bc54
+
+# fetch latest or specific version of a secret from Azure Key Vault
+azmi getsecret --secret $SECRET_URL
+azmi getsecret --secret $SECRET_URL/$VERSION
+
+# fetch latest or specific version of a certificate from Azure Key Vault
+azmi getcertificate --certificate $CERTIFICATE_URL
+azmi getcertificate --certificate $CERTIFICATE_URL/$VERSION
 ```
 
 For more explanations, see detailed [commands overview](./Commands.md).
