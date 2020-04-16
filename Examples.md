@@ -31,7 +31,7 @@ azmi listblobs -c $CONTAINER --prefix $PREFIX | wc -l
 azmi getblob --blob $CONTAINER/$BLOB --file $FILE
 
 # read a blob using specified managed identity
-azmi getblob -b $$BLOBURL --file $FILE --identity $ID
+azmi getblob -b $BLOBURL --file $FILE --identity $ID
 
 # download blob only if newer than existing file
 azmi getblob -b $BLOBURL -f $FILE --if-newer
