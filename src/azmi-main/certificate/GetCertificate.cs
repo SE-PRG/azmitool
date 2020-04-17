@@ -15,11 +15,11 @@ namespace azmi_main
             {
 
                 name = "getcertificate",
-                description = "Fetches latest or specific version of a certificate from key vault.",
+                description = "Fetches latest or specific version of a certificate (PEM or PFX format; certificate(s) and private key bundle) from key vault.",
 
                 arguments = new AzmiArgument[] {
                 new AzmiArgument("certificate", required: true, type: ArgType.url,
-                    description: "URL of a certificate inside of key vault. Examples: https://my-key-vault.vault.azure.net/certificates/readThisCertificate or https://my-key-vault.vault.azure.net/certificates/readThisCertificate/103a7355c6094bc78307b2db7b85b3c2 ."),
+                    description: "URL of a certificate inside of key vault. Examples: https://my-key-vault.vault.azure.net/certificates/readThisCertificate or https://my-key-vault.vault.azure.net/certificates/readThisCertificatePfxFormat/103a7355c6094bc78307b2db7b85b3c2 ."),
                 SharedAzmiArguments.identity,
                 SharedAzmiArguments.verbose
             }
@@ -58,7 +58,14 @@ namespace azmi_main
             var MIcredential = new ManagedIdentityCredential(identity);
             var certificateClient = new CertificateClient(keyVaultUri, MIcredential);
 
-            // Retrieve a certificate
+            // Retrieve a certificate (certificate = certificate and private key bundle in Azure terminology)
+            // PEM (Privacy Enhanced Mail) or PFX (Personal Information Exchange; PKCS#12 archive file format) formats
+            // depends on what content type you set in Azure Key Vault at respective certificate.
+            // Both formats usually contain a certificate (possibly with its assorted set of CA certificates) and the corresponding private key
+
+            // Download CER format (X.509 certificate)
+            // single certificate, alone and without any wrapping (no private key, no password protection, just the certificate)
+            // not supported
             try
             {
                 // certificate (and key) is stored as a secret at the end in Azure

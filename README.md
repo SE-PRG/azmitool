@@ -31,7 +31,7 @@ azmi setblob --file ~/info.txt --blob $CONTAINER_URL/myhostname/info.txt --ident
 azmi getsecret --secret $SECRET_URL
 azmi getsecret --secret $SECRET_URL/$VERSION
 
-# fetch latest or specific version of a certificate from Azure Key Vault
+# fetch latest or specific version of a certificate (PEM or PFX format; certificate(s) and private key bundle) from Azure Key Vault
 azmi getcertificate --certificate $CERTIFICATE_URL
 azmi getcertificate --certificate $CERTIFICATE_URL/$VERSION
 ```

@@ -121,7 +121,7 @@ If storage account has more than 5,000 blobs, it is required to use `--prefix`, 
 
 |**command**|description|
 |-|-|
-|**`azmi getcertificate`**|Downloads single certificate from Azure Key Vault.|
+|**`azmi getcertificate`**|Downloads certificate (PEM of PFX format; certificate(s) and private key bundle) from Azure Key Vault.|
 
 ## Arguments overview
 
