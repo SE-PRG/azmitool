@@ -19,6 +19,7 @@ KV_RO="https://${KV_BASENAME}-r.vault.azure.net"
 # certificate subcommands testing
 #
 
+testing class "getcertificate"
 test "getcertificate fails on existing but foreign certificate" assert.Fail "azmi getcertificate --certificate ${KV_NA}/certificates/buriedCertificate"
 
 test "getcertificate OK on RO latest PEM certificate" assert.Success "azmi getcertificate --certificate ${KV_RO}/certificates/readThisCertificate --identity $identity | grep MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCdJzK88AQzWXVO"
