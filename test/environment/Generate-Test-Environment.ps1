@@ -275,6 +275,3 @@ Remove-Item -Path $TempFile.FullName -Force
 #  Verify and Create Key Vaults
 #
 
-if ($KeyVaultsBaseName -and (Get-AzKeyVault -ResourceGroupName $ResourceGroupName |  )
-
-}
