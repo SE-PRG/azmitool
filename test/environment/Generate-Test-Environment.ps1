@@ -22,6 +22,9 @@ param (
     [string]$StorageAccountName,
 
     [Parameter(Mandatory=$false)]
+    [string]$KeyVaultsBaseName,
+
+    [Parameter(Mandatory=$false)]
     [string]$ManagedIdentityName,
 
     [Parameter()]
@@ -40,9 +43,9 @@ function Write-VVerbose($Message) {Write-Verbose "$(Get-Date -f T)   $Message"}
 function Write-EEror($Message) {Write-Error "$CommandName`: $Message"}
 function Get-RandomDigits($Count) {(1..$Count | % {0..9 | Get-Random}) -join '' }
 
-function Test-StorageAccountName($Name) {
+function Test-DNSName($Name) {
     try {
-        if ([System.Net.Dns]::Resolve($Name + '.blob.core.windows.net')) {
+        if ([System.Net.Dns]::Resolve($Name)) {
             return 'not ok'
         } else {
             return 'ok'
@@ -50,6 +53,18 @@ function Test-StorageAccountName($Name) {
     } catch {
         return 'ok'
     }
+}
+function Test-StorageAccountName($Name) {
+    return Test-DNSName ($Name + '.blob.core.windows.net')
+}
+
+function Test-KeyVaultName($Name) {
+    if (((Test-DNSName ($Name + '-na.vault.azure.net')) -eq 'ok') -and
+        ((Test-DNSName ($Name + '-ro.vault.azure.net')) -eq 'ok')) {
+            return 'ok'
+        } else {
+            return 'not ok'
+        }
 }
 
 function Test-ManagedIdentityName($Name) {
@@ -59,11 +74,7 @@ function Test-ManagedIdentityName($Name) {
         return 'ok'
     }
 }
--r.vault.azure.net
 
-function Test-KeyVaultName($Name) {
-    
-}
 
 function Get-RandomName($TestFunctionName) {
     $RandomDigits = 1;
@@ -261,5 +272,9 @@ Remove-Item -Path $TempFile.FullName -Force
 
 
 #
-#  Create Key Vaults
+#  Verify and Create Key Vaults
 #
+
+if ($KeyVaultsBaseName -and (Get-AzKeyVault -ResourceGroupName $ResourceGroupName |  )
+
+}
