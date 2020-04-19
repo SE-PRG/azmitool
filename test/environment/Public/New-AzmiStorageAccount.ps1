@@ -6,9 +6,6 @@ function New-AzmiStorageAccount {
     [Parameter(Mandatory=$false,Position=0,HelpMessage="Run Get-AzResourceGroup to see existing resource groups")]
         [string]$ResourceGroupName = 'AzmiEnvironment',
 
-        [Parameter(Mandatory=$false,Position=1,HelpMessage="Location for newly created resource group, run Get-AzLocation for options")]
-        [string]$ManagedIdentityName = 'azmitest',
-
         [Parameter(Mandatory=$false,Position=2,HelpMessage="The name of storage account to create")]
         [string]$StorageAccountName
     )
@@ -24,9 +21,12 @@ function New-AzmiStorageAccount {
     #
 
     if ($StorageAccountName) {
-        $SAObj = Get-AzStorageAccount -ea 0 | ? Name -eq $StorageAccountName
+        Write-AzmiVerbose "Checking for existance of Storage account $StorageAccountName..."
+        $SAObj = Get-AzStorageAccount -ea 0 | ? StorageAccountName -eq $StorageAccountName
         if ($SAObj) {
             Write-AzmiVerbose "Storage account $StorageAccountName is existing."
+        } else {
+            Write-AzmiVerbose "Storage account $StorageAccountName is not existing."
         }
     }
 

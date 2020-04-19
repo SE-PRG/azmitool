@@ -26,4 +26,13 @@ function New-AzmiEnvironment {
 )
 
 throw "Not implemented command!"
+
+Test-AzmiSubscription -SubscriptionID $SubscriptionID -Verbose
+New-AzmiResourceGroup -ResourceGroupName $ResourceGroupName -LocationName $LocationName -Verbose
+New-AzmiManagedIdentity -ResourceGroupName $ResourceGroupName -ManagedIdentityName $ManagedIdentityName -Verbose
+New-AzmiStorageAccount -ResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName -Verbose
+# TODO: Catch generated storage account if originally null
+New-AzmiStorageContainers -ResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName
+
+# New-AzmiKeyVaults
 }

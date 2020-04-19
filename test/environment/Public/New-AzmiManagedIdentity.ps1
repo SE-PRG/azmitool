@@ -6,7 +6,7 @@ function New-AzmiManagedIdentity {
         [Parameter(Mandatory=$false,Position=0,HelpMessage="Run Get-AzResourceGroup to see existing resource groups")]
         [string]$ResourceGroupName = 'AzmiEnvironment',
 
-        [Parameter(Mandatory=$false,Position=1,HelpMessage="Location for newly created resource group, run Get-AzLocation for options")]
+        [Parameter(Mandatory=$false,Position=1,HelpMessage="Managed Identity to be used with Azmi testing")]
         [string]$ManagedIdentityName = 'azmitest'
     )
 
@@ -24,7 +24,7 @@ function New-AzmiManagedIdentity {
     Write-AzmiVerbose "Checking managed identity $ManagedIdentityName..."
     $MIObj = Get-AzUserAssignedIdentity -ea 0 | where Name -eq $ManagedIdentityName
     if ($MIObj) {
-        Write-VVerbose "Found existing managed identity $ManagedIdentityName"
+        Write-AzmiVerbose "Found existing managed identity $ManagedIdentityName"
     } else {
         Write-AzmiVerbose "Managed identity $ManagedIdentityName not found."
 
@@ -34,7 +34,7 @@ function New-AzmiManagedIdentity {
 
         if (($pscmdlet.ShouldProcess("Resource Group $ResourceGroupName","Create Managed Identity $ManagedIdentityName"))) {
             Write-AzmiVerbose "Creating new managed identity $ManagedIdentityName..."
-            $MIObj = New-AzResourceGroup -Name $ResourceGroupName -Location $RGObj.Location -ea Stop
+            $MIObj = New-AzUserAssignedIdentity -ResourceGroupName $ResourceGroupName -Name $ManagedIdentityName -Location $RGObj.Location
             Write-AzmiVerbose "New managed identity $ManagedIdentityName created in $ResourceGroupName."
         }
     }
