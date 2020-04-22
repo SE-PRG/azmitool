@@ -31,7 +31,7 @@ azmi setblob --file ~/info.txt --blob $CONTAINER_URL/myhostname/info.txt --ident
 azmi getsecret --secret $SECRET_URL
 azmi getsecret --secret $SECRET_URL/$VERSION
 
-# fetch latest or specific version of a certificate (PEM or PFX format; certificate(s) and private key bundle) from Azure Key Vault
+# fetch latest or specific version of a certificate(s) and private key bundle from Azure Key Vault
 azmi getcertificate --certificate $CERTIFICATE_URL
 azmi getcertificate --certificate $CERTIFICATE_URL/$VERSION
 ```
@@ -85,7 +85,7 @@ Read more:
  
 ## Common errors
 
-By default, `azmi` will display simple, Linux style errors. To discard the error, you can redirect the error stream to nul.
+By default, `azmi` will display simple, Linux style errors. To discard the error, you can redirect the error stream to null.
 To get more verbose error output, use `--verbose` or `-v` switch in command.
 
 - `Missing identity argument` 
@@ -99,6 +99,13 @@ If you run `azmi` on non-Azure VM, you will get the error above.
 - `Identity not found`
 
 If you used `--identity` argument, please verify if you used correct client / application ID
+
+- `Failure processing application bundle.
+Failed to create directory [/var/tmp/.net/azmi/] for extracting bundled files
+A fatal error was encountered. Could not extract contents of the bundle`
+
+You ran `azmi` as a different user in past at your host than current user. Cache for .NET bundle has been created for previous user and can not be re-used. See [open github issue at .NET project](https://github.com/dotnet/runtime/issues/3846).
+Either remove cache directory (e.g. `rm -rf /var/tmp/.net/azmi`) or set specific cache directory for your current user like `export DOTNET_BUNDLE_EXTRACT_BASE_DIR="$HOME/cache_dotnet_bundle_extract`."
 
 ## Pipeline statuses
 
