@@ -130,8 +130,7 @@ If storage account has more than 5,000 blobs, it is required to use `--prefix`, 
 |**`azmi getcertificate`**|`--certificate`| *n.a.* | |
 
 ## Description
-Despite command's name `getcertificate` this command downloads certificate(s) and corresponding private key. Command name `getcertificate` is pointing to "Certificate" object-type in Key Vault.
-https://{keyvault-name}.vault.azure.net/{object-type}/{object-name}/{object-version} .
+Despite command's name `getcertificate` this command downloads certificate(s) and corresponding private key. Command name `getcertificate` is pointing to "Certificate" object-type in Key Vault like https://{keyvault-name}.vault.azure.net/{object-type}/{object-name}/{object-version} .
 
 Command downloads PEM (Privacy Enhanced Mail) or PFX (Personal Information Exchange; PKCS#12 archive file format) formats,
 depending on what content type you set in Azure Key Vault.
