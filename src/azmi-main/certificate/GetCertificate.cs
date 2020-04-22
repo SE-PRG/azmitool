@@ -15,7 +15,7 @@ namespace azmi_main
             {
 
                 name = "getcertificate",
-                description = "Fetches latest or specific version of a certificate (PEM or PFX format; certificate(s) and private key bundle) from key vault.",
+                description = "Fetches latest or specific version of a certificate(s) and private key bundle from key vault.",
 
                 arguments = new AzmiArgument[] {
                 new AzmiArgument("certificate", required: true, type: ArgType.url,
