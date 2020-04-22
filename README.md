@@ -105,7 +105,7 @@ Failed to create directory [/var/tmp/.net/azmi/] for extracting bundled files
 A fatal error was encountered. Could not extract contents of the bundle`
 
 You ran `azmi` as a different user in past at your host than current user. Cache for .NET bundle has been created for previous user and can not be re-used. See [open github issue at .NET project](https://github.com/dotnet/runtime/issues/3846).
-Either remove cache directory (e.g. `rm -rf /var/tmp/.net/azmi`) or set specific cache directory for your current user like `export DOTNET_BUNDLE_EXTRACT_BASE_DIR="$HOME/cache_dotnet_bundle_extract`."
+Either remove cache directory (e.g. `rm -rf /var/tmp/.net/azmi`) or set specific cache directory for your current user like `export DOTNET_BUNDLE_EXTRACT_BASE_DIR="$HOME/cache_dotnet_bundle_extract"` .
 
 ## Pipeline statuses
 
