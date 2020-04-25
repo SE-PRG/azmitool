@@ -7,7 +7,11 @@ function New-AzmiKeyVaults {
         [string]$ResourceGroupName = 'AzmiEnvironment',
 
         [Parameter(Mandatory=$false,Position=1,HelpMessage="The base name for key vaults to create")]
-        [string]$KeyVaultsBaseName
+        [string]$KeyVaultsBaseName,
+
+        [Parameter(Mandatory=$false,Position=2,HelpMessage="The name of managed identity to use or create")]
+        [string]$ManagedIdentityName = 'azmitest'
+
     )
 
 
@@ -63,7 +67,32 @@ function New-AzmiKeyVaults {
                 throw "Failed to create Key Vaults: $_"
             }
         }
+
+        Write-AzmiVerbose "Check for existence of Managed Identity"
+        $MIObj = New-AzmiManagedIdentity -ResourceGroupName $ResourceGroupName -ManagedIdentityName $ManagedIdentityName
+
+        # grant access to RO key vault
+        if (($pscmdlet.ShouldProcess("Key Vault $KeyVaultsBaseName-ro","Grant access"))) {
+            # Get policy on all three services
+            Set-AzKeyVaultAccessPolicy -VaultName "$KeyVaultsBaseName-ro" `
+                -ObjectId $MIObj.PrincipalId `
+                -PermissionsToKeys Get `
+                -PermissionsToSecrets Get `
+                -PermissionsToCertificates Get `
+                -wa 0 -ea Stop
+        }
+
+        # create secrets
+        if (($pscmdlet.ShouldProcess("Key Vault $KeyVaultsBaseName-ro","Create secrets"))) {
+            @('version1','version2') | % {
+                Set-AzKeyVaultSecret -VaultName "$KeyVaultsBaseName-ro" `
+                -Name 'secret1' `
+                -SecretValue (ConvertTo-SecureString $_ -AsPlainText -Force) | Out-Null
+            }
+        }
     }
+
+
 
     # return value
     $KVObjs

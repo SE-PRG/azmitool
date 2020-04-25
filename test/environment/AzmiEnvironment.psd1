@@ -51,7 +51,7 @@ Description = 'Module creates testing environment for azmi-tool'
 # ProcessorArchitecture = ''
 
 # Modules that must be imported into the global environment prior to importing this module
-RequiredModules = @('Az.Accounts','Az.Resources','Az.ManagedServiceIdentity','Az.Storage')
+RequiredModules = @('Az.Accounts','Az.Resources','Az.ManagedServiceIdentity','Az.Storage','Az.KeyVault','Az.Compute')
 
 # Assemblies that must be loaded prior to importing this module
 # RequiredAssemblies = @()
