@@ -21,13 +21,13 @@ CompatiblePSEditions = @('Desktop', 'Core')
 GUID = 'b89e14bb-6cfb-4da3-8ce7-35d2b0ad6ffe'
 
 # Author of this module
-Author = 'iricigor@gmail.com'
+Author = 'Igor Iric'
 
 # Company or vendor of this module
 CompanyName = 'Microsoft'
 
 # Copyright statement for this module
-Copyright = '(c) iiric. All rights reserved.'
+Copyright = '(c) SRE-PRG. All rights reserved.'
 
 # Description of the functionality provided by this module
 Description = 'Module creates testing environment for azmi-tool'
