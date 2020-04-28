@@ -118,6 +118,7 @@ function New-AzmiStorageAccount {
         Write-AzmiVerbose "Create Storage Blobs"
         try {
             $TempFile = New-TemporaryFile
+            Set-Content -Path $TempFile -Value 'Ahoj!'
             Set-AzStorageBlobContent -File $TempFile.FullName -Container 'azmi-na' -Blob 'file1' -Context $SAObj.Context -ea Stop -Verbose:$false | Out-Null
             Set-AzStorageBlobContent -File $TempFile.FullName -Container 'azmi-ro' -Blob 'file1' -Context $SAObj.Context -ea Stop -Verbose:$false | Out-Null
             Set-AzStorageBlobContent -File $TempFile.FullName -Container 'azmi-ls' -Blob 'server1-file1' -Context $SAObj.Context -ea Stop -Verbose:$false | Out-Null

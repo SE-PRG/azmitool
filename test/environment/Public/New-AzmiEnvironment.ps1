@@ -1,4 +1,5 @@
 function New-AzmiEnvironment {
+    [cmdletbinding(SupportsShouldProcess=$True)]
 
     param (
 
