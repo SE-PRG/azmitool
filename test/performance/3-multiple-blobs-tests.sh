@@ -13,8 +13,9 @@ CONT="https://azmitest5.blob.core.windows.net/azmi-pt"
 
 
 printf  "\n=================\n"
-echo "azmi listblobs -c  $CONT"
-time azmi listblobs -c  $CONT | wc -l
+echo "azmi listblobs -c $CONT"
+time azmi listblobs -c $CONT | wc -l
+sleep 1
 
 
 
