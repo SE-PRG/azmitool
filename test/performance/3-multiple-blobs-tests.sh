@@ -3,7 +3,7 @@
 echo 'azmi - build executable'
 dotnet build src/azmi-commandline/azmi-commandline.csproj
 
-exePath=$(cd ./src/azmi-commandline/bin/Debug/netcoreapp3.0; pwd)
+exePath=$(cd ./src/azmi-commandline/bin/Debug/netcoreapp3.0 || exit; pwd)
 PATH="$PATH:$exePath"
 
 echo "azmi getblobs - performance testing, repeat count: 1"
@@ -29,7 +29,7 @@ mkdir download1
 printf  "\n=================\n"
 echo "azmi getblobs -c $CONT -d download1"
 time azmi getblobs -c $CONT -d download1 > /dev/null
-echo "disk usage: `du download1`"
+echo "disk usage: $(du download1)"
 
 
 
@@ -38,4 +38,4 @@ mkdir download2
 printf  "\n=================\n"
 echo "rclone copy pt:azmi-pt ./download2"
 time rclone copy pt:azmi-pt ./download2
-echo "disk usage: `du download2`"
+echo "disk usage: $(du download2)"
