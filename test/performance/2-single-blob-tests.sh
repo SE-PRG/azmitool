@@ -36,8 +36,9 @@ printf  "\n=================\n"
 echo "curl $BLOB"
 
 
-time seq "$REPEAT" | \
-  url="http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https%3A%2F%2Fstorage.azure.com%2F"
+time for ((n=0;n<"$REPEAT";n++))
+do
+  url='http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https%3A%2F%2Fstorage.azure.com%2F'
   token=$(curl -sS "$url" -H Metadata:true | python -c 'import sys, json; print (json.load(sys.stdin)["access_token"])')
   request_date=$(TZ=GMT LC_ALL=en_US.utf8 date "+%a, %d %h %Y %H:%M:%S %Z")
 
@@ -46,7 +47,7 @@ time seq "$REPEAT" | \
      -H "x-ms-version: 2017-11-09" \
      -H "x-ms-date: $request_date" \
      -H "x-ms-blob-type: BlockBlob" > /dev/null
-
+done
 
 
 BLOB="https://azmitest5.blob.core.windows.net/azmi-ro/file2"
@@ -68,7 +69,8 @@ time seq "$REPEAT" | ./"$PREVIOUS_VERSION" getblob --blob $BLOB --file download1
 printf  "\n=================\n"
 echo "curl $BLOB"
 
-time seq "$REPEAT" | \
+time for ((n=0;n<"$REPEAT";n++))
+do
   url='http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https%3A%2F%2Fstorage.azure.com%2F'
   token=$(curl -sS "$url" -H Metadata:true | python -c 'import sys, json; print (json.load(sys.stdin)["access_token"])')
   request_date=$(TZ=GMT LC_ALL=en_US.utf8 date "+%a, %d %h %Y %H:%M:%S %Z")
@@ -78,4 +80,4 @@ time seq "$REPEAT" | \
      -H "x-ms-version: 2017-11-09" \
      -H "x-ms-date: $request_date" \
      -H "x-ms-blob-type: BlockBlob" > /dev/null
-
+done
