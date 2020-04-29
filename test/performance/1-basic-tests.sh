@@ -10,7 +10,7 @@ PATH="$PATH:$exePath"
 
 
 echo "azmi getblob - performance testing, repeat count: $(REPEAT)"
-echo "VM size: $(curl -H Metadata:true "http://169.254.169.254/metadata/instance/compute/vmSize?api-version=2018-10-01&format=text")"
+echo "VM size: $(curl -sS -H Metadata:true "http://169.254.169.254/metadata/instance/compute/vmSize?api-version=2018-10-01&format=text")"
 
 
 printf  "\n=================\n"

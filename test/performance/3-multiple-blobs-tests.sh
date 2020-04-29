@@ -7,7 +7,7 @@ exePath=$(cd ./src/azmi-commandline/bin/Debug/netcoreapp3.0 || exit; pwd)
 PATH="$PATH:$exePath"
 
 echo "azmi getblobs - performance testing, repeat count: 1"
-echo "VM size: $(curl -H Metadata:true "http://169.254.169.254/metadata/instance/compute/vmSize?api-version=2018-10-01&format=text")"
+echo "VM size: $(curl -sS -H Metadata:true "http://169.254.169.254/metadata/instance/compute/vmSize?api-version=2018-10-01&format=text")"
 echo "azmi: $(azmi --version)"
 CONT="https://azmitest5.blob.core.windows.net/azmi-pt"
 
