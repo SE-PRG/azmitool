@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 using Azure.Identity;
@@ -21,14 +22,17 @@ namespace azmi_main
                 new AzmiArgument("certificate", required: true, type: ArgType.url,
                     description: "URL of a certificate inside of key vault. Examples: https://my-key-vault.vault.azure.net/certificates/readThisCertificate or https://my-key-vault.vault.azure.net/certificates/readThisCertificatePfxFormat/103a7355c6094bc78307b2db7b85b3c2 ."),
                 SharedAzmiArguments.identity,
+                new AzmiArgument("file",
+                    description: "Path to local file to which bundle will be saved to. Examples: /tmp/readThisCertificate.crt, ./readThisCertificatePfxFormat.pfx"),
                 SharedAzmiArguments.verbose
-            }
+                }
             };
         }
 
         public class AzmiArgumentsClass : SharedAzmiArgumentsClass
         {
             public string certificate { get; set; }
+            public string file { get; set; }
         }
 
         public List<string> Execute(object options)
@@ -43,7 +47,7 @@ namespace azmi_main
                 throw AzmiException.WrongObject(ex);
             }
 
-            return Execute(opt.certificate, opt.identity).ToStringList();
+            return Execute(opt.certificate, opt.file, opt.identity).ToStringList();
         }
 
 
@@ -51,7 +55,7 @@ namespace azmi_main
         // execute GetCertificate
         //
 
-        public string Execute(string certificateIdentifierUrl, string identity = null)
+        public string Execute(string certificateIdentifierUrl, string filePath = null, string identity = null)
         {
             (Uri keyVaultUri, string certificateName, string certificateVersion) = ValidateAndParseCertificateURL(certificateIdentifierUrl);
 
@@ -85,8 +89,19 @@ namespace azmi_main
                     secretIdentifierUrl = certificate.SecretId.ToString();
                 }
 
-                string secret = new GetSecret().Execute(secretIdentifierUrl, identity);
-                return secret;
+                // filePath: null means get secret into variable only
+                // otherwise secret may be unintentionally saved to file by GetSecret() method
+                string secret = new GetSecret().Execute(secretIdentifierUrl, filePath: null, identity);
+
+                if (String.IsNullOrEmpty(filePath))
+                {   // print to stdout
+                    return secret;
+                }
+                else
+                {   // creates or overwrites file and saves secret into it
+                    File.WriteAllText(filePath, secret);
+                    return "Saved";
+                }
             }
             catch (Exception ex)
             {

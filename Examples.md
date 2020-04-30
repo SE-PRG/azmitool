@@ -77,6 +77,7 @@ If a container has more than 5,000 blobs, , it is required to use `--prefix`, ot
 
 ```bash
 azmi getsecret --secret ${KV_URL}/secrets/buriedSecret
+azmi getsecret --secret ${KV_URL}/secrets/buriedSecret --file $file
 azmi getsecret --secret ${KV_URL}/secrets/ReadPassword --identity $identity
 azmi getsecret --secret ${KV_URL}/secrets/ReadPassword/6f7c24526c4d489594ca27a85edf6176 --identity $identity
 ```
@@ -85,6 +86,7 @@ azmi getsecret --secret ${KV_URL}/secrets/ReadPassword/6f7c24526c4d489594ca27a85
 
 ```bash
 azmi getcertificate --certificate ${KV_URL}/certificates/buriedCertificate
+azmi getcertificate --certificate ${KV_URL}/certificates/buriedCertificate --file $file
 azmi getcertificate --certificate ${KV_URL}/certificates/readThisCertificate --identity $identity
 azmi getcertificate --certificate ${KV_URL}/certificates/readThisCertificatePfxFormat/103a7355c6094bc78307b2db7b85b3c2
 ```

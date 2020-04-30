@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
@@ -22,6 +23,8 @@ namespace azmi_main
                     new AzmiArgument("secret", required: true, type: ArgType.url,
                         description: "URL of a secret inside of key vault. Examples: https://my-key-vault.vault.azure.net/secrets/mySecret.pwd or https://my-key-vault.vault.azure.net/secrets/mySecret.pwd/67d1f6c499824607b81d5fa852f9865c ."),
                     SharedAzmiArguments.identity,
+                    new AzmiArgument("file",
+                        description: "Path to local file to which secret will be saved to. Examples: /tmp/mySecret.pwd, ./mySecret.pwd"),
                     SharedAzmiArguments.verbose
                 }
             };
@@ -30,6 +33,7 @@ namespace azmi_main
         public class AzmiArgumentsClass : SharedAzmiArgumentsClass
         {
             public string secret { get; set; }
+            public string file { get; set; }
         }
 
         public List<string> Execute(object options)
@@ -43,14 +47,14 @@ namespace azmi_main
                 throw AzmiException.WrongObject(ex);
             }
 
-            return Execute(opt.secret, opt.identity).ToStringList();
+            return Execute(opt.secret, opt.file, opt.identity).ToStringList();
         }
 
         //
         // execute GetSecret
         //
 
-        public string Execute(string secretIdentifierUrl, string identity = null)
+        public string Execute(string secretIdentifierUrl, string filePath = null, string identity = null)
         {
             (Uri keyVaultUri, string secretName, string secretVersion) = ValidateAndParseSecretURL(secretIdentifierUrl);
 
@@ -61,7 +65,17 @@ namespace azmi_main
             try
             {
                 KeyVaultSecret secret = secretClient.GetSecret(secretName, secretVersion);
-                return secret.Value;
+                string secretValue = secret.Value;
+
+                if (String.IsNullOrEmpty(filePath))
+                {   // print to stdout
+                    return secretValue;
+                }
+                else
+                {   // creates or overwrites file and saves secret into it
+                    File.WriteAllText(filePath, secretValue);
+                    return "Saved";
+                }
             } catch (Exception ex)
             {
                 throw AzmiException.IDCheck(identity, ex);
