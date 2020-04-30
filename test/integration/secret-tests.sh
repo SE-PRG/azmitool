@@ -22,6 +22,8 @@ KV_RO="https://${KV_BASENAME}-r.vault.azure.net"
 testing class "getsecret"
 test "getsecret fails on existing but foreign secret" assert.Fail "azmi getsecret --secret ${KV_NA}/secrets/buriedSecret"
 test "getsecret OK on RO latest secret" assert.Equals "azmi getsecret --secret ${KV_RO}/secrets/ReadPassword --identity $identity" "LikeThat"
+test "getsecret OK on RO latest secret save to file - relative path" assert.Success "azmi getsecret --secret ${KV_RO}/secrets/ReadPassword --file download.txt --identity $identity && grep LikeThat download.txt"
+test "getsecret the same but absolute path" assert.Success "azmi getsecret --secret ${KV_RO}/secrets/ReadPassword -f /var/tmp/download.txt --identity $identity && grep LikeThat /var/tmp/download.txt"
 test "getsecret OK on RO specific version of secret" assert.Equals "azmi getsecret --secret ${KV_RO}/secrets/ReadPassword/6f7c24526c4d489594ca27a85edf6176 --identity $identity" "LikeThatSpecifically"
 test "getsecret fails on non-existing specific version of secret" assert.Fail "azmi getsecret --secret ${KV_RO}/secrets/ReadPassword/xxxxxxxVersionDoesNotExistxxxxxx --identity $identity"
 

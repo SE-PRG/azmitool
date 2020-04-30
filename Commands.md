@@ -115,7 +115,7 @@ If storage account has more than 5,000 blobs, it is required to use `--prefix`, 
 
 |**command**|source|destination|other arguments|
 |-|-|-|-|
-|**`azmi getsecret`**|`--secret`| *n.a.* | |
+|**`azmi getsecret`**|`--secret`| `--file` | *n.a.* |
 
 # Key Vault Certificate commands
 
@@ -127,7 +127,7 @@ If storage account has more than 5,000 blobs, it is required to use `--prefix`, 
 
 |**command**|source|destination|other arguments|
 |-|-|-|-|
-|**`azmi getcertificate`**|`--certificate`| *n.a.* | |
+|**`azmi getcertificate`**|`--certificate`| `--file` | *n.a.* |
 
 ## Description
 Despite command's name `getcertificate` this command downloads certificate(s) and corresponding private key. Command name `getcertificate` is pointing to "Certificate" object-type in Key Vault like `https://{keyvault-name}.vault.azure.net/{object-type}/{object-name}/{object-version}` . In context of Azure Portal GUI:
