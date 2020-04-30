@@ -4,10 +4,12 @@ REPEAT=$1
 PREVIOUS_VERSION=$2
 
 echo 'azmi - build executable'
-dotnet build src/azmi-commandline/azmi-commandline.csproj
+# dotnet build src/azmi-commandline/azmi-commandline.csproj
+dotnet publish ./src/azmi-commandline/azmi-commandline.csproj --configuration Release --self-contained true /p:PublishSingleFile=true --runtime linux-x64
 
-exePath=$(cd ./src/azmi-commandline/bin/Debug/netcoreapp3.0 || exit; pwd)
-PATH="$PATH:$exePath"
+#exePath=$(cd ./src/azmi-commandline/bin/Debug/netcoreapp3.0 || exit; pwd)
+exePath=$(cd ./src/azmi-commandline/bin/Release/netcoreapp3.0/linux-x64/publish || exit; pwd)
+PATH="$exePath:$PATH"
 
 
 echo "azmi getblob - performance testing, repeat count: $REPEAT"
@@ -28,7 +30,7 @@ wget --quiet https://azmideb.blob.core.windows.net/azmi-deb/archive/"$PREVIOUS_V
 chmod +x ./"$PREVIOUS_VERSION"
 ./"$PREVIOUS_VERSION" --version
 
-time seq "$REPEAT" | ./"$PREVIOUS_VERSION" getblob --blob $BLOB --file download1.txt --verbose > /dev/null
+time seq "$REPEAT" | ./"$PREVIOUS_VERSION" getblob --blob $BLOB --file download1.txt > /dev/null
 
 
 
