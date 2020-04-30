@@ -12,7 +12,8 @@ PATH="$exePath:$PATH"
 export DOTNET_BUNDLE_EXTRACT_BASE_DIR="$HOME/cache_dotnet_bundle_extract"
 
 
-echo "azmi getblob - performance testing, repeat count: $(REPEAT)"
+printf  "\n=================\n"
+echo "azmi getblob - performance testing, repeat count: $REPEAT"
 echo "VM size: $(curl -sS -H Metadata:true "http://169.254.169.254/metadata/instance/compute/vmSize?api-version=2018-10-01&format=text")"
 
 
