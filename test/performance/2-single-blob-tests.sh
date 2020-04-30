@@ -10,6 +10,7 @@ dotnet publish ./src/azmi-commandline/azmi-commandline.csproj --configuration Re
 #exePath=$(cd ./src/azmi-commandline/bin/Debug/netcoreapp3.0 || exit; pwd)
 exePath=$(cd ./src/azmi-commandline/bin/Release/netcoreapp3.0/linux-x64/publish || exit; pwd)
 PATH="$exePath:$PATH"
+export DOTNET_BUNDLE_EXTRACT_BASE_DIR="$HOME/cache_dotnet_bundle_extract"
 
 
 printf  "\n=================\n"
@@ -26,7 +27,6 @@ time seq "$REPEAT" | azmi getblob --blob $BLOB --file download1.txt > /dev/null
 
 printf  "\n=================\n"
 echo "$PREVIOUS_VERSION getblob --blob $BLOB --file download.txt"
-export DOTNET_BUNDLE_EXTRACT_BASE_DIR="$HOME/cache_dotnet_bundle_extract"
 wget --quiet https://azmideb.blob.core.windows.net/azmi-deb/archive/"$PREVIOUS_VERSION"
 chmod +x ./"$PREVIOUS_VERSION"
 ./"$PREVIOUS_VERSION" --version
