@@ -14,6 +14,7 @@
 # list of test files
 files="
 01-common.sh
+99-tests-end.sh
 "
 
 echo prepare test script
