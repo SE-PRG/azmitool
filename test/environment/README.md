@@ -12,12 +12,11 @@ https://github.com/SRE-PRG/azmitool
 
 ## Basic Usage
 
-Prior to using this PowerShell module you need to import it.
+Prior to using this PowerShell module you need to import it. No local admin rights are needed.
 
 ```PowerShell
 git clone https://github.com/SRE-PRG/azmitool # skip if you already have it clonned
-
-Import-Module .\test\environment\AzmiEnvironment.psd1 -Force
+Import-Module .\azmitool\test\environment\AzmiEnvironment.psd1 -Force
 ```
 
 After this you will get additional commands in your session, which will enable you to create environment. The most simple way how to create it, is like this:
@@ -43,6 +42,9 @@ In order to create new resource group and assign permissions on objects within, 
 If you are using existing resource group, then it is enough to have owner rights on that resource group.
 
 Due to Key Vault limitations, you cannot use AAD guest accounts for creating this environment.
+
+On your local environment (laptop or desktop machine), you do not need to have any special rights.
+Module will download and install required dependant Azure modules.
 
 ## Module commands
 
