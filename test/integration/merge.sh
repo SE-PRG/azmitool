@@ -9,7 +9,12 @@
 #
 
 
-files="tests-start.sh blob-tests.sh secret-tests.sh certificate-tests.sh tests-end.sh"
+#files="tests-start.sh blob-tests.sh secret-tests.sh certificate-tests.sh tests-end.sh"
+
+# list of test files
+files="
+01-common.sh
+"
 
 echo prepare test script
 temp_file=$(mktemp /tmp/azmi.XXXXX.sh)
@@ -20,4 +25,4 @@ do
     cat $script >> $temp_file
 done
 
-ls -l $temp_file
+ls -l "$temp_file"
