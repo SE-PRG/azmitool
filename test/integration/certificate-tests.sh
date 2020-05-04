@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # AzMiTool Integration tests
 # It requires Bash Testing Framework
 #
@@ -11,8 +13,8 @@
 
 identity=$3
 KV_BASENAME=$4
-KV_NA="https://${KV_BASENAME}-no-access.vault.azure.net"
-KV_RO="https://${KV_BASENAME}-r.vault.azure.net"
+KV_NA="https://${KV_BASENAME}-na.vault.azure.net"
+KV_RO="https://${KV_BASENAME}-ro.vault.azure.net"
 
 
 #

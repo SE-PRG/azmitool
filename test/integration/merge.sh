@@ -15,6 +15,7 @@
 files="
 01-common.sh
 blob-tests.sh
+secret-tests.sh
 99-tests-end.sh
 "
 

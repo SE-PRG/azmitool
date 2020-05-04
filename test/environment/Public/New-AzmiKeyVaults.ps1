@@ -83,11 +83,13 @@ function New-AzmiKeyVaults {
         }
 
         # create secrets
-        if (($pscmdlet.ShouldProcess("Key Vault $KeyVaultsBaseName-ro","Create secrets"))) {
-            @('version1','version2') | % {
-                Set-AzKeyVaultSecret -VaultName "$KeyVaultsBaseName-ro" `
-                -Name 'secret1' `
-                -SecretValue (ConvertTo-SecureString $_ -AsPlainText -Force) | Out-Null
+        foreach ($KeyVaultName in @("$KeyVaultsBaseName-ro","$KeyVaultsBaseName-na")) {
+            if (($pscmdlet.ShouldProcess("Key Vault $KeyVaultName","Create secrets"))) {
+                foreach ($SecretValue in @('version1','version2')) {
+                    Set-AzKeyVaultSecret -VaultName $KeyVaultName `
+                        -Name 'secret1' `
+                        -SecretValue (ConvertTo-SecureString $SecretValue -AsPlainText -Force) | Out-Null
+                }
             }
         }
     }
