@@ -26,7 +26,7 @@ It also provides seamless integration into Azure DevOps testing pages.
 
 This is still work in progress!
 Once completed we can remove reference to pipelines above.
-Later we need to add release pipeline also, that would include 
+Later we need to add release pipeline also, that would include also compliance requirements.
 
 Unified pipeline will create `azmi` executable from the source code.
 It can be executed also on a dev branch.

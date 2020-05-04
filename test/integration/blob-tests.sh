@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # AzMiTool Integration tests
 # It requires Bash Testing Framework
 #
@@ -11,13 +13,13 @@
 
 identity=$3
 STORAGEACCOUNTNAME=$2
-CONTAINER_NA="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-no-access"
-CONTAINER_RO="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-r"
-CONTAINER_RW="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-rw"
-CONTAINER_LB="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-itest-listblobs"
+CONTAINER_NA="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-na"
+CONTAINER_RO="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-ro"
+CONTAINER_RW="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-rw"
+CONTAINER_LB="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-ls"
 
-BLOB_NA="restricted_access_blob.txt"
-BLOB_RO="read_only_blob.txt"
+BLOB_NA="file1"
+BLOB_RO="file1"
 DOWNLOAD_FILE="download.txt"
 DOWNLOAD_DIR="./Download"
 # prepare test upload file
