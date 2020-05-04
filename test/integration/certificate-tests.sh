@@ -22,7 +22,7 @@ KV_RO="https://${KV_BASENAME}-ro.vault.azure.net"
 #
 
 testing class "getcertificate"
-test "getcertificate fails on existing but foreign certificate" assert.Fail "azmi getcertificate --certificate ${KV_NA}/certificates/buriedCertificate"
+test "getcertificate fails on NA KeyVault" assert.Fail "azmi getcertificate --certificate ${KV_NA}/certificates/buriedCertificate"
 
 test "getcertificate OK on RO latest PEM certificate" assert.Success "azmi getcertificate --certificate ${KV_RO}/certificates/readThisCertificate --identity $identity | grep MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCdJzK88AQzWXVO"
 test "getcertificate the same but save to file - relative path" assert.Success "azmi getcertificate --certificate ${KV_RO}/certificates/readThisCertificate --file download.txt --identity $identity && grep MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCdJzK88AQzWXVO download.txt"
@@ -35,6 +35,7 @@ test "getcertificate OK on RO specific version of PFX certificate" assert.Succes
 test "getcertificate fails on non-existing specific version of certificate" assert.Fail "azmi getcertificate --certificate ${KV_RO}/certificates/readThisCertificate/xxxxxxxVersionDoesNotExistxxxxxx --identity $identity"
 test "getcertificate fails on missing certificate" assert.Fail "azmi getcertificate --certificate ${KV_RO}/certificates/iDoNotExist --identity $identity"
 
+testing class "getcertificate url"
 test "getcertificate fails on invalid URL #1" assert.Fail "azmi getcertificate --certificate ${KV_RO}"
 test "getcertificate fails on invalid URL #2" assert.Fail "azmi getcertificate --certificate ${KV_RO}/"
 test "getcertificate fails on invalid URL #3" assert.Fail "azmi getcertificate --certificate http://azmi-itest-r.vault.azure.net/certificates/readThisCertificate"   # http protocol

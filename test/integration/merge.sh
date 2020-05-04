@@ -9,13 +9,13 @@
 #
 
 
-#files="tests-start.sh blob-tests.sh secret-tests.sh certificate-tests.sh tests-end.sh"
 
 # list of test files
 files="
 01-common.sh
 blob-tests.sh
 secret-tests.sh
+certificate-tests.sh
 99-tests-end.sh
 "
 

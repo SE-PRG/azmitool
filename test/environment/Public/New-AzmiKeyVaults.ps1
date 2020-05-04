@@ -92,6 +92,21 @@ function New-AzmiKeyVaults {
                 }
             }
         }
+        Add-AzKeyVaultCertificate -Name pem.pem -VaultName 'azmitest4-ro' -CertificatePolicy
+        # create secrets
+        foreach ($KeyVaultName in @("$KeyVaultsBaseName-ro","$KeyVaultsBaseName-na")) {
+            if (($pscmdlet.ShouldProcess("Key Vault $KeyVaultName","Create certificates"))) {
+                foreach ($Version in (1,2)) {
+                    foreach ($CertFormat in ('pfx','pem')) {
+                        # TODO: Not working!
+                        Import-AzKeyVaultCertificate -VaultName $KeyVaultName `
+                            -Name "$CertFormat" `
+                            -FilePath "$CertFormat$Version.$CertFormat"
+                    }
+                }
+            }
+        }
+
     }
 
 

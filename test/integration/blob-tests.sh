@@ -11,8 +11,8 @@
 # setup variables
 #
 
-STORAGEACCOUNTNAME=$2
 identity=$3
+STORAGEACCOUNTNAME=$2
 CONTAINER_NA="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-na"
 CONTAINER_RO="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-ro"
 CONTAINER_RW="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-rw"

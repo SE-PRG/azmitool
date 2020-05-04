@@ -31,10 +31,11 @@ test "getsecret fails on NA KeyVault" assert.Fail "azmi getsecret --secret ${KV_
 test "getsecret OK on RO KV" assert.Equals "azmi getsecret --secret ${KV_RO}/secrets/${SECRET} --identity $identity" "version2"
 test "getsecret OK on RO KV with relative path" assert.Success "azmi getsecret --secret ${KV_RO}/secrets/${SECRET} --file download.txt --identity $identity && grep version2 download.txt"
 test "getsecret OK on RO KV with absolute path" assert.Success "azmi getsecret --secret ${KV_RO}/secrets/${SECRET} -f /var/tmp/download.txt --identity $identity && grep version2 /var/tmp/download.txt"
-test "getsecret OK on RO specific version of secret" assert.Equals "azmi getsecret --secret ${KV_RO}/secrets/${SECRET}/$older_version_id --identity $identity" "version1"
-test "getsecret fails on non-existing specific version of secret" assert.Fail "azmi getsecret --secret ${KV_RO}/secrets/${SECRET}/xxxxxxxVersionDoesNotExistxxxxxx --identity $identity"
-
+test "getsecret OK on RO secret version" assert.Equals "azmi getsecret --secret ${KV_RO}/secrets/${SECRET}/$older_version_id --identity $identity" "version1"
+test "getsecret fails on missing secret version" assert.Fail "azmi getsecret --secret ${KV_RO}/secrets/${SECRET}/xxxxxxxVersionDoesNotExistxxxxxx --identity $identity"
 test "getsecret fails on missing secret" assert.Fail "azmi getsecret --secret ${KV_RO}/secrets/iDoNotExist --identity $identity"
+
+testing class "getsecret url"
 test "getsecret fails on invalid URL #1" assert.Fail "azmi getsecret --secret ${KV_RO}"
 test "getsecret fails on invalid URL #2" assert.Fail "azmi getsecret --secret ${KV_RO}/"
 test "getsecret fails on invalid URL #3" assert.Fail "azmi getsecret --secret http://azmi-itest-r.vault.azure.net/secrets/ReadPassword"   # http protocol
