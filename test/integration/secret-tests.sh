@@ -25,7 +25,7 @@ SECRET="secret1"
 
 testing class "getsecret"
 test "getsecret fails on NA KeyVault" assert.Fail "azmi getsecret --secret ${KV_NA}/secrets/${SECRET}"
-test "getsecret OK on RO KV" assert.Equals "azmi getsecret --secret ${KV_RO}/secrets/${SECRET} --identity $identity" "LikeThat"
+test "getsecret OK on RO KV" assert.Equals "azmi getsecret --secret ${KV_RO}/secrets/${SECRET} --identity $identity" "version2"
 test "getsecret OK on RO KV with relative path" assert.Success "azmi getsecret --secret ${KV_RO}/secrets/${SECRET} --file download.txt --identity $identity && grep LikeThat download.txt"
 test "getsecret OK on RO KV with absolute path" assert.Success "azmi getsecret --secret ${KV_RO}/secrets/${SECRET} -f /var/tmp/download.txt --identity $identity && grep LikeThat /var/tmp/download.txt"
 test "getsecret OK on RO specific version of secret" assert.Equals "azmi getsecret --secret ${KV_RO}/secrets/ReadPassword/6f7c24526c4d489594ca27a85edf6176 --identity $identity" "LikeThatSpecifically"
