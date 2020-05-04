@@ -15,7 +15,8 @@
 
 identity=$3
 KV_BASENAME=$4
-older_version_id="61d2262ca4e54ba79de5411fbdbb84be"
+older_version_id=$5
+#older_version_id="61d2262ca4e54ba79de5411fbdbb84be"
 # TODO: Move above to pipeline variable!
 KV_NA="https://${KV_BASENAME}-na.vault.azure.net"
 KV_RO="https://${KV_BASENAME}-ro.vault.azure.net"
