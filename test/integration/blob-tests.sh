@@ -11,8 +11,8 @@
 # setup variables
 #
 
-identity=$3
 STORAGEACCOUNTNAME=$2
+identity=$3
 CONTAINER_NA="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-na"
 CONTAINER_RO="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-ro"
 CONTAINER_RW="https://${STORAGEACCOUNTNAME}.blob.core.windows.net/azmi-rw"
@@ -37,13 +37,13 @@ testing class "listblobs"
 BC=5 # blob count
 test "listblobs basic" assert.Success "azmi listblobs --container $CONTAINER_LB"
 test "listblobs finds $BC blobs" assert.Equals "azmi listblobs --container $CONTAINER_LB | wc -l" $BC
-BC=3; PREFIX="neu-pre"
+BC=3; PREFIX="server1"
 test "listblobs finds $BC blobs with prefix $PREFIX" assert.Equals "azmi listblobs -c $CONTAINER_LB --prefix $PREFIX | wc -l" $BC
-BC=1; PREFIX="neu-pre-show-me-only"
+BC=2; PREFIX="server2"
 test "listblobs finds $BC blobs with prefix $PREFIX" assert.Equals "azmi listblobs -c $CONTAINER_LB --prefix $PREFIX | wc -l" $BC
-BC=0; PREFIX="noBlobsShouldDownload"
+BC=0; PREFIX="notExisting"
 test "listblobs finds $BC blobs with prefix $PREFIX" assert.Equals "azmi listblobs -c $CONTAINER_LB --prefix $PREFIX | wc -l" $BC
-BC=4; EXCLUDE="HelloWorld.txt"
+BC=3; EXCLUDE="server2"
 test "listblobs finds $BC blobs excluding $EXCLUDE" assert.Equals "azmi listblobs -c $CONTAINER_LB --exclude $EXCLUDE | wc -l" $BC
 
 
@@ -62,11 +62,11 @@ testing class "getblobs"
 BC=5; rm -rf $DOWNLOAD_DIR
 test "getblobs downloads $BC blobs" assert.Equals "azmi getblobs --container $CONTAINER_LB --directory $DOWNLOAD_DIR | grep Success | wc -l" $((BC+1))
 # there is one extra line for summary
-BC=3; PREFIX="neu-pre"; rm -rf $DOWNLOAD_DIR
+BC=3; PREFIX="server1"; rm -rf $DOWNLOAD_DIR
 test "getblobs downloads $BC blobs with prefix $PREFIX" assert.Equals "azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --prefix $PREFIX | grep Success | wc -l" $((BC+1))
-BC=0; PREFIX="noBlobsShouldDownload"; rm -rf $DOWNLOAD_DIR
+BC=0; PREFIX="notExisting"; rm -rf $DOWNLOAD_DIR
 test "getblobs downloads $BC blobs with prefix $PREFIX" assert.Equals "azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --prefix $PREFIX | wc -l" $BC
-BC=4; EXCLUDE="neu-pre-logboxA1"; rm -rf $DOWNLOAD_DIR
+BC=3; EXCLUDE="server2"; rm -rf $DOWNLOAD_DIR
 test "getblobs downloads $BC blobs excluding $EXCLUDE" assert.Equals "azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --exclude $EXCLUDE | grep Success | wc -l" $((BC+1))
 
 
