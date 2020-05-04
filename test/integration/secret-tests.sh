@@ -15,6 +15,8 @@
 
 identity=$3
 KV_BASENAME=$4
+older_version_id="61d2262ca4e54ba79de5411fbdbb84be"
+# TODO: Move above to pipeline variable!
 KV_NA="https://${KV_BASENAME}-na.vault.azure.net"
 KV_RO="https://${KV_BASENAME}-ro.vault.azure.net"
 SECRET="secret1"
@@ -26,10 +28,10 @@ SECRET="secret1"
 testing class "getsecret"
 test "getsecret fails on NA KeyVault" assert.Fail "azmi getsecret --secret ${KV_NA}/secrets/${SECRET}"
 test "getsecret OK on RO KV" assert.Equals "azmi getsecret --secret ${KV_RO}/secrets/${SECRET} --identity $identity" "version2"
-test "getsecret OK on RO KV with relative path" assert.Success "azmi getsecret --secret ${KV_RO}/secrets/${SECRET} --file download.txt --identity $identity && grep LikeThat download.txt"
-test "getsecret OK on RO KV with absolute path" assert.Success "azmi getsecret --secret ${KV_RO}/secrets/${SECRET} -f /var/tmp/download.txt --identity $identity && grep LikeThat /var/tmp/download.txt"
-test "getsecret OK on RO specific version of secret" assert.Equals "azmi getsecret --secret ${KV_RO}/secrets/ReadPassword/6f7c24526c4d489594ca27a85edf6176 --identity $identity" "LikeThatSpecifically"
-test "getsecret fails on non-existing specific version of secret" assert.Fail "azmi getsecret --secret ${KV_RO}/secrets/ReadPassword/xxxxxxxVersionDoesNotExistxxxxxx --identity $identity"
+test "getsecret OK on RO KV with relative path" assert.Success "azmi getsecret --secret ${KV_RO}/secrets/${SECRET} --file download.txt --identity $identity && grep version2 download.txt"
+test "getsecret OK on RO KV with absolute path" assert.Success "azmi getsecret --secret ${KV_RO}/secrets/${SECRET} -f /var/tmp/download.txt --identity $identity && grep version2 /var/tmp/download.txt"
+test "getsecret OK on RO specific version of secret" assert.Equals "azmi getsecret --secret ${KV_RO}/secrets/${SECRET}/$older_version_id --identity $identity" "version1"
+test "getsecret fails on non-existing specific version of secret" assert.Fail "azmi getsecret --secret ${KV_RO}/secrets/${SECRET}/xxxxxxxVersionDoesNotExistxxxxxx --identity $identity"
 
 test "getsecret fails on missing secret" assert.Fail "azmi getsecret --secret ${KV_RO}/secrets/iDoNotExist --identity $identity"
 test "getsecret fails on invalid URL #1" assert.Fail "azmi getsecret --secret ${KV_RO}"
