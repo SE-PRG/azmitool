@@ -83,6 +83,10 @@ Azmi is not working across different AAD tenants.
 Read more:
 - [Managed identities for Azure resources](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview)
  
+## Performance
+
+Because `azmi` is written in c# / dotnet, its performance are dependant on your VM size. On Basic VM sizes, performance will be slower than native Linux commands or tools, like `curl` or `rclone`. We recommend Standard or Compute optimized VM sizes (like F2 or larger) where `azmi` performs better than `curl` tool for example.
+
 ## Common errors
 
 By default, `azmi` will display simple, Linux style errors. To discard the error, you can redirect the error stream to null.
