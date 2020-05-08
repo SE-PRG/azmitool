@@ -6,7 +6,7 @@ dotnet publish ./src/azmi-commandline/azmi-commandline.csproj --configuration Re
 
 #exePath=$(cd ./src/azmi-commandline/bin/Debug/netcoreapp3.0 || exit; pwd)
 exePath=$(cd ./src/azmi-commandline/bin/Release/netcoreapp3.0/linux-x64/publish || exit; pwd)
-PATH="$exePath:$PATH"
+export PATH="$exePath:$PATH"
 export DOTNET_BUNDLE_EXTRACT_BASE_DIR="$HOME/cache_dotnet_bundle_extract"
 
 printf  "\n=================\n"
