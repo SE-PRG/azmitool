@@ -24,7 +24,6 @@ temp_file=$(mktemp /tmp/azmi.XXXXX.sh)
 
 for script in $files
 do
-    #echo "$script"
     cat "$script" >> "$temp_file"
 done
 
