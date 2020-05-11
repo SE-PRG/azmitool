@@ -82,35 +82,49 @@ function New-AzmiKeyVaults {
                 -wa 0 -ea Stop
         }
 
+        $ContentMapping = @{
+            'pem' = 'application/x-pkcs12'
+            'pfx' = 'application/x-pem-file'
+        }
+
+        # create certificates
+        foreach ($KeyVaultName in @("$KeyVaultsBaseName-ro","$KeyVaultsBaseName-na")) {
+            if (($pscmdlet.ShouldProcess("Key Vault $KeyVaultName","Create certificates"))) {
+                foreach ($CertFormat in ('pfx','pem')) {
+                    $Policy = New-AzKeyVaultCertificatePolicy `
+                        -SecretContentType $ContentMapping.$CertFormat `
+                        -SubjectName "CN=azmi.test" `
+                        -IssuerName "Self"
+                    Add-AzKeyVaultCertificate -VaultName $KeyVaultName -Name "$CertFormat-cert" -CertificatePolicy $Policy | Out-Null
+                }
+            }
+        }
+
         # create secrets
         foreach ($KeyVaultName in @("$KeyVaultsBaseName-ro","$KeyVaultsBaseName-na")) {
             if (($pscmdlet.ShouldProcess("Key Vault $KeyVaultName","Create secrets"))) {
                 foreach ($SecretValue in @('version1','version2')) {
                     Set-AzKeyVaultSecret -VaultName $KeyVaultName `
                         -Name 'secret1' `
-                        -SecretValue (ConvertTo-SecureString $SecretValue -AsPlainText -Force) | Out-Null
+                        -SecretValue (ConvertTo-SecureString $SecretValue -AsPlainText -Force) -ea Stop | Out-Null
                 }
             }
         }
-        Add-AzKeyVaultCertificate -Name pem.pem -VaultName 'azmitest4-ro' -CertificatePolicy
-        # create secrets
+
+        # create certificates again
         foreach ($KeyVaultName in @("$KeyVaultsBaseName-ro","$KeyVaultsBaseName-na")) {
-            if (($pscmdlet.ShouldProcess("Key Vault $KeyVaultName","Create certificates"))) {
-                foreach ($Version in (1,2)) {
-                    foreach ($CertFormat in ('pfx','pem')) {
-                        if ($CertFormat -eq 'pfx') {
-                            $ContentType = 'application/x-pkcs12'
-                        } else {
-                            $ContentType = 'application/x-pem-file'
-                        }
-                        $Policy = New-AzKeyVaultCertificatePolicy `
-                            -SecretContentType $ContentType `
-                            -SubjectName "CN=azmi.test" `
-                            -IssuerName "Self"
-                            #-ValidityInMonths 6 `
-                            #-ReuseKeyOnRenewal
-                        Add-AzKeyVaultCertificate -VaultName "ContosoKV01" -Name "TestCert01" -CertificatePolicy $Policy
+            if (($pscmdlet.ShouldProcess("Key Vault $KeyVaultName","Create new version certificates"))) {
+                foreach ($CertFormat in ('pfx','pem')) {
+                    $Policy = New-AzKeyVaultCertificatePolicy `
+                        -SecretContentType $ContentMapping.$CertFormat `
+                        -SubjectName "CN=azmi.test" `
+                        -IssuerName "Self"
+                    # verify if previous version is created
+                    while ((Get-AzKeyVaultCertificate -VaultName $KeyVaultName -Name "$CertFormat-cert").Enabled -eq $false) {
+                        Write-AzmiVerbose "Waiting for previous version of certificate $CertFormat-cert in KV $KeyVaultName"
+                        Start-Sleep 5
                     }
+                    Add-AzKeyVaultCertificate -VaultName $KeyVaultName -Name "$CertFormat-cert" -CertificatePolicy $Policy -ea Stop | Out-Null
                 }
             }
         }
