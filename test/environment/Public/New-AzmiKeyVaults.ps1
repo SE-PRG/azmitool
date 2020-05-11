@@ -98,10 +98,18 @@ function New-AzmiKeyVaults {
             if (($pscmdlet.ShouldProcess("Key Vault $KeyVaultName","Create certificates"))) {
                 foreach ($Version in (1,2)) {
                     foreach ($CertFormat in ('pfx','pem')) {
-                        # TODO: Not working!
-                        Import-AzKeyVaultCertificate -VaultName $KeyVaultName `
-                            -Name "$CertFormat" `
-                            -FilePath "$CertFormat$Version.$CertFormat"
+                        if ($CertFormat -eq 'pfx') {
+                            $ContentType = 'application/x-pkcs12'
+                        } else {
+                            $ContentType = 'application/x-pem-file'
+                        }
+                        $Policy = New-AzKeyVaultCertificatePolicy `
+                            -SecretContentType $ContentType `
+                            -SubjectName "CN=azmi.test" `
+                            -IssuerName "Self"
+                            #-ValidityInMonths 6 `
+                            #-ReuseKeyOnRenewal
+                        Add-AzKeyVaultCertificate -VaultName "ContosoKV01" -Name "TestCert01" -CertificatePolicy $Policy
                     }
                 }
             }

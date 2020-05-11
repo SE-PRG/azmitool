@@ -20,7 +20,7 @@ namespace azmi_main
 
                 arguments = new AzmiArgument[] {
                 new AzmiArgument("certificate", required: true, type: ArgType.url,
-                    description: "URL of a certificate inside of key vault. Examples: https://my-key-vault.vault.azure.net/certificates/readThisCertificate or https://my-key-vault.vault.azure.net/certificates/readThisCertificatePfxFormat/103a7355c6094bc78307b2db7b85b3c2 ."),
+                    description: "URL of a certificate inside of key vault. Examples: https://my-kv.vault.azure.net/certificates/cert1 or https://my-kv.vault.azure.net/certificates/cert2/103a7355c6094bc78307b2db7b85b3c2 ."),
                 SharedAzmiArguments.identity,
                 new AzmiArgument("file",
                     description: "Path to local file to which bundle will be saved to. Examples: /tmp/readThisCertificate.crt, ./readThisCertificatePfxFormat.pfx"),
