@@ -19,7 +19,7 @@ certificate-tests.sh
 99-tests-end.sh
 "
 
-echo prepare test script
+# prepare test script
 temp_file=$(mktemp /tmp/azmi.XXXXX.sh)
 
 for script in $files

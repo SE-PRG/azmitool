@@ -20,7 +20,7 @@ chmod +x  merge.sh
 #./merge.sh
 #testFile=$(ls /tmp/azmi* -1t | head -1)
 testFile=$(./merge.sh)
-ls -l $testFile
+ls -l "$testFile"
 
 wget --quiet https://azmideb.blob.core.windows.net/azmi-deb/dev/btf.sh
 chmod +x btf.sh
