@@ -28,4 +28,4 @@ do
     cat "$script" >> "$temp_file"
 done
 
-ls -l "$temp_file"
+echo "$temp_file"
