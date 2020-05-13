@@ -5,12 +5,6 @@
 #
 
 
-# uninstalling
-testing class "package"
-test "Uninstall packages" assert.Success "apt purge $PACKAGENAME -y"
-test "Verify azmi binary does not exist anymore" assert.Fail "[ -f /usr/bin/azmi ]"
-
-
 #################################
 # display some diagnostic data
 ################################
