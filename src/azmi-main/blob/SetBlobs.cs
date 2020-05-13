@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
-namespace azmi_main.blob
+namespace azmi_main
 {
-    class SetBlobs : IAzmiCommand
+    public class SetBlobs : IAzmiCommand
     {
         public SubCommandDefinition Definition()
         {
