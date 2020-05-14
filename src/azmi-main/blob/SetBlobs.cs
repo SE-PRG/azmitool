@@ -54,13 +54,14 @@ namespace azmi_main
         {
             // test cases for not existing directory, empty or with one or two files
             // consider iEnumerable results so it will go out to pipeline
+            List<string> results = new List<string>();
             foreach (var file in Directory.EnumerateFiles(directory))
             {
                 // use blob name and not container, blob name should be path after directory name
-                SetBlob.setBlob_byContainer(file, containerUri, identity, force);
+                results.Add(SetBlob.setBlob_byContainer(file, containerUri, identity, force));
             }
 
-            return new List<string>();
+            return results;
         }
     }
 }
