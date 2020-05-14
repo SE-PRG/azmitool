@@ -58,8 +58,9 @@ namespace azmi_main
 
             foreach (var file in Directory.EnumerateFiles(fullDirectoryPath, "*", SearchOption.AllDirectories))
             {
-                var blobUri = containerUri + file.Substring(fullDirectoryPath.Length+1);
-                results.Add(SetBlob.setBlob_byBlob(file, blobUri, identity, force));
+                var blobUri = containerUri + '/' + file.Substring(fullDirectoryPath.Length);
+                results.Add(blobUri);
+                //results.Add(SetBlob.setBlob_byBlob(file, blobUri, identity, force));
             }
 
             return results;
