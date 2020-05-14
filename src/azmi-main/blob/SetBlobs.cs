@@ -67,7 +67,7 @@ namespace azmi_main
                 try
                 {
                     blobClient.Upload(file, force);
-                    results.Add("Success" + blobUri);
+                    results.Add("Success " + blobUri);
                 } catch
                 {
                     results.Add("Failed " + blobUri);
