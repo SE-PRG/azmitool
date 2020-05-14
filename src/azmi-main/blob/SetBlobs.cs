@@ -55,11 +55,14 @@ namespace azmi_main
             // test cases for not existing directory, empty or with one or two files
             // consider iEnumerable results so it will go out to pipeline
             List<string> results = new List<string>();
+            string fullDirectoryPath = Path.GetFullPath(directory);
 
-            foreach (var file in Directory.EnumerateFiles(Path.GetFullPath(directory), "*", SearchOption.AllDirectories))
+            foreach (var file in Directory.EnumerateFiles(fullDirectoryPath, "*", SearchOption.AllDirectories))
             {
                 // use blob name and not container, blob name should be path after directory name
-                results.Add(SetBlob.setBlob_byContainer(file, containerUri, identity, force));
+                // results.Add(SetBlob.setBlob_byContainer(file, containerUri, identity, force));
+                var blobUri = containerUri + '/' + file.Substring(fullDirectoryPath.Length);
+                results.Add(SetBlob.setBlob_byBlob(file, blobUri));
             }
 
             return results;
