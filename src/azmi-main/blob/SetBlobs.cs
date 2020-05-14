@@ -63,7 +63,7 @@ namespace azmi_main
             Parallel.ForEach(Directory.EnumerateFiles(fullDirectoryPath, "*", SearchOption.AllDirectories), file =>
             {
                 var blobUri = containerUri + file.Substring(fullDirectoryPath.Length);
-                results.Add(blobUri);
+                results.Add("Starting " + blobUri);
                 var blobClient = new BlobClient(new Uri(blobUri), Cred);
                 try
                 {
