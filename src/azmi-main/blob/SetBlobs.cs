@@ -60,7 +60,7 @@ namespace azmi_main
             {
                 var blobUri = containerUri + '/' + file.Substring(fullDirectoryPath.Length);
                 results.Add(blobUri);
-                //results.Add(SetBlob.setBlob_byBlob(file, blobUri, identity, force));
+                results.Add(SetBlob.setBlob_byBlob(file, blobUri, identity, force));
             }
 
             return results;
