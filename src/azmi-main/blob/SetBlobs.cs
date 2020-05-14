@@ -58,23 +58,25 @@ namespace azmi_main
             List<string> results = new List<string>();
             string fullDirectoryPath = Path.GetFullPath(directory);
             var Cred = new ManagedIdentityCredential(identity);
+            string result;
 
-            //foreach (var file in Directory.EnumerateFiles(fullDirectoryPath, "*", SearchOption.AllDirectories))
             Parallel.ForEach(Directory.EnumerateFiles(fullDirectoryPath, "*", SearchOption.AllDirectories), file =>
             {
                 var blobUri = containerUri + file.Substring(fullDirectoryPath.Length);
-                results.Add("Starting " + blobUri);
                 var blobClient = new BlobClient(new Uri(blobUri), Cred);
                 try
                 {
                     blobClient.Upload(file, force);
-                    results.Add("Success " + blobUri);
+                    result = "Success";
                 } catch
                 {
-                    results.Add("Failed " + blobUri);
+                    result = "Failed";
+                }
+                lock (results)
+                {
+                    results.Add(result + " " + blobUri);
                 }
             });
-
             return results;
         }
     }
