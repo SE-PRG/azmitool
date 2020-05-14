@@ -3,6 +3,7 @@ using Azure.Storage.Blobs;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace azmi_main
 {
@@ -54,16 +55,15 @@ namespace azmi_main
 
         public List<string> Execute(string containerUri, string directory, string identity = null, string exclude = null, bool force = false)
         {
-            // consider iEnumerable results so it will go out to pipeline
             List<string> results = new List<string>();
             string fullDirectoryPath = Path.GetFullPath(directory);
             var Cred = new ManagedIdentityCredential(identity);
 
-            foreach (var file in Directory.EnumerateFiles(fullDirectoryPath, "*", SearchOption.AllDirectories))
+            //foreach (var file in Directory.EnumerateFiles(fullDirectoryPath, "*", SearchOption.AllDirectories))
+            Parallel.ForEach(Directory.EnumerateFiles(fullDirectoryPath, "*", SearchOption.AllDirectories), file =>
             {
                 var blobUri = containerUri + file.Substring(fullDirectoryPath.Length);
                 var blobClient = new BlobClient(new Uri(blobUri), Cred);
-                //results.Add(SetBlob.setBlob_byBlob(file, blobUri, identity, force));
                 try
                 {
                     blobClient.Upload(file, force);
@@ -72,7 +72,7 @@ namespace azmi_main
                 {
                     results.Add("Failed " + blobUri);
                 }
-            }
+            });
 
             return results;
         }
