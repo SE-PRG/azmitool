@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Azure.Identity;
+using Azure.Storage.Blobs;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -55,12 +57,21 @@ namespace azmi_main
             // consider iEnumerable results so it will go out to pipeline
             List<string> results = new List<string>();
             string fullDirectoryPath = Path.GetFullPath(directory);
+            var Cred = new ManagedIdentityCredential(identity);
 
             foreach (var file in Directory.EnumerateFiles(fullDirectoryPath, "*", SearchOption.AllDirectories))
             {
                 var blobUri = containerUri + file.Substring(fullDirectoryPath.Length);
-                results.Add(blobUri);
-                results.Add(SetBlob.setBlob_byBlob(file, blobUri, identity, force));
+                var blobClient = new BlobClient(new Uri(blobUri), Cred);
+                //results.Add(SetBlob.setBlob_byBlob(file, blobUri, identity, force));
+                try
+                {
+                    blobClient.Upload(file, force);
+                    results.Add("Success" + blobUri);
+                } catch
+                {
+                    results.Add("Failed " + blobUri);
+                }
             }
 
             return results;
