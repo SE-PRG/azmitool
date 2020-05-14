@@ -27,6 +27,7 @@ DATE1=$(date +%s)   # used in file name
 DATE2=$(date +%s%N) # used in file content
 UPLOADFILE="upload$DATE1.txt"
 echo "$DATE2" > "$UPLOADFILE"
+UPLOAD_DIR="./Upload"
 
 
 #
@@ -81,7 +82,27 @@ test "setblob fails to overwrite on blob" assert.Fail "azmi setblob -f $UPLOADFI
 test "setblob overwrites blob on container" assert.Success "azmi setblob -f $UPLOADFILE --container $CONTAINER_RW --force"
 test "setblob overwrites blob on blob" assert.Success "azmi setblob -f $UPLOADFILE --blob ${CONTAINER_RW}/${UPLOADFILE} --force --verbose"
 
-# TODO: Add here setblobs tests
+testing class "setblobs"
+mkdir -p $UPLOAD_DIR && rm -rf $UPLOAD_DIR/*
+# TODO: What about pre-cleaning container, or using some other container?
+# TODO: What about comparing number of returned lines?
+# zero files
+test "setblobs OK with 0 files on RO container" assert.Success "azmi setblobs --directory $UPLOAD_DIR --container $CONTAINER_RO"
+test "setblobs fails on non-existing directory" assert.Fail "azmi setblobs -d nonexisting -c $CONTAINER_RO"
+# one file
+echo "$DATE2" > "$UPLOAD_DIR/file1.txt"
+test "setblobs OK with 1 file and identity" assert.Success "azmi setblobs -d $UPLOAD_DIR -c $CONTAINER_RW --identity $identity"
+test "setblobs fails on RO container" assert.Fail "azmi setblobs -d $UPLOAD_DIR -c $CONTAINER_RO"
+# two files
+echo "$DATE2" > "$UPLOAD_DIR/file2.txt"
+test "setblobs fails with 2 files without force" assert.Fail "azmi setblobs -d $UPLOAD_DIR -c $CONTAINER_RW"
+test "setblobs OK with 2 files and force" assert.Success "azmi setblobs -d $UPLOAD_DIR -c $CONTAINER_RW --force"
+# three files and subdirectory
+mkdir -p "$UPLOAD_DIR/subdirectory" && echo "$DATE2" > "$UPLOAD_DIR/subdirectory/file3.txt"
+test "setblobs OK with subdirectory" assert.Equals "azmi setblobs -d $UPLOAD_DIR -c $CONTAINER_RW --force | wc -l" 4
+rm -rf $DOWNLOAD_DIR
+test "setblobs and getblobs give same files" assert.Success "azmi getblobs -c $CONTAINER_RW -d $DOWNLOAD_DIR --delete-after-copy && diff $UPLOAD_DIR $DOWNLOAD_DIR"
+
 
 # mixed commands tests
 testing class "SHA256"
