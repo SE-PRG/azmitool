@@ -82,10 +82,9 @@ test "setblob fails to overwrite on blob" assert.Fail "azmi setblob -f $UPLOADFI
 test "setblob overwrites blob on container" assert.Success "azmi setblob -f $UPLOADFILE --container $CONTAINER_RW --force"
 test "setblob overwrites blob on blob" assert.Success "azmi setblob -f $UPLOADFILE --blob ${CONTAINER_RW}/${UPLOADFILE} --force --verbose"
 
+
 testing class "setblobs"
 mkdir -p $UPLOAD_DIR && rm -rf $UPLOAD_DIR/*
-# TODO: What about pre-cleaning container, or using some other container?
-# TODO: What about comparing number of returned lines?
 # zero files
 test "prepare for setblobs tests" assert.Success "azmi getblobs -c $CONTAINER_RW -d $DOWNLOAD_DIR --delete-after-copy"
 test "setblobs OK with 0 files on RO container" assert.Success "azmi setblobs --directory $UPLOAD_DIR --container $CONTAINER_RO"
@@ -102,10 +101,7 @@ test "setblobs OK with 2 files and force" assert.Success "azmi setblobs -d $UPLO
 mkdir -p "$UPLOAD_DIR/subdirectory" && echo "$DATE2" > "$UPLOAD_DIR/subdirectory/file3.txt"
 test "setblobs OK with subdirectory" assert.Equals "azmi setblobs -d $UPLOAD_DIR -c $CONTAINER_RW --force | wc -l" 3
 rm -rf $DOWNLOAD_DIR
-test "h1-getblobs" assert.Success "azmi getblobs -c $CONTAINER_RW -d $DOWNLOAD_DIR"
-test "h2-ls download" assert.Equals "find $DOWNLOAD_DIR -type f | wc -l" 3
-test "h3-ls upload" assert.Equals "find $UPLOAD_DIR -type f | wc -l" 3
-#test "setblobs and getblobs give same files" assert.Success "azmi getblobs -c $CONTAINER_RW -d $DOWNLOAD_DIR --delete-after-copy && diff -r $UPLOAD_DIR $DOWNLOAD_DIR"
+test "setblobs and getblobs give same files" assert.Success "azmi getblobs -c $CONTAINER_RW -d $DOWNLOAD_DIR --delete-after-copy && diff -r $UPLOAD_DIR $DOWNLOAD_DIR"
 
 
 # mixed commands tests
