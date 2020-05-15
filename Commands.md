@@ -50,6 +50,7 @@ Print token in JSON Web Token (JWT) format.
 |**`azmi getblob`**|Downloads single blob from storage account to a local file.|
 |**`azmi getblobs`**|Downloads multiple blobs from container to a local directory.|
 |**`azmi setblob`**|Writes single local file to a storage account blob.|
+|**`azmi setblobs`**|Writes multiple local files to storage account blobs.|
 
 ## Arguments overview
 
@@ -59,6 +60,7 @@ Print token in JSON Web Token (JWT) format.
 |**`getblob`**|`--blob`|`--file`|`--if-newer`, `--delete-after-copy`|
 |**`getblobs`**|`--container`|`--directory`|`--prefix`, `--if-newer`, `--delete-after-copy`, `--exclude`|
 |**`setblob`**|`--file`|`--blob` or `--container`|`--force`|
+|**`setblobs`**|`--directory`|`--container`|`--force`,`--exclude`|
 
 All commands support arguments `--identity` and `--verbose`.
 
