@@ -1,9 +1,6 @@
-﻿using Azure.Identity;
-using Azure.Storage.Blobs;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 
 namespace azmi_main
 {
@@ -58,6 +55,7 @@ namespace azmi_main
             List<string> results = new List<string>();
             string fullDirectoryPath = Path.GetFullPath(directory);
             int failures = 0;
+            Exception lastException = null;
 
             foreach (var file in Directory.EnumerateFiles(fullDirectoryPath, "*", SearchOption.AllDirectories))
             {
@@ -67,14 +65,20 @@ namespace azmi_main
                     string result = SetBlob.setBlob_byBlob(file, blobUri, identity, force);
                     results.Add(result + ' ' + blobUri);
                 }
-                catch
+                catch (Exception ex)
                 {
                     results.Add("Failed " + blobUri);
                     failures++;
+                    lastException = ex;
                 }
             }
-            results.Add(failures == 0 ? "Success" : $"Failed {failures} blobs");
-            return results;
+            if (lastException != null)
+            {
+                throw new AzmiException($"Failed {failures} blobs", lastException);
+            } else
+            {
+                return results;
+            }
         }
     }
 }
