@@ -87,6 +87,7 @@ mkdir -p $UPLOAD_DIR && rm -rf $UPLOAD_DIR/*
 # TODO: What about pre-cleaning container, or using some other container?
 # TODO: What about comparing number of returned lines?
 # zero files
+test "prepare for setblobs tests" assert.Success "azmi getblobs -c $CONTAINER_RW -d $DOWNLOAD_DIR --delete-after-copy"
 test "setblobs OK with 0 files on RO container" assert.Success "azmi setblobs --directory $UPLOAD_DIR --container $CONTAINER_RO"
 test "setblobs fails on non-existing directory" assert.Fail "azmi setblobs -d nonexisting -c $CONTAINER_RO"
 # one file
