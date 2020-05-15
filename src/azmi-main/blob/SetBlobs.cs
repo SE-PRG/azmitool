@@ -57,12 +57,23 @@ namespace azmi_main
         {
             List<string> results = new List<string>();
             string fullDirectoryPath = Path.GetFullPath(directory);
+            int failures = 0;
 
             foreach (var file in Directory.EnumerateFiles(fullDirectoryPath, "*", SearchOption.AllDirectories))
             {
                 var blobUri = containerUri + file.Substring(fullDirectoryPath.Length);
-                results.Add(SetBlob.setBlob_byBlob(file, blobUri, identity, force));
+                try
+                {
+                    string result = SetBlob.setBlob_byBlob(file, blobUri, identity, force);
+                    results.Add(result + ' ' + blobUri);
+                }
+                catch
+                {
+                    results.Add("Failed " + blobUri);
+                    failures++;
+                }
             }
+            results.Add(failures == 0 ? "Success" : $"Failed {failures} blobs");
             return results;
         }
     }
