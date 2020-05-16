@@ -6,6 +6,8 @@ namespace azmi_main
 {
     public class GetBlobs : IAzmiCommand
     {
+        private const char blobPathDelimiter = '/';
+
         public SubCommandDefinition Definition()
         {
             return new SubCommandDefinition
@@ -69,7 +71,7 @@ namespace azmi_main
             foreach (var blob in blobsListing)
             {
                 // e.g. blobUri = https://<storageAccount>.blob.core.windows.net/Hello/World.txt
-                string blobUri = containerUriTrimmed + '/' + blob;
+                string blobUri = containerUriTrimmed + blobPathDelimiter + blob;
                 string filePath = Path.Combine(directory, blob);
                 try
                 {

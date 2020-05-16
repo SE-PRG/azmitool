@@ -3,6 +3,8 @@ using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("azmi-commandline-tests")]
+
 namespace azmi_commandline
 {
     static class Program
@@ -15,7 +17,7 @@ namespace azmi_commandline
             Environment.Exit(parseResult);
         }
 
-        static RootCommand ConfigureArguments()
+        internal static RootCommand ConfigureArguments()
         {
 
             //

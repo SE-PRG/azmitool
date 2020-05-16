@@ -9,10 +9,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "azmi-main", "src\azmi-main\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "azmi-main-tests", "test\azmi-main-tests\azmi-main-tests.csproj", "{9C2C3C70-F456-4A7A-AA83-286372274F5C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "azmi-gui", "azmi-gui\azmi-gui.csproj", "{29623981-8FEB-4FC2-B493-CF3B10ADC2C1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "azmi-gui", "azmi-gui\azmi-gui.csproj", "{29623981-8FEB-4FC2-B493-CF3B10ADC2C1}"
 	ProjectSection(ProjectDependencies) = postProject
 		{8A00C0BE-396E-41DF-BC45-DF27C85116AF} = {8A00C0BE-396E-41DF-BC45-DF27C85116AF}
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "azmi-commandline-tests", "test\azmi-commandline-tests\azmi-commandline-tests.csproj", "{A3D35782-1FE0-4E97-A24A-3AF3ECE6A2A4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,6 +38,10 @@ Global
 		{29623981-8FEB-4FC2-B493-CF3B10ADC2C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{29623981-8FEB-4FC2-B493-CF3B10ADC2C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{29623981-8FEB-4FC2-B493-CF3B10ADC2C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3D35782-1FE0-4E97-A24A-3AF3ECE6A2A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3D35782-1FE0-4E97-A24A-3AF3ECE6A2A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3D35782-1FE0-4E97-A24A-3AF3ECE6A2A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3D35782-1FE0-4E97-A24A-3AF3ECE6A2A4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
