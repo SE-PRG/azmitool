@@ -2,6 +2,10 @@
 
 # azmi
 
+![GitHub](https://img.shields.io/github/license/sre-prg/azmitool)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/SRE-PRG/azmitool?style=plastic)
+![GitHub Release Date](https://img.shields.io/github/release-date/sre-prg/azmitool)
+
 ## Description
 
 Azure Managed Identity tool - **azmi** - simplifies authentication to Azure resources inside Azure Linux VMs. Using VM with assigned Managed Identity you can easily authenticate against Azure services like Key Vault, Storage Account, etc.
@@ -118,3 +122,20 @@ Either remove cache directory (e.g. `rm -rf /var/tmp/.net/azmi`) or set specific
 - Old integration tests [![Build status](https://skype.visualstudio.com/SCC/_apis/build/status/SE-UP/azmi/Integration%20-%20azmi)](https://skype.visualstudio.com/SCC/_build/latest?definitionId=8091)
 
 See [testing overview here](./Testing.md).
+
+## Other repository statistics
+
+![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/sre-prg/azmitool/latest)
+![GitHub last commit](https://img.shields.io/github/last-commit/sre-prg/azmitool)
+
+![GitHub issues](https://img.shields.io/github/issues-raw/sre-prg/azmitool)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/sre-prg/azmitool)
+![GitHub stars](https://img.shields.io/github/stars/sre-prg/azmitool?style=plastic)
+
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/sre-prg/azmitool)
+![GitHub repo size](https://img.shields.io/github/repo-size/sre-prg/azmitool)
+
+![GitHub language count](https://img.shields.io/github/languages/count/sre-prg/azmitool)
+![GitHub top language](https://img.shields.io/github/languages/top/sre-prg/azmitool)
+
+![Azure DevOps tests](https://img.shields.io/azure-devops/tests/iiric/azmi/28?label=integration%20tests)
