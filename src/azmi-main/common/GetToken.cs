@@ -58,8 +58,19 @@ namespace azmi_main
 
             // method start
             var Cred = new ManagedIdentityCredential(identity);
-            if (String.IsNullOrEmpty(endpoint)) { endpoint = "management"; }
-            var Scope = new String[] { $"https://{endpoint}.azure.com" };
+            String[] Scope;
+
+            if (String.IsNullOrEmpty(endpoint))
+            {
+                Scope = new String[] {
+                    "https://management.azure.com",
+                    "https://storage.azure.com",
+                    "https://vault.azure.net" };
+            }
+            else
+            {
+                Scope = new String[] { $"https://{endpoint}.azure.com" };
+            }
             var Request = new TokenRequestContext(Scope);
             try
             {
