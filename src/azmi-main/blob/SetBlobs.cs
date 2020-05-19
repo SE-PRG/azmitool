@@ -63,8 +63,11 @@ namespace azmi_main
             string fullDirectoryPath = Path.GetFullPath(directory);
             Regex excludeRegEx = new Regex(exclude);
 
-            var fileList = Directory.EnumerateFiles(fullDirectoryPath, "*", SearchOption.AllDirectories)
-                .Where(file => !excludeRegEx.IsMatch(file));
+            var fileList = Directory.EnumerateFiles(fullDirectoryPath, "*", SearchOption.AllDirectories);
+
+            if (!String.IsNullOrEmpty(exclude)) {
+                fileList = fileList.Where(file => !excludeRegEx.IsMatch(file));
+            }
 
             foreach (var file in fileList)
             {
