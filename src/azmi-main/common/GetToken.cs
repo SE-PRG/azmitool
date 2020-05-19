@@ -64,7 +64,9 @@ namespace azmi_main
             {
                 Scope = new String[] {
                     "https://management.azure.com",
-                    "https://storage.azure.com"};
+                    "https://storage.azure.com",
+                    "https://keyvault.azure.com"
+                };
             }
             else
             {
@@ -73,8 +75,8 @@ namespace azmi_main
             var Request = new TokenRequestContext(Scope);
             try
             {
-                var Token = Cred.GetToken(Request);
-                return (JWTformat) ? Decode_JWT(Token.Token) : Token.Token;
+                var Token = Cred.GetToken(Request).Token;
+                return (JWTformat) ? Decode_JWT(Token) : Token;
             } catch (Exception ex)
             {
                 throw AzmiException.IDCheck(identity, ex);
