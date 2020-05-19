@@ -100,6 +100,7 @@ test "setblobs OK with 2 files and force" assert.Success "azmi setblobs -d $UPLO
 # three files and subdirectory
 mkdir -p "$UPLOAD_DIR/subdirectory" && echo "$DATE2" > "$UPLOAD_DIR/subdirectory/file3.txt"
 test "setblobs OK with subdirectory" assert.Equals "azmi setblobs -d $UPLOAD_DIR -c $CONTAINER_RW --force | wc -l" 3
+test "setblobs excludes a file" assert.Equals "azmi setblobs -d $UPLOAD_DIR -c $CONTAINER_RW --force --exclude file2 | wc -l" 2
 rm -rf $DOWNLOAD_DIR
 test "setblobs and getblobs give same files" assert.Success "azmi getblobs -c $CONTAINER_RW -d $DOWNLOAD_DIR --delete-after-copy && diff -r $UPLOAD_DIR $DOWNLOAD_DIR"
 

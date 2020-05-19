@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace azmi_main
 {
@@ -50,35 +52,27 @@ namespace azmi_main
             return Execute(opt.container, opt.directory, opt.identity, opt.exclude, opt.force);
         }
 
+
+        //
+        // SetBlobs main method
+        //
+
         public List<string> Execute(string containerUri, string directory, string identity = null, string exclude = null, bool force = false)
         {
             List<string> results = new List<string>();
             string fullDirectoryPath = Path.GetFullPath(directory);
-            int failures = 0;
-            Exception lastException = null;
+            Regex excludeRegEx = new Regex(exclude);
 
-            foreach (var file in Directory.EnumerateFiles(fullDirectoryPath, "*", SearchOption.AllDirectories))
+            var fileList = Directory.EnumerateFiles(fullDirectoryPath, "*", SearchOption.AllDirectories)
+                .Where(file => !excludeRegEx.IsMatch(file));
+
+            foreach (var file in fileList)
             {
                 var blobUri = containerUri + file.Substring(fullDirectoryPath.Length);
-                try
-                {
-                    string result = SetBlob.setBlob_byBlob(file, blobUri, identity, force);
-                    results.Add(result + ' ' + blobUri);
-                }
-                catch (Exception ex)
-                {
-                    results.Add("Failed " + blobUri);
-                    failures++;
-                    lastException = ex;
-                }
+                string result = SetBlob.setBlob_byBlob(file, blobUri, identity, force);
+                results.Add(result + ' ' + blobUri);
             }
-            if (lastException != null)
-            {
-                throw new AzmiException($"Failed {failures} blobs", lastException);
-            } else
-            {
-                return results;
-            }
+            return results;
         }
     }
 }
