@@ -64,8 +64,7 @@ namespace azmi_main
             {
                 Scope = new String[] {
                     "https://management.azure.com",
-                    "https://storage.azure.com",
-                    "https://keyvault.azure.net" };
+                    "https://storage.azure.com"};
             }
             else
             {
