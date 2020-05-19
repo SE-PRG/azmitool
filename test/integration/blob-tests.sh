@@ -61,14 +61,14 @@ test "getblob fails on RO container using non-existing identity" assert.Fail "az
 
 testing class "getblobs"
 BC=5; rm -rf $DOWNLOAD_DIR
-test "getblobs downloads $BC blobs" assert.Equals "azmi getblobs --container $CONTAINER_LB --directory $DOWNLOAD_DIR | grep Success | wc -l" $((BC+1))
+test "getblobs downloads $BC blobs" assert.Equals "azmi getblobs --container $CONTAINER_LB --directory $DOWNLOAD_DIR | grep Success | wc -l" $BC
 # there is one extra line for summary
 BC=3; PREFIX="server1"; rm -rf $DOWNLOAD_DIR
-test "getblobs downloads $BC blobs with prefix $PREFIX" assert.Equals "azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --prefix $PREFIX | grep Success | wc -l" $((BC+1))
+test "getblobs downloads $BC blobs with prefix $PREFIX" assert.Equals "azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --prefix $PREFIX | grep Success | wc -l" $BC
 BC=0; PREFIX="notExisting"; rm -rf $DOWNLOAD_DIR
 test "getblobs downloads $BC blobs with prefix $PREFIX" assert.Equals "azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --prefix $PREFIX | wc -l" $BC
 BC=3; EXCLUDE="server2"; rm -rf $DOWNLOAD_DIR
-test "getblobs downloads $BC blobs excluding $EXCLUDE" assert.Equals "azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --exclude $EXCLUDE | grep Success | wc -l" $((BC+1))
+test "getblobs downloads $BC blobs excluding $EXCLUDE" assert.Equals "azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --exclude $EXCLUDE | grep Success | wc -l" $BC
 
 
 testing class "setblob"
