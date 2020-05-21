@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Azure.Identity;
 using Azure.Storage.Blobs;
-using System.IO;
 
 namespace azmi_main
 {
