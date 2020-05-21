@@ -17,10 +17,7 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.101
-    - name: Install dependencies
-      run: dotnet restore ./src/azmi-commandline/azmi-commandline.csproj
-    - name: Build
-      run: dotnet build ./src/azmi-commandline/azmi-commandline.csproj --configuration Release --no-restore 
-    - name: Test
-      run: dotnet test ./src/azmi-commandline/azmi-commandline.csproj --no-restore --verbosity normal
-      
+    - name: Test 1
+      run: dotnet test ./test/azmi-commandline-tests/azmi-commandline-tests.csproj --verbosity normal
+    - name: Test 2
+      run: dotnet test ./test/azmi-main-tests/azmi-main-tests.csproj --verbosity normal
