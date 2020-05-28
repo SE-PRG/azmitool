@@ -4,7 +4,7 @@
 
 ## Description
 
-Azure Managed Identity tool - **azmi** - simplifies authentication to Azure resources inside Azure Linux VMs. Using VM with assigned Managed Identity you can easily authenticate against Azure services like Key Vault, Storage Account, etc.
+Azure Managed Identity tool -  **azmi** - is application designed to run at Command-line interface (CLI) inside Azure Linux Virtual Machines (VM) which simplifies authentication to Azure resources. Using VM with azmi installed and assigned Managed Identity to VM you can easily authenticate against Azure services like Key Vault, Storage Account, etc.
 
 ## Examples
 
