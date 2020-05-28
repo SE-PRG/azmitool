@@ -20,7 +20,7 @@ azmi listblobs --container $CONTAINER_URL
 azmi getblob --blob $BLOB_URL --file $FILE
 
 # download blobs from a storage account container and save them to folder
-azmi getblobs --container $CONTAINER_URL --directory ./downloadBlobsHere  
+azmi getblobs --container $CONTAINER_URL --directory ./downloadBlobsHere
 
 # upload file as a blob to storage account container
 azmi setblob --file $FILE --container $CONTAINER_URL
@@ -47,17 +47,19 @@ To download executable / package, use following commands:
 
 - executable
 ```bash
-curl https://azmideb.blob.core.windows.net/azmi-deb/azmi  > ./azmi
+wget https://azmi.blob.core.windows.net/release/azmi
 chmod +x azmi
 ls azmi -l
+./azmi --version
 ```
 P.S. Running azmi executable does not require root privilege.
 
 - Debian package
 ```bash
-curl https://azmideb.blob.core.windows.net/azmi-deb/azmi.deb > ./azmi.deb
+wget https://azmi.blob.core.windows.net/release/azmi.deb
 ls azmi.deb -l
 sudo dpkg -i ./azmi.deb
+azmi --version
 ```
 
 - Windows
@@ -83,7 +85,7 @@ Azmi is not working across different AAD tenants.
 
 Read more:
 - [Managed identities for Azure resources](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview)
- 
+
 ## Performance
 
 Because `azmi` is written in c# / dotnet, its performance are dependant on your VM size. On Basic VM sizes, performance will be slower than native Linux commands or tools, like `curl` or `rclone`. We recommend Standard or Compute optimized VM sizes (like F2 or larger) where `azmi` performs better than `curl` tool for example.
@@ -93,7 +95,7 @@ Because `azmi` is written in c# / dotnet, its performance are dependant on your 
 By default, `azmi` will display simple, Linux style errors. To discard the error, you can redirect the error stream to null.
 To get more verbose error output, use `--verbose` or `-v` switch in command.
 
-- `Missing identity argument` 
+- `Missing identity argument`
 
 If your VM has exactly one managed identity, you can omit `--identity` parameter. If it has more than one identity, you must specify it using the same argument.
 
