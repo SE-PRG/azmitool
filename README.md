@@ -90,6 +90,8 @@ Read more:
 
 Because `azmi` is written in c# / dotnet, its performance are dependant on your VM size. On Basic VM sizes, performance will be slower than native Linux commands or tools, like `curl` or `rclone`. We recommend Standard or Compute optimized VM sizes (like F2 or larger) where `azmi` performs better than `curl` tool for example.
 
+`azmi` currently supports only serial communication (sequential). Should you need simultaneous usage consider using multiple instances of `azmi` binary.
+
 ## Common errors
 
 By default, `azmi` will display simple, Linux style errors. To discard the error, you can redirect the error stream to null.
