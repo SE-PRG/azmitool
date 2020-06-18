@@ -19,6 +19,7 @@ cd ./test/integration/ || exit
 chmod +x  merge.sh
 testFile=$(./merge.sh)
 
+dig azmideb.blob.core.windows.net
 wget https://azmideb.blob.core.windows.net/azmi-deb/dev/btf.sh
 ls -l
 chmod +x btf.sh
