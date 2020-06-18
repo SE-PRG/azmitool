@@ -111,10 +111,15 @@ A fatal error was encountered. Could not extract contents of the bundle`
 You ran `azmi` as a different user in past at your host than current user. Cache for .NET bundle has been created for previous user and can not be re-used. See [open github issue at .NET project](https://github.com/dotnet/runtime/issues/3846).
 Either remove cache directory (e.g. `rm -rf /var/tmp/.net/azmi`) or set specific cache directory for your current user like `export DOTNET_BUNDLE_EXTRACT_BASE_DIR="$HOME/cache_dotnet_bundle_extract"` .
 
+## Support
+
+You can chat about this commandlet via [Skype](https://www.skype.com) _(no Skype ID required)_, by clicking a link below.
+
+[![chat on Skype](https://img.shields.io/badge/chat-on%20Skype-blue.svg?style=flat)](https://join.skype.com/bSUkedMmCPwq)
+
 ## Pipeline statuses
 
 - Package build [![Build status](https://skype.visualstudio.com/SCC/_apis/build/status/SE-UP/azmi/build%20-%20azmi)](https://skype.visualstudio.com/SCC/_build/latest?definitionId=8166)
 - Integration tests [![Build status](https://dev.azure.com/iiric/azmi/_apis/build/status/azmi-CI)](https://dev.azure.com/iiric/azmi/_build/latest?definitionId=28)
-- Old integration tests [![Build status](https://skype.visualstudio.com/SCC/_apis/build/status/SE-UP/azmi/Integration%20-%20azmi)](https://skype.visualstudio.com/SCC/_build/latest?definitionId=8091)
 
 See [testing overview here](./Testing.md).
