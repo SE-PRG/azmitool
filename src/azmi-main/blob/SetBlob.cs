@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Azure.Identity;
-using Azure.Storage.Blobs;
 
 namespace azmi_main
 {
@@ -57,7 +56,7 @@ namespace azmi_main
         public static string Execute(string filePath, string blobUri, string identity = null, bool force = false)
         {
             var Cred = new ManagedIdentityCredential(identity);
-            var blobClient = new BlobClient(new Uri(blobUri), Cred);
+            var blobClient = new BlobClientImpl(new Uri(blobUri), Cred);
             try
             {
                 blobClient.Upload(filePath, force);
