@@ -117,6 +117,8 @@ You can chat about **azmi** or get support for your issues via [Skype](https://w
 
 [![chat on Skype](https://img.shields.io/badge/chat-on%20Skype-blue.svg?style=flat)](https://join.skype.com/bSUkedMmCPwq)
 
+Or, if you want, feel free to [open a new issue](https://github.com/SRE-PRG/azmitool/issues/new/choose).
+
 ## Pipeline statuses
 
 - Package build [![Build status](https://skype.visualstudio.com/SCC/_apis/build/status/SE-UP/azmi/build%20-%20azmi)](https://skype.visualstudio.com/SCC/_build/latest?definitionId=8166)
