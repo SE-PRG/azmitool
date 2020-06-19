@@ -118,7 +118,7 @@ Either remove cache directory (e.g. `rm -rf /var/tmp/.net/azmi`) or set specific
 
 ## Support
 
-You can chat about **azmi** or get support for your issues via [Skype](https://www.skype.com) _(no Skype ID required)_, by clicking a link below.
+You can chat about **azmi** or get support for your issues via [Skype](https://www.skype.com) _(no account registration/Skype ID required)_, by clicking a link below.
 
 [![chat on Skype](https://img.shields.io/badge/chat-on%20Skype-blue.svg?style=flat)](https://join.skype.com/bSUkedMmCPwq)
 
