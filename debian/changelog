@@ -1,3 +1,10 @@
+azmi (0.4.1-1) stable; urgency=medium
+
+  * Bug fix - azmi enters endless loop if no identity on the VM
+  * Full list of issues: https://github.com/SRE-PRG/azmitool/milestone/6?closed=1
+
+ -- SRE-PRG <NA@NA.com>  Fri, 19 Jun 2020 13:13:04 +0200
+
 azmi (0.4.0-1) stable; urgency=medium
 
   * Implemented new command: getcertificate

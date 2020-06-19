@@ -67,7 +67,7 @@ namespace azmi_main
                 return (JWTformat) ? Decode_JWT(Token.Token) : Token.Token;
             } catch (Exception ex)
             {
-                throw AzmiException.IDCheck(identity, ex);
+                throw AzmiException.IDCheck(identity, ex, false);
             }
         }
 
