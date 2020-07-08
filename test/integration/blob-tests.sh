@@ -71,15 +71,13 @@ test "getblobs downloads $BC blobs excluding $EXCLUDE" assert.Equals "azmi getbl
 
 
 testing class "setblob"
-test "setblob fails on NA container" assert.Fail "azmi setblob --file $UPLOADFILE --container $CONTAINER_NA"
-test "setblob fails on RO container" assert.Fail "azmi setblob --file $UPLOADFILE --container $CONTAINER_RO"
-test "setblob OK on RW container" assert.Success "azmi setblob --file $UPLOADFILE --container $CONTAINER_RW"
+test "setblob fails on NA container" assert.Fail "azmi setblob --file $UPLOADFILE --blob ${CONTAINER_NA}/${UPLOADFILE}"
+test "setblob fails on RO container" assert.Fail "azmi setblob --file $UPLOADFILE --blob ${CONTAINER_RO}/${UPLOADFILE}"
+test "setblob OK on RW container" assert.Success "azmi setblob --file $UPLOADFILE --blob ${CONTAINER_RW}/${UPLOADFILE}"
 
 testing class "setblob force"
-test "setblob fails to overwrite on container" assert.Fail "azmi setblob -f $UPLOADFILE --container $CONTAINER_RW"
-test "setblob fails to overwrite on blob" assert.Fail "azmi setblob -f $UPLOADFILE --blob ${CONTAINER_RW}/${UPLOADFILE}"
-test "setblob overwrites blob on container" assert.Success "azmi setblob -f $UPLOADFILE --container $CONTAINER_RW --force"
-test "setblob overwrites blob on blob" assert.Success "azmi setblob -f $UPLOADFILE --blob ${CONTAINER_RW}/${UPLOADFILE} --force --verbose"
+test "setblob fails to overwrite blob" assert.Fail "azmi setblob -f $UPLOADFILE --blob ${CONTAINER_RW}/${UPLOADFILE}"
+test "setblob overwrites blob with force" assert.Success "azmi setblob -f $UPLOADFILE --blob ${CONTAINER_RW}/${UPLOADFILE} --force"
 
 # TODO: Add here setblobs tests
 
@@ -92,24 +90,25 @@ UPLOADFILE_SHA256=$(sha256sum "$UPLOADFILE" | awk '{ print $1 }')
 DOWNLOADFILE_SHA256=$(sha256sum $DOWNLOAD_FILE | awk '{ print $1 }')
 test "SHA256 same checksums" assert.Success "[ $UPLOADFILE_SHA256 = $DOWNLOADFILE_SHA256 ]"
 
-testing class "noname"
-test "prepare tmp file" assert.Success "rm -f /tmp/${UPLOADFILE} && echo sometext > /tmp/${UPLOADFILE}"
-test "upload tmp file" assert.Success "azmi setblob -f /tmp/${UPLOADFILE} --container ${CONTAINER_RW}"
-test "there is no noname folder" assert.Fail "azmi getblob -f /dev/null -b ${CONTAINER_RW}//tmp/${UPLOADFILE}"
+# noname tests make no sense without --container argument
+#testing class "noname"
+#test "prepare tmp file" assert.Success "rm -f /tmp/${UPLOADFILE} && echo sometext > /tmp/${UPLOADFILE}"
+#test "upload tmp file" assert.Success "azmi setblob -f /tmp/${UPLOADFILE} --container ${CONTAINER_RW}"
+#test "there is no noname folder" assert.Fail "azmi getblob -f /dev/null -b ${CONTAINER_RW}//tmp/${UPLOADFILE}"
 
 testing class "if-newer"
 SKIPMSG="Skipped. Blob is not newer than file."
-test "setblob if-newer upload" assert.Equals "azmi setblob -f $UPLOADFILE -c $CONTAINER_RW"
+test "setblob if-newer upload" assert.Equals "azmi setblob -f $UPLOADFILE -b ${CONTAINER_RW}/${UPLOADFILE}"
 touch "$UPLOADFILE"
 test "getblob skips if not newer" assert.Equals "azmi getblob -b ${CONTAINER_RW}/${UPLOADFILE} -f $UPLOADFILE --if-newer" "$SKIPMSG"
-test "setblob updates blob" assert.Success "azmi setblob -f $UPLOADFILE -c $CONTAINER_RW --force"
+test "setblob updates blob" assert.Success "azmi setblob -f $UPLOADFILE -b ${CONTAINER_RW}/${UPLOADFILE} --force"
 sleep 1
 test "getblob downloads if newer" assert.Equals "azmi getblob -b ${CONTAINER_RW}/${UPLOADFILE} -f $UPLOADFILE --if-newer" "Success"
 rm -rf $DOWNLOAD_FILE
 test "getblob downloads newer than nonexisting" assert.Equals "azmi getblob -b ${CONTAINER_RW}/${UPLOADFILE} -f $DOWNLOAD_FILE --if-newer" "Success"
 
 testing class "delete-after-copy"
-test "setblob delete-after-copy upload" assert.Success "azmi setblob --file $UPLOADFILE --container $CONTAINER_RW --force"
+test "setblob delete-after-copy upload" assert.Success "azmi setblob --file $UPLOADFILE -b ${CONTAINER_RW}/${UPLOADFILE} --force"
 test "getblob remove blob with delete-after-copy" assert.Success "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file $DOWNLOAD_FILE --delete-after-copy"
 test "getblob fails with deleted file" assert.Fail "azmi getblob --blob ${CONTAINER_RW}/${UPLOADFILE} --file $DOWNLOAD_FILE"
 

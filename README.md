@@ -26,9 +26,6 @@ azmi getblob --blob $BLOB_URL --file $FILE
 # download blobs from a storage account container and save them to folder
 azmi getblobs --container $CONTAINER_URL --directory ./downloadBlobsHere
 
-# upload file as a blob to storage account container
-azmi setblob --file $FILE --container $CONTAINER_URL
-
 # upload file by specifying blob url and identity
 azmi setblob --file ~/info.txt --blob $CONTAINER_URL/myhostname/info.txt --identity 117dc05c-4d12-4ac2-b5f8-5e239dc8bc54
 
