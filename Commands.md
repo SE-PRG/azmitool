@@ -59,7 +59,7 @@ Print token in JSON Web Token (JWT) format.
 |**`listblobs`**|`--container`| *n.a.* |`--prefix`, `--exclude`|
 |**`getblob`**|`--blob`|`--file`|`--if-newer`, `--delete-after-copy`|
 |**`getblobs`**|`--container`|`--directory`|`--prefix`, `--if-newer`, `--delete-after-copy`, `--exclude`|
-|**`setblob`**|`--file`|`--blob` or `--container`|`--force`|
+|**`setblob`**|`--file`|`--blob` |`--force`|
 |**`setblobs`**|`--directory`|`--container`|`--force`,`--exclude`|
 
 All commands support arguments `--identity` and `--verbose`.

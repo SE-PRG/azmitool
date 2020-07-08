@@ -50,14 +50,11 @@ azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --prefix $PREFIX
 azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --exclude $EXCLUDE
 
 
-# upload file to storage account container
-azmi setblob -f $UPLOADFILE --container $CONTAINER
-
 # upload file and specify exact uploaded blob URL
 azmi setblob -f $UPLOADFILE --blob $BLOBURL
 
 # upload file even if exact blob already exists
-azmi setblob -f $UPLOADFILE --container $CONTAINER --force
+azmi setblob -f $UPLOADFILE --blob $BLOBURL --force
 
 
 

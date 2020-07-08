@@ -118,5 +118,5 @@ https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/v2-linux?view=azu
 2. Create new PAT (Read & manage on Agent Pools)
 3. Download ADO agent
 4. Configure and start agent service
-5. Install additional components (dotnet, pwsh, ...)
+5. Install additional components (dotnet, pwsh, build-essential, dotnet-sdk-3.0, debhelper, ...)
 

@@ -6,6 +6,8 @@ namespace azmi_main
 {
     public class GetBlobs : IAzmiCommand
     {
+        private const char blobPathDelimiter = '/';
+
         public SubCommandDefinition Definition()
         {
             return new SubCommandDefinition
@@ -63,7 +65,7 @@ namespace azmi_main
 
         public List<string> Execute(string containerUri, string directory, string identity = null, string prefix = null, string exclude = null, bool ifNewer = false, bool deleteAfterCopy = false)
         {
-            char blobDelimiter = '/';
+            char blobPathDelimiter = '/';
             string containerUriTrimmed = containerUri.TrimEnd(blobDelimiter);
             List<string> blobsListing = new ListBlobs().Execute(containerUriTrimmed, identity, prefix, exclude);
             List<string> results = new List<string>();
@@ -71,7 +73,7 @@ namespace azmi_main
             foreach (var blob in blobsListing)
             {
                 // e.g. blobUri = https://<storageAccount>.blob.core.windows.net/Hello/World.txt
-                string blobUri = containerUriTrimmed + blobDelimiter + blob;
+                string blobUri = containerUriTrimmed + blobPathDelimiter + blob;
                 string filePath = Path.Combine(directory, blob);
                 string result = new GetBlob().Execute(blobUri, filePath, identity, ifNewer, deleteAfterCopy);
                 string downloadStatus = result + ' ' + blobUri;

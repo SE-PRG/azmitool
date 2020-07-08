@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Azure.Identity;
 using Azure.Storage.Blobs;
-using System.IO;
 
 namespace azmi_main
 {
@@ -19,9 +18,7 @@ namespace azmi_main
                 arguments = new AzmiArgument[] {
                     new AzmiArgument("file", required: true,
                         description: "Path to local file which will be uploaded. Examples: /tmp/1.txt, ./1.xml"),
-                    new AzmiArgument("container", required: false, type: ArgType.url,
-                        description: "URL of container to which file will be uploaded. Cannot be used together with --blob. Example: https://myaccount.blob.core.windows.net/mycontainer"),
-                    new AzmiArgument("blob", required: false, type: ArgType.url,
+                    new AzmiArgument("blob", required: true, type: ArgType.url,
                         description: "URL of blob to which file will be uploaded. Cannot be used together with --container. Example: https://myaccount.blob.core.windows.net/mycontainer/myblob.txt"),
                     new AzmiArgument("force", alias: null, type: ArgType.flag,
                         description: "Overwrite existing blob in Azure."),
@@ -50,57 +47,15 @@ namespace azmi_main
                 throw AzmiException.WrongObject(ex);
             }
 
-            if (String.IsNullOrEmpty(opt.blob) && String.IsNullOrEmpty(opt.container))
-            {
-                throw new AzmiException("You must specify either blob or container url");
-            } else if ((!String.IsNullOrEmpty(opt.blob)) && (!String.IsNullOrEmpty(opt.container)))
-            {
-                throw new AzmiException("Cannot use both container and blob url");
-            }
-
-            if (String.IsNullOrEmpty(opt.blob))
-            {
-                return SetBlob.setBlob_byContainer(opt.file, opt.container, opt.identity, opt.force).ToStringList();
-            } else
-            {
-                return SetBlob.setBlob_byBlob(opt.file, opt.blob, opt.identity, opt.force).ToStringList();
-            }
+            return Execute(opt.file, opt.blob, opt.identity, opt.force).ToStringList();
         }
 
         //
         // Execute SetBlob
         //
 
-        public static string setBlob_byContainer(string filePath, string containerUri, string identity = null, bool force = false)
+        public static string Execute(string filePath, string blobUri, string identity = null, bool force = false)
         {
-            if (!(File.Exists(filePath)))
-            {
-                throw new FileNotFoundException($"File '{filePath}' not found!");
-            }
-
-            var Cred = new ManagedIdentityCredential(identity);
-            var containerClient = new BlobContainerClient(new Uri(containerUri), Cred);
-            containerClient.CreateIfNotExists();
-            var blobClient = containerClient.GetBlobClient(filePath.TrimStart('/'));
-            try
-            {
-                blobClient.Upload(filePath, force);
-                return "Success";
-            } catch (Exception ex)
-            {
-                throw AzmiException.IDCheck(identity, ex);
-            }
-        }
-
-        // Sets blob content based on local file content into blob
-        public static string setBlob_byBlob(string filePath, string blobUri, string identity = null, bool force = false)
-        {
-            // sets blob content based on local file content with provided blob url
-            if (!(File.Exists(filePath)))
-            {
-                throw new FileNotFoundException($"File '{filePath}' not found!");
-            }
-
             var Cred = new ManagedIdentityCredential(identity);
             var blobClient = new BlobClient(new Uri(blobUri), Cred);
             try
@@ -112,7 +67,5 @@ namespace azmi_main
                 throw AzmiException.IDCheck(identity, ex);
             }
         }
-
-
     }
 }
