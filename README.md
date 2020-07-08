@@ -2,6 +2,10 @@
 
 # azmi
 
+![GitHub](https://img.shields.io/github/license/sre-prg/azmitool)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/SRE-PRG/azmitool?style=plastic)
+![GitHub Release Date](https://img.shields.io/github/release-date/sre-prg/azmitool)
+
 ## Description
 
 Azure Managed Identity tool -  **azmi** - is application designed to run at Command-line interface (CLI) inside Azure Linux Virtual Machines (VM) which simplifies authentication to Azure resources. <br /><br />
@@ -130,3 +134,20 @@ Or, if you want, feel free to [open a new issue](https://github.com/SRE-PRG/azmi
 - Integration tests [![Build status](https://dev.azure.com/iiric/azmi/_apis/build/status/azmi-CI)](https://dev.azure.com/iiric/azmi/_build/latest?definitionId=28)
 
 See [testing overview here](./Testing.md).
+
+## Other repository statistics
+
+![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/sre-prg/azmitool/latest)
+![GitHub last commit](https://img.shields.io/github/last-commit/sre-prg/azmitool)
+
+![GitHub issues](https://img.shields.io/github/issues-raw/sre-prg/azmitool)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/sre-prg/azmitool)
+![GitHub stars](https://img.shields.io/github/stars/sre-prg/azmitool?style=plastic)
+
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/sre-prg/azmitool)
+![GitHub repo size](https://img.shields.io/github/repo-size/sre-prg/azmitool)
+
+![GitHub language count](https://img.shields.io/github/languages/count/sre-prg/azmitool)
+![GitHub top language](https://img.shields.io/github/languages/top/sre-prg/azmitool)
+
+![Azure DevOps tests](https://img.shields.io/azure-devops/tests/iiric/azmi/28?label=integration%20tests)
