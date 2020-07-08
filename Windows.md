@@ -8,7 +8,7 @@ These versions are not actively supported, nor published regularly.
 You can download it and use it via PowerShell command prompt like this:
 
 ```PowerShell
-Invoke-WebRequest https://azmideb.blob.core.windows.net/azmi-deb/azmi.exe -OutFile ./azmi.exe
+Invoke-WebRequest https://azmi.blob.core.windows.net/release/azmi.exe -OutFile ./azmi.exe
 ./azmi.exe --help
 ./azmi.exe gettoken --verbose
 ```
@@ -23,7 +23,7 @@ It has only one simple call to cross-platform method for getting a new token.
 ![azmi-Windows-GUI-sourcecode](img/azmi-Windows-GUI-sourcecode.png)
 
 ```PowerShell
-Invoke-WebRequest https://azmideb.blob.core.windows.net/azmi-deb/azmi-gui.exe -OutFile ./azmi-gui.exe
+Invoke-WebRequest https://azmi.blob.core.windows.net/release/azmi-gui.exe -OutFile ./azmi-gui.exe
 ./azmi-gui.exe
 ```
 

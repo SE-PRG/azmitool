@@ -6,6 +6,8 @@ namespace azmi_main
 {
     public class GetBlobs : IAzmiCommand
     {
+        private const char blobPathDelimiter = '/';
+
         public SubCommandDefinition Definition()
         {
             return new SubCommandDefinition
@@ -56,33 +58,27 @@ namespace azmi_main
             return Execute(opt.container, opt.directory, opt.identity, opt.prefix, opt.exclude, opt.ifNewer, opt.deleteAfterCopy);
         }
 
+
+        //
+        // GetBlobs main method
+        //
+
         public List<string> Execute(string containerUri, string directory, string identity = null, string prefix = null, string exclude = null, bool ifNewer = false, bool deleteAfterCopy = false)
         {
-            string containerUriTrimmed = containerUri.TrimEnd('/');
+            char blobPathDelimiter = '/';
+            string containerUriTrimmed = containerUri.TrimEnd(blobDelimiter);
             List<string> blobsListing = new ListBlobs().Execute(containerUriTrimmed, identity, prefix, exclude);
-            if (blobsListing == null)
-                return new List<string>();
-
             List<string> results = new List<string>();
-            string result = null;
-            int failures = 0;
+
             foreach (var blob in blobsListing)
             {
                 // e.g. blobUri = https://<storageAccount>.blob.core.windows.net/Hello/World.txt
-                string blobUri = containerUriTrimmed + '/' + blob;
+                string blobUri = containerUriTrimmed + blobPathDelimiter + blob;
                 string filePath = Path.Combine(directory, blob);
-                try
-                {
-                    result = new GetBlob().Execute(blobUri, filePath, identity, ifNewer, deleteAfterCopy);
-                    string downloadStatus = result + ' ' + blob;
-                    results.Add(downloadStatus);
-                } catch
-                {
-                    results.Add("Failed " + blob);
-                    failures++;
-                }
+                string result = new GetBlob().Execute(blobUri, filePath, identity, ifNewer, deleteAfterCopy);
+                string downloadStatus = result + ' ' + blobUri;
+                results.Add(downloadStatus);
             }
-            results.Add(failures == 0 ? "Success" : $"Failed {failures} blobs");
             return results;
         }
     }

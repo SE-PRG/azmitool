@@ -1,5 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("azmi-main-tests")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("azmi-commandline-tests")]
+
 namespace azmi_main
 {
 
@@ -18,6 +21,9 @@ namespace azmi_main
         public bool required { get; set; }
         public ArgType type { get; set; } // string, url or bool
 
+        private const ArgType defaultType = ArgType.str;
+        private const bool defaultRequired = false;
+
         internal AzmiArgument(string name, char? alias, string description, bool required, ArgType type)
         {
             this.name = name;
@@ -29,7 +35,7 @@ namespace azmi_main
 
         // constructor NAME with one string
         internal AzmiArgument(string name,
-            ArgType type = ArgType.str, bool required = false)
+            ArgType type = defaultType, bool required = defaultRequired)
         : this(
             name,
             name[0],
@@ -39,7 +45,7 @@ namespace azmi_main
 
         // constructor NAME + ALIAS? + DESCRIPTION
         internal AzmiArgument(string name, char? alias, string description,
-            ArgType type = ArgType.str, bool required = false)
+            ArgType type = defaultType, bool required = defaultRequired)
         : this(
             name,
             alias,
@@ -49,7 +55,7 @@ namespace azmi_main
 
         // constructor NAME + DESCRIPTION
         internal AzmiArgument(string name, [DisallowNull]string description,
-            ArgType type = ArgType.str, bool required = false)
+            ArgType type = defaultType, bool required = defaultRequired)
         : this(
             name,
             name[0],

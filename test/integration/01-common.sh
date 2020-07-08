@@ -19,9 +19,6 @@ KV_BASENAME=$4
 
 
 # fixed variables
-export DEBIAN_FRONTEND=noninteractive
-PACKAGENAME=azmi
-PACKAGEFILE=/tmp/azmiX.deb
 declare -a subCommands=("gettoken" "getblob" "getblobs" "setblob" "listblobs" "getsecret" "getcertificate")
 identity_foreign=d8e2f047-99b7-48e8-89d1-0e9b6e0b2464
 
@@ -30,15 +27,7 @@ identity_foreign=d8e2f047-99b7-48e8-89d1-0e9b6e0b2464
 # start testing
 #
 
-testing start "$PACKAGENAME"
-testing class "package"
-test "Install fake package should fail" assert.Fail "apt --assume-yes install somenonexistingpackage"
-
-# dependencies installed?
-test "Check all dependencies are installed" assert.Success "dpkg -s libstdc++6"
-
-test "Install $PACKAGENAME package from file" assert.Success "dpkg -i $PACKAGEFILE"
-test "Verify azmi binary exists and is executable" assert.Success "[ -x /usr/bin/azmi ]"
+testing start "azmi"
 
 testing class "help"
 test "Fail if no arguments are provided" assert.Fail "azmi"

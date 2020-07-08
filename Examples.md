@@ -50,14 +50,26 @@ azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --prefix $PREFIX
 azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --exclude $EXCLUDE
 
 
-# upload file to storage account container
-azmi setblob -f $UPLOADFILE --container $CONTAINER
-
 # upload file and specify exact uploaded blob URL
 azmi setblob -f $UPLOADFILE --blob $BLOBURL
 
 # upload file even if exact blob already exists
-azmi setblob -f $UPLOADFILE --container $CONTAINER --force
+azmi setblob -f $UPLOADFILE --blob $BLOBURL --force
+
+
+
+# upload all files from directory
+azmi setblobs --directory $UPLOAD_DIR --container $CONTAINER
+
+# upload using specified identity
+azmi setblobs -d $UPLOAD_DIR -c $CONTAINER --identity $identity
+
+# upload and overwrite existing blobs
+azmi setblobs -d $UPLOAD_DIR -c $CONTAINER --force
+
+# setblobs and getblobs have the same folder structure
+azmi getblobs -c $CONTAINER -d $DOWNLOAD_DIR
+diff -r $UPLOAD_DIR $DOWNLOAD_DIR # returns exit code 0
 ```
 
 ### Comments
@@ -77,6 +89,7 @@ If a container has more than 5,000 blobs, , it is required to use `--prefix`, ot
 
 ```bash
 azmi getsecret --secret ${KV_URL}/secrets/buriedSecret
+azmi getsecret --secret ${KV_URL}/secrets/buriedSecret --file $file
 azmi getsecret --secret ${KV_URL}/secrets/ReadPassword --identity $identity
 azmi getsecret --secret ${KV_URL}/secrets/ReadPassword/6f7c24526c4d489594ca27a85edf6176 --identity $identity
 ```
@@ -85,8 +98,9 @@ azmi getsecret --secret ${KV_URL}/secrets/ReadPassword/6f7c24526c4d489594ca27a85
 
 ```bash
 azmi getcertificate --certificate ${KV_URL}/certificates/buriedCertificate
+azmi getcertificate --certificate ${KV_URL}/certificates/buriedCertificate --file $file
 azmi getcertificate --certificate ${KV_URL}/certificates/readThisCertificate --identity $identity
-azmi getcertificate --certificate ${KV_URL}/certificates/readThisCertificate/103a7355c6094bc78307b2db7b85b3c2
+azmi getcertificate --certificate ${KV_URL}/certificates/readThisCertificatePfxFormat/103a7355c6094bc78307b2db7b85b3c2
 ```
 
 ### Comments

@@ -21,3 +21,14 @@ It can also be executed against dev branch.
 Integration testing is using **Bash Testing Framework** (BTF).
 BTF is simplifying testing of bash scripts using modern techniques.
 It also provides seamless integration into Azure DevOps testing pages.
+
+## Unified Integration testing pipeline
+
+This is still work in progress!
+Once completed we can remove reference to pipelines above.
+Later we need to add release pipeline also, that would include also compliance requirements.
+
+Unified pipeline will create `azmi` executable from the source code.
+It can be executed also on a dev branch.
+
+Testing pipeline will then take that executable and run tests against it.

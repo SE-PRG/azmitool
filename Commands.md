@@ -50,6 +50,7 @@ Print token in JSON Web Token (JWT) format.
 |**`azmi getblob`**|Downloads single blob from storage account to a local file.|
 |**`azmi getblobs`**|Downloads multiple blobs from container to a local directory.|
 |**`azmi setblob`**|Writes single local file to a storage account blob.|
+|**`azmi setblobs`**|Writes multiple local files to storage account blobs.|
 
 ## Arguments overview
 
@@ -58,7 +59,8 @@ Print token in JSON Web Token (JWT) format.
 |**`listblobs`**|`--container`| *n.a.* |`--prefix`, `--exclude`|
 |**`getblob`**|`--blob`|`--file`|`--if-newer`, `--delete-after-copy`|
 |**`getblobs`**|`--container`|`--directory`|`--prefix`, `--if-newer`, `--delete-after-copy`, `--exclude`|
-|**`setblob`**|`--file`|`--blob` or `--container`|`--force`|
+|**`setblob`**|`--file`|`--blob` |`--force`|
+|**`setblobs`**|`--directory`|`--container`|`--force`,`--exclude`|
 
 All commands support arguments `--identity` and `--verbose`.
 
@@ -115,16 +117,23 @@ If storage account has more than 5,000 blobs, it is required to use `--prefix`, 
 
 |**command**|source|destination|other arguments|
 |-|-|-|-|
-|**`azmi getsecret`**|`--secret`| *n.a.* | |
+|**`azmi getsecret`**|`--secret`| `--file` | *n.a.* |
 
 # Key Vault Certificate commands
 
 |**command**|description|
 |-|-|
-|**`azmi getcertificate`**|Downloads single certificate from Azure Key Vault.|
+|**`azmi getcertificate`**|Downloads certificate(s) and private key bundle from Azure Key Vault.|
 
 ## Arguments overview
 
 |**command**|source|destination|other arguments|
 |-|-|-|-|
-|**`azmi getcertificate`**|`--certificate`| *n.a.* | |
+|**`azmi getcertificate`**|`--certificate`| `--file` | *n.a.* |
+
+## Description
+Despite command's name `getcertificate` this command downloads certificate(s) and corresponding private key. Command name `getcertificate` is pointing to "Certificate" object-type in Key Vault like `https://{keyvault-name}.vault.azure.net/{object-type}/{object-name}/{object-version}` . In context of Azure Portal GUI:
+![GetCertificate Portal](img/azmi-getcertificate-portal.png)
+
+Command downloads PEM (Privacy Enhanced Mail) or PFX (Personal Information Exchange; PKCS#12 archive file format) formats,
+depending on what content type you set in Azure Key Vault.

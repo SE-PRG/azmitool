@@ -1,5 +1,7 @@
 ﻿using System;
 
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("azmi-main-tests")]
+
 namespace azmi_main
 {
     [Serializable]

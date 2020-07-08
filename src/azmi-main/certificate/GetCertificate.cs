@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 using Azure.Identity;
@@ -15,20 +16,23 @@ namespace azmi_main
             {
 
                 name = "getcertificate",
-                description = "Fetches latest or specific version of a certificate from key vault.",
+                description = "Fetches latest or specific version of a certificate(s) and private key bundle from key vault.",
 
                 arguments = new AzmiArgument[] {
                 new AzmiArgument("certificate", required: true, type: ArgType.url,
-                    description: "URL of a certificate inside of key vault. Examples: https://my-key-vault.vault.azure.net/certificates/readThisCertificate or https://my-key-vault.vault.azure.net/certificates/readThisCertificate/103a7355c6094bc78307b2db7b85b3c2 ."),
+                    description: "URL of a certificate inside of key vault. Examples: https://my-kv.vault.azure.net/certificates/cert1 or https://my-kv.vault.azure.net/certificates/cert2/103a7355c6094bc78307b2db7b85b3c2 ."),
                 SharedAzmiArguments.identity,
+                new AzmiArgument("file",
+                    description: "Path to local file to which bundle will be saved to. Examples: /tmp/readThisCertificate.crt, ./readThisCertificatePfxFormat.pfx"),
                 SharedAzmiArguments.verbose
-            }
+                }
             };
         }
 
         public class AzmiArgumentsClass : SharedAzmiArgumentsClass
         {
             public string certificate { get; set; }
+            public string file { get; set; }
         }
 
         public List<string> Execute(object options)
@@ -43,7 +47,7 @@ namespace azmi_main
                 throw AzmiException.WrongObject(ex);
             }
 
-            return Execute(opt.certificate, opt.identity).ToStringList();
+            return Execute(opt.certificate, opt.file, opt.identity).ToStringList();
         }
 
 
@@ -51,14 +55,21 @@ namespace azmi_main
         // execute GetCertificate
         //
 
-        public string Execute(string certificateIdentifierUrl, string identity = null)
+        public string Execute(string certificateIdentifierUrl, string filePath = null, string identity = null)
         {
             (Uri keyVaultUri, string certificateName, string certificateVersion) = ValidateAndParseCertificateURL(certificateIdentifierUrl);
 
             var MIcredential = new ManagedIdentityCredential(identity);
             var certificateClient = new CertificateClient(keyVaultUri, MIcredential);
 
-            // Retrieve a certificate
+            // Retrieve a certificate (certificate = certificate and private key bundle in Azure terminology)
+            // PEM (Privacy Enhanced Mail) or PFX (Personal Information Exchange; PKCS#12 archive file format) formats
+            // depends on what content type you set in Azure Key Vault at respective certificate.
+            // Both formats usually contain a certificate (possibly with its assorted set of CA certificates) and the corresponding private key
+
+            // Download CER format (X.509 certificate)
+            // single certificate, alone and without any wrapping (no private key, no password protection, just the certificate)
+            // not supported
             try
             {
                 // certificate (and key) is stored as a secret at the end in Azure
@@ -78,8 +89,19 @@ namespace azmi_main
                     secretIdentifierUrl = certificate.SecretId.ToString();
                 }
 
-                string secret = new GetSecret().Execute(secretIdentifierUrl, identity);
-                return secret;
+                // filePath: null means get secret into variable only
+                // otherwise secret may be unintentionally saved to file by GetSecret() method
+                string secret = new GetSecret().Execute(secretIdentifierUrl, filePath: null, identity);
+
+                if (String.IsNullOrEmpty(filePath))
+                {   // print to stdout
+                    return secret;
+                }
+                else
+                {   // creates or overwrites file and saves secret into it
+                    File.WriteAllText(filePath, secret);
+                    return "Saved";
+                }
             }
             catch (Exception ex)
             {
