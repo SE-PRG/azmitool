@@ -14,7 +14,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "azmi-gui", "azmi-gui\azmi-g
 		{8A00C0BE-396E-41DF-BC45-DF27C85116AF} = {8A00C0BE-396E-41DF-BC45-DF27C85116AF}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "azmi-commandline-tests", "test\azmi-commandline-tests\azmi-commandline-tests.csproj", "{A3D35782-1FE0-4E97-A24A-3AF3ECE6A2A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "azmi-commandline-tests", "test\azmi-commandline-tests\azmi-commandline-tests.csproj", "{A3D35782-1FE0-4E97-A24A-3AF3ECE6A2A4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

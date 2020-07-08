@@ -72,7 +72,7 @@ namespace azmi_main
             foreach (var file in fileList)
             {
                 var blobUri = containerUri + file.Substring(fullDirectoryPath.Length);
-                string result = SetBlob.setBlob_byBlob(file, blobUri, identity, force);
+                string result = SetBlob.Execute(file, blobUri, identity, force);
                 results.Add(result + ' ' + blobUri);
             }
             return results;

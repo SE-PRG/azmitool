@@ -66,7 +66,7 @@ namespace azmi_main
         public List<string> Execute(string containerUri, string directory, string identity = null, string prefix = null, string exclude = null, bool ifNewer = false, bool deleteAfterCopy = false)
         {
             char blobPathDelimiter = '/';
-            string containerUriTrimmed = containerUri.TrimEnd(blobDelimiter);
+            string containerUriTrimmed = containerUri.TrimEnd(blobPathDelimiter);
             List<string> blobsListing = new ListBlobs().Execute(containerUriTrimmed, identity, prefix, exclude);
             List<string> results = new List<string>();
 
