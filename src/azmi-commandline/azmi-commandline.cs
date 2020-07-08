@@ -46,6 +46,7 @@ namespace azmi_commandline
             rootCommand.AddCommand(AzmiCommandLineExtensions.ToCommand<GetBlob, GetBlob.AzmiArgumentsClass>());
             rootCommand.AddCommand(AzmiCommandLineExtensions.ToCommand<GetBlobs, GetBlobs.AzmiArgumentsClass>());
             rootCommand.AddCommand(AzmiCommandLineExtensions.ToCommand<SetBlob, SetBlob.AzmiArgumentsClass>());
+            rootCommand.AddCommand(AzmiCommandLineExtensions.ToCommand<SetBlobs, SetBlobs.AzmiArgumentsClass>());
 
             // secret
             rootCommand.AddCommand(AzmiCommandLineExtensions.ToCommand<GetSecret, GetSecret.AzmiArgumentsClass>());
