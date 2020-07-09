@@ -127,9 +127,11 @@ Or, if you want, feel free to [open a new issue](https://github.com/SRE-PRG/azmi
 
 ## Pipeline statuses
 
-- Package build [![Build status](https://skype.visualstudio.com/SCC/_apis/build/status/SE-UP/azmi/build%20-%20azmi)](https://skype.visualstudio.com/SCC/_build/latest?definitionId=8166)
-- Integration tests [![Build status](https://dev.azure.com/iiric/azmi/_apis/build/status/azmi-CI)](https://dev.azure.com/iiric/azmi/_build/latest?definitionId=28)
-- Unit tests [![Build Status](https://dev.azure.com/iiric/azmi/_apis/build/status/Unit%20Testing?branchName=unit-tests)](https://dev.azure.com/iiric/azmi/_build/latest?definitionId=32&branchName=unit-tests)
+| Pipeline | Status | Tests |
+|---|---|---|
+| Package build | [![Build status](https://skype.visualstudio.com/SCC/_apis/build/status/SE-UP/azmi/build%20-%20azmi)](https://skype.visualstudio.com/SCC/_build/latest?definitionId=8166) |   |
+| Integration tests | [![Build status](https://dev.azure.com/iiric/azmi/_apis/build/status/azmi-CI)](https://dev.azure.com/iiric/azmi/_build/latest?definitionId=28) | ![](https://img.shields.io/azure-devops/tests/iiric/azmi/28?label=integration%20tests) |
+| Unit tests | [![Build Status](https://dev.azure.com/iiric/azmi/_apis/build/status/Unit%20Testing?branchName=unit-tests)](https://dev.azure.com/iiric/azmi/_build/latest?definitionId=32&branchName=unit-tests) | ![](https://img.shields.io/azure-devops/tests/iiric/azmi/32?label=unit%20tests) |
 
 See [testing overview here](./Testing.md).
 
@@ -137,16 +139,11 @@ See [testing overview here](./Testing.md).
 
 ![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/sre-prg/azmitool/latest)
 ![GitHub last commit](https://img.shields.io/github/last-commit/sre-prg/azmitool)
-
 ![GitHub issues](https://img.shields.io/github/issues-raw/sre-prg/azmitool)
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/sre-prg/azmitool)
-![GitHub stars](https://img.shields.io/github/stars/sre-prg/azmitool?style=plastic)
 
+![GitHub stars](https://img.shields.io/github/stars/sre-prg/azmitool?style=plastic)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/sre-prg/azmitool)
 ![GitHub repo size](https://img.shields.io/github/repo-size/sre-prg/azmitool)
-
 ![GitHub language count](https://img.shields.io/github/languages/count/sre-prg/azmitool)
 ![GitHub top language](https://img.shields.io/github/languages/top/sre-prg/azmitool)
-
-![Azure DevOps tests](https://img.shields.io/azure-devops/tests/iiric/azmi/28?label=integration%20tests)
-![Azure DevOps tests](https://img.shields.io/azure-devops/tests/iiric/azmi/32?label=unit%20tests)
