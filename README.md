@@ -139,13 +139,11 @@ See [testing overview here](./Testing.md).
 
 ![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/sre-prg/azmitool/latest)
 ![GitHub last commit](https://img.shields.io/github/last-commit/sre-prg/azmitool)
-
 ![GitHub issues](https://img.shields.io/github/issues-raw/sre-prg/azmitool)
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/sre-prg/azmitool)
-![GitHub stars](https://img.shields.io/github/stars/sre-prg/azmitool?style=plastic)
 
+![GitHub stars](https://img.shields.io/github/stars/sre-prg/azmitool?style=plastic)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/sre-prg/azmitool)
 ![GitHub repo size](https://img.shields.io/github/repo-size/sre-prg/azmitool)
-
 ![GitHub language count](https://img.shields.io/github/languages/count/sre-prg/azmitool)
 ![GitHub top language](https://img.shields.io/github/languages/top/sre-prg/azmitool)
