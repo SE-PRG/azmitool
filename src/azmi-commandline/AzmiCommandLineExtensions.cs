@@ -27,13 +27,27 @@ namespace azmi_commandline
 
         internal static Argument OptionArgument(this AzmiArgument option)
         {
-            switch (option.type)
+            if (option.multiValued)
             {
-                case ArgType.str: return new Argument<string>("string");
-                case ArgType.flag: return new Argument<bool>("bool");
-                case ArgType.url: return new Argument<string>("url");
+                switch (option.type)
+                {
+                    case ArgType.str: return new Argument<string[]>("string");
+                    case ArgType.flag: return new Argument<bool>("bool");
+                    case ArgType.url: return new Argument<string[]>("url");
 
-                default: throw new ArgumentException($"Unsupported option type: {option.type}");
+                    default: throw new ArgumentException($"Unsupported option type: {option.type}");
+                }
+
+            } else
+            {
+                switch (option.type)
+                {
+                    case ArgType.str: return new Argument<string>("string");
+                    case ArgType.flag: return new Argument<bool>("bool");
+                    case ArgType.url: return new Argument<string>("url");
+
+                    default: throw new ArgumentException($"Unsupported option type: {option.type}");
+                }
             }
         }
 
