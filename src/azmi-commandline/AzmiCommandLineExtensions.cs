@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.IO;
-using System.Runtime.CompilerServices;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("azmi-main-tests")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("azmi-commandline-tests")]
@@ -27,27 +26,14 @@ namespace azmi_commandline
 
         internal static Argument OptionArgument(this AzmiArgument option)
         {
-            if (option.multiValued)
+            switch (option.type)
             {
-                switch (option.type)
-                {
-                    case ArgType.str: return new Argument<string[]>("string");
-                    case ArgType.flag: return new Argument<bool>("bool");
-                    case ArgType.url: return new Argument<string[]>("url");
-
-                    default: throw new ArgumentException($"Unsupported option type: {option.type}");
-                }
-
-            } else
-            {
-                switch (option.type)
-                {
-                    case ArgType.str: return new Argument<string>("string");
-                    case ArgType.flag: return new Argument<bool>("bool");
-                    case ArgType.url: return new Argument<string>("url");
-
-                    default: throw new ArgumentException($"Unsupported option type: {option.type}");
-                }
+                case ArgType.flag: return new Argument<bool>("bool");
+                case ArgType.str when (option.multiValued): return new Argument<string[]>("string");
+                case ArgType.url when (option.multiValued): return new Argument<string[]>("url");
+                case ArgType.str when (!option.multiValued): return new Argument<string>("string");
+                case ArgType.url when (!option.multiValued): return new Argument<string>("url");
+                default: throw new ArgumentException($"Unsupported option type: {option.type}");
             }
         }
 
@@ -96,6 +82,7 @@ namespace azmi_commandline
                     } catch (Exception ex) {
                         DisplayError(cmd.Definition().name, ex, op.verbose);
                     } });
+
             return commandLineSubCommand;
         }
 

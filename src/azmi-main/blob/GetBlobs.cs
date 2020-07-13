@@ -67,7 +67,7 @@ namespace azmi_main
         {
             const char blobPathDelimiter = '/';
             string containerUriTrimmed = containerUri.TrimEnd(blobPathDelimiter);
-            List<string> blobsListing = new ListBlobs().Execute(containerUriTrimmed, identity, prefix, exclude );
+            List<string> blobsListing = new ListBlobs().Execute(containerUriTrimmed, identity, prefix, exclude);
             List<string> results = new List<string>();
 
             foreach (var blob in blobsListing)
