@@ -55,7 +55,9 @@ namespace azmi_tests
             public void SimplestConstructor_DefinesSingleValued()
             {
                 var a = new AzmiArgument("some-name");
-                Assert.False(a.multiValued);
+                var isMultiValued = a.multiValued;
+                Assert.False(isMultiValued);
+
             }
         }
 
@@ -117,14 +119,16 @@ namespace azmi_tests
             public void TwoStringsConstructor_OptionalMultiValuedIsTrue()
             {
                 var a = new AzmiArgument("some-name", "some-description", multiValued: true);
-                Assert.True(a.multiValued);
+                var isMultiValued = a.multiValued;
+                Assert.True(isMultiValued);
             }
 
             [Fact]
             public void TwoStringsConstructor_OptionalMultiValuedIsFalse()
             {
                 var a = new AzmiArgument("some-name", "some-description");
-                Assert.False(a.multiValued);
+                var isMultiValued = a.multiValued;
+                Assert.False(isMultiValued);
             }
         }
 
