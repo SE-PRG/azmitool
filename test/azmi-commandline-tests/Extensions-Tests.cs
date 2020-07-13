@@ -173,6 +173,54 @@ namespace azmi_commandline_tests
             }
 
             // TODO: Add more tests for command.handler
+
+            private class DummyAzmiCommand2 : IAzmiCommand
+            {
+                public SubCommandDefinition Definition()
+                {
+                    return new SubCommandDefinition
+                    {
+                        name = "dummy_command",
+                        arguments = new AzmiArgument[] {
+                            SharedAzmiArguments.identity,
+                            new AzmiArgument("exclude", multiValued: true),
+                        }
+                    };
+                }
+
+                public List<string> Execute(object options)
+                {
+                    return new List<string> { "dummy command executed" };
+                }
+            }
+
+            [Fact]
+            public void ToCommand_ProperType2()
+            {
+                var a = AzmiCommandLineExtensions.ToCommand<DummyAzmiCommand2, SharedAzmiArgumentsClass>();
+                Assert.IsType<Command>(a);
+            }
+
+            [Fact]
+            public void ToCommand_ProperOptionCount2()
+            {
+                var a = AzmiCommandLineExtensions.ToCommand<DummyAzmiCommand2, SharedAzmiArgumentsClass>();
+                var actualCount = a.Options.Count();
+                Assert.Equal(2, actualCount);
+            }
+
+            [Fact]
+            public void ToCommand_ProperMultiValuedOption()
+            {
+                var subCommand = AzmiCommandLineExtensions.ToCommand<DummyAzmiCommand2, SharedAzmiArgumentsClass>();
+                var option = subCommand.Options.First(a => a.Name == "exclude");
+                var actualArity = option.Argument.Arity;
+                Assert.Equal(ArgumentArity.OneOrMore.MinimumNumberOfValues, actualArity.MinimumNumberOfValues);
+                Assert.Equal(ArgumentArity.OneOrMore.MaximumNumberOfValues, actualArity.MaximumNumberOfValues);
+                // TODO: use one Assert above, simple Equal is not working for objects
+            }
+
+
         }
 
         public class DisplayError_TestsGroup

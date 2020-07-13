@@ -96,7 +96,6 @@ namespace azmi_commandline
                     } catch (Exception ex) {
                         DisplayError(cmd.Definition().name, ex, op.verbose);
                     } });
-
             return commandLineSubCommand;
         }
 
