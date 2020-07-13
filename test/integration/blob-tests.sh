@@ -46,6 +46,8 @@ BC=0; PREFIX="notExisting"
 test "listblobs finds $BC blobs with prefix $PREFIX" assert.Equals "azmi listblobs -c $CONTAINER_LB --prefix $PREFIX | wc -l" $BC
 BC=3; EXCLUDE="server2"
 test "listblobs finds $BC blobs excluding $EXCLUDE" assert.Equals "azmi listblobs -c $CONTAINER_LB --exclude $EXCLUDE | wc -l" $BC
+BC=1; EXCLUDE1="file1"; EXCLUDE2="file2"
+test "listblobs finds $BC blobs with multiple excludes $EXCLUDE" assert.Equals "azmi listblobs -c $CONTAINER_LB --exclude $EXCLUDE | wc -l" $BC
 
 
 testing class "getblob"

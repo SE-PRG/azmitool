@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("azmi-main-tests")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("azmi-commandline-tests")]
@@ -48,12 +49,18 @@ namespace azmi_commandline
 
         internal static Option ToOption(this AzmiArgument option)
         {
-            return new Option(option.OptionNames())
+            var opt = new Option(option.OptionNames())
             {
                 Argument = option.OptionArgument(),
                 Description = option.OptionDescription(),
                 Required = option.required
             };
+            if (option.multiValued)
+            {
+                opt.Argument.Arity = ArgumentArity.OneOrMore;
+                // TODO: Should optional arguments have ZeroOrMore?
+            }
+            return opt;
         }
 
         internal static Command ToCommand<T, TOptions>()

@@ -23,7 +23,7 @@ namespace azmi_main
                         description: "URL of container for which to list blobs. Example: https://myaccount.blob.core.windows.net/mycontainer"),
                     new AzmiArgument("prefix",
                         description: "Specifies a string that filters the results to return only blobs whose name begins with the specified prefix"),
-                    new AzmiArgument("exclude",
+                    new AzmiArgument("exclude", multiValued: true,
                         description: "Exclude blobs that match given regular expression."),
                     SharedAzmiArguments.identity,
                     SharedAzmiArguments.verbose
