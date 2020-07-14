@@ -19,7 +19,7 @@ It is utilizing Azure AD authentication via user assigned managed identity.</Des
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.CommandLine.Experimental" Version="0.3.0-alpha.19577.1" />
+    <PackageReference Include="System.CommandLine" Version="2.0.0-beta1.20253.1" />
   </ItemGroup>
 
   <ItemGroup>
