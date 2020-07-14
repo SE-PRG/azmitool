@@ -57,7 +57,6 @@ azmi setblob -f $UPLOADFILE --blob $BLOBURL
 azmi setblob -f $UPLOADFILE --blob $BLOBURL --force
 
 
-
 # upload all files from directory
 azmi setblobs --directory $UPLOAD_DIR --container $CONTAINER
 
