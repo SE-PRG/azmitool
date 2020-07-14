@@ -55,6 +55,20 @@ azmi setblob -f $UPLOADFILE --blob $BLOBURL
 
 # upload file even if exact blob already exists
 azmi setblob -f $UPLOADFILE --blob $BLOBURL --force
+
+
+# upload all files from directory
+azmi setblobs --directory $UPLOAD_DIR --container $CONTAINER
+
+# upload using specified identity
+azmi setblobs -d $UPLOAD_DIR -c $CONTAINER --identity $identity
+
+# upload and overwrite existing blobs
+azmi setblobs -d $UPLOAD_DIR -c $CONTAINER --force
+
+# setblobs and getblobs have the same folder structure
+azmi getblobs -c $CONTAINER -d $DOWNLOAD_DIR
+diff -r $UPLOAD_DIR $DOWNLOAD_DIR # returns exit code 0
 ```
 
 ### Comments

@@ -4,6 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Invocation;
+using System.IO;
+
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("azmi-main-tests")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("azmi-commandline-tests")]
 
 namespace azmi_commandline
 {

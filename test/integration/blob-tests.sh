@@ -27,6 +27,7 @@ DATE1=$(date +%s)   # used in file name
 DATE2=$(date +%s%N) # used in file content
 UPLOADFILE="upload$DATE1.txt"
 echo "$DATE2" > "$UPLOADFILE"
+UPLOAD_DIR="./Upload"
 
 
 #
@@ -60,14 +61,14 @@ test "getblob fails on RO container using non-existing identity" assert.Fail "az
 
 testing class "getblobs"
 BC=5; rm -rf $DOWNLOAD_DIR
-test "getblobs downloads $BC blobs" assert.Equals "azmi getblobs --container $CONTAINER_LB --directory $DOWNLOAD_DIR | grep Success | wc -l" $((BC+1))
+test "getblobs downloads $BC blobs" assert.Equals "azmi getblobs --container $CONTAINER_LB --directory $DOWNLOAD_DIR | grep Success | wc -l" $BC
 # there is one extra line for summary
 BC=3; PREFIX="server1"; rm -rf $DOWNLOAD_DIR
-test "getblobs downloads $BC blobs with prefix $PREFIX" assert.Equals "azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --prefix $PREFIX | grep Success | wc -l" $((BC+1))
+test "getblobs downloads $BC blobs with prefix $PREFIX" assert.Equals "azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --prefix $PREFIX | grep Success | wc -l" $BC
 BC=0; PREFIX="notExisting"; rm -rf $DOWNLOAD_DIR
 test "getblobs downloads $BC blobs with prefix $PREFIX" assert.Equals "azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --prefix $PREFIX | wc -l" $BC
 BC=3; EXCLUDE="server2"; rm -rf $DOWNLOAD_DIR
-test "getblobs downloads $BC blobs excluding $EXCLUDE" assert.Equals "azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --exclude $EXCLUDE | grep Success | wc -l" $((BC+1))
+test "getblobs downloads $BC blobs excluding $EXCLUDE" assert.Equals "azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --exclude $EXCLUDE | grep Success | wc -l" $BC
 
 
 testing class "setblob"
@@ -79,7 +80,28 @@ testing class "setblob force"
 test "setblob fails to overwrite blob" assert.Fail "azmi setblob -f $UPLOADFILE --blob ${CONTAINER_RW}/${UPLOADFILE}"
 test "setblob overwrites blob with force" assert.Success "azmi setblob -f $UPLOADFILE --blob ${CONTAINER_RW}/${UPLOADFILE} --force"
 
-# TODO: Add here setblobs tests
+
+testing class "setblobs"
+mkdir -p $UPLOAD_DIR && rm -rf $UPLOAD_DIR/*
+# zero files
+test "prepare for setblobs tests" assert.Success "azmi getblobs -c $CONTAINER_RW -d $DOWNLOAD_DIR --delete-after-copy"
+test "setblobs OK with 0 files on RO container" assert.Success "azmi setblobs --directory $UPLOAD_DIR --container $CONTAINER_RO"
+test "setblobs fails on non-existing directory" assert.Fail "azmi setblobs -d nonexisting -c $CONTAINER_RO"
+# one file
+echo "$DATE2" > "$UPLOAD_DIR/file1.txt"
+test "setblobs OK with 1 file and identity" assert.Success "azmi setblobs -d $UPLOAD_DIR -c $CONTAINER_RW --identity $identity"
+test "setblobs fails on RO container" assert.Fail "azmi setblobs -d $UPLOAD_DIR -c $CONTAINER_RO"
+# two files
+echo "$DATE2" > "$UPLOAD_DIR/file2.txt"
+test "setblobs fails with 2 files without force" assert.Fail "azmi setblobs -d $UPLOAD_DIR -c $CONTAINER_RW"
+test "setblobs OK with 2 files and force" assert.Success "azmi setblobs -d $UPLOAD_DIR -c $CONTAINER_RW --force"
+# three files and subdirectory
+mkdir -p "$UPLOAD_DIR/subdirectory" && echo "$DATE2" > "$UPLOAD_DIR/subdirectory/file3.txt"
+test "setblobs OK with subdirectory" assert.Equals "azmi setblobs -d $UPLOAD_DIR -c $CONTAINER_RW --force | wc -l" 3
+test "setblobs excludes a file" assert.Equals "azmi setblobs -d $UPLOAD_DIR -c $CONTAINER_RW --force --exclude file2 | wc -l" 2
+rm -rf $DOWNLOAD_DIR
+test "setblobs and getblobs give same files" assert.Success "azmi getblobs -c $CONTAINER_RW -d $DOWNLOAD_DIR --delete-after-copy && diff -r $UPLOAD_DIR $DOWNLOAD_DIR"
+
 
 # mixed commands tests
 testing class "SHA256"

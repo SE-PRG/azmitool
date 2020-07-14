@@ -27,7 +27,7 @@ time seq "$REPEAT" | azmi getblob --blob $BLOB --file download1.txt > /dev/null
 
 printf  "\n=================\n"
 echo "$PREVIOUS_VERSION getblob --blob $BLOB --file download.txt"
-wget --quiet https://azmideb.blob.core.windows.net/azmi-deb/archive/"$PREVIOUS_VERSION"
+wget --quiet https://azmi.blob.core.windows.net/archive/"$PREVIOUS_VERSION"
 chmod +x ./"$PREVIOUS_VERSION"
 ./"$PREVIOUS_VERSION" --version
 
