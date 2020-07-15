@@ -164,6 +164,14 @@ namespace azmi_tests
                 var a = new AzmiArgument("some-name", 'u', "some-description");
                 Assert.False(a.required);
             }
+
+            [Fact]
+            public void ThreeArgsConstructor_AcceptsMultiValued()
+            {
+                var a = new AzmiArgument("some-name", 'u', "some-description", multiValued: true);
+                var isMultiValued = a.multiValued;
+                Assert.True(isMultiValued);
+            }
         }
     }
 }
