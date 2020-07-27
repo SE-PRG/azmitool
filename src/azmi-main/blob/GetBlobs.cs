@@ -71,10 +71,10 @@ namespace azmi_main
             List<string> blobsListing = new ListBlobs().Execute(containerUriTrimmed, identity, prefix, exclude);
             List<string> results = new List<string>();
 
-            /*var options = new ParallelOptions()
+            var options = new ParallelOptions()
             {
                 MaxDegreeOfParallelism = 10
-            };*/
+            };
             var Cred = new ManagedIdentityCredential();
             Parallel.ForEach(blobsListing, blob =>
             // foreach (var blob in blobsListing)
@@ -82,7 +82,8 @@ namespace azmi_main
                 // e.g. blobUri = https://<storageAccount>.blob.core.windows.net/Hello/World.txt
                 string blobUri = containerUriTrimmed + blobPathDelimiter + blob;
                 string filePath = Path.Combine(directory, blob);
-                string result = new GetBlob().Execute(blobUri, filePath, identity, ifNewer, deleteAfterCopy, Cred);
+                //string result = new GetBlob().Execute(blobUri, filePath, identity, ifNewer, deleteAfterCopy, Cred);
+                string result = new GetToken().Execute();
                 string downloadStatus = result + ' ' + blobUri;
                 lock (results)
                 {
