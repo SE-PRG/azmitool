@@ -4,8 +4,6 @@ using System.Collections.Generic;
 
 using Azure.Identity;
 using Azure.Storage.Blobs;
-using System.Threading.Tasks;
-
 
 namespace azmi_main
 {
@@ -56,15 +54,14 @@ namespace azmi_main
                 throw AzmiException.WrongObject(ex);
             }
 
-            // return ExecuteAsync(opt.blob, opt.file, opt.identity, opt.ifNewer, opt.deleteAfterCopy).ToStringList();
-            return ExecuteAsync(opt.blob, opt.file, opt.identity, opt.ifNewer, opt.deleteAfterCopy).Result.ToStringList();
+            return Execute(opt.blob, opt.file, opt.identity, opt.ifNewer, opt.deleteAfterCopy).ToStringList();
         }
 
         //
         // Execute GetBlob
         //
 
-        public async Task<string> ExecuteAsync(string blobURL, string filePath, string identity = null, bool ifNewer = false, bool deleteAfterCopy = false)
+        public string Execute(string blobURL, string filePath, string identity = null, bool ifNewer = false, bool deleteAfterCopy = false)
         {
 
             // method start
@@ -84,7 +81,7 @@ namespace azmi_main
                 string dirName = Path.GetDirectoryName(absolutePath);
                 Directory.CreateDirectory(dirName);
 
-                await blobClient.DownloadToAsync(filePath);
+                blobClient.DownloadToAsync(filePath);
 
                 if (deleteAfterCopy)
                 {

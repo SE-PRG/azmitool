@@ -76,8 +76,8 @@ namespace azmi_main
                 // e.g. blobUri = https://<storageAccount>.blob.core.windows.net/Hello/World.txt
                 string blobUri = containerUriTrimmed + blobPathDelimiter + blob;
                 string filePath = Path.Combine(directory, blob);
-                Task<string> result = new GetBlob().ExecuteAsync(blobUri, filePath, identity, ifNewer, deleteAfterCopy);
-                string downloadStatus = result.Result + ' ' + blobUri;
+                string result = new GetBlob().Execute(blobUri, filePath, identity, ifNewer, deleteAfterCopy);
+                string downloadStatus = result + ' ' + blobUri;
                 results.Add(downloadStatus);
             });
             return results;

@@ -1,7 +1,6 @@
 using azmi_main;
 using System;
 using System.CommandLine;
-using System.CommandLine.Invocation;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("azmi-commandline-tests")]
 
