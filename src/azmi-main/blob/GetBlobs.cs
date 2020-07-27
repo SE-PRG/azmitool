@@ -70,7 +70,8 @@ namespace azmi_main
             List<string> blobsListing = new ListBlobs().Execute(containerUriTrimmed, identity, prefix, exclude);
             List<string> results = new List<string>();
 
-            foreach (var blob in blobsListing)
+            Parallel.ForEach(blobsListing, (blob) =>
+            // foreach (var blob in blobsListing)
             {
                 // e.g. blobUri = https://<storageAccount>.blob.core.windows.net/Hello/World.txt
                 string blobUri = containerUriTrimmed + blobPathDelimiter + blob;
@@ -78,7 +79,7 @@ namespace azmi_main
                 Task<string> result = new GetBlob().ExecuteAsync(blobUri, filePath, identity, ifNewer, deleteAfterCopy);
                 string downloadStatus = result.Result + ' ' + blobUri;
                 results.Add(downloadStatus);
-            }
+            });
             return results;
         }
     }
