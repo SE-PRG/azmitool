@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace azmi_main
 {
@@ -65,7 +66,6 @@ namespace azmi_main
 
         public List<string> Execute(string containerUri, string directory, string identity = null, string prefix = null, string exclude = null, bool ifNewer = false, bool deleteAfterCopy = false)
         {
-            char blobPathDelimiter = '/';
             string containerUriTrimmed = containerUri.TrimEnd(blobPathDelimiter);
             List<string> blobsListing = new ListBlobs().Execute(containerUriTrimmed, identity, prefix, exclude);
             List<string> results = new List<string>();
@@ -75,8 +75,8 @@ namespace azmi_main
                 // e.g. blobUri = https://<storageAccount>.blob.core.windows.net/Hello/World.txt
                 string blobUri = containerUriTrimmed + blobPathDelimiter + blob;
                 string filePath = Path.Combine(directory, blob);
-                string result = new GetBlob().Execute(blobUri, filePath, identity, ifNewer, deleteAfterCopy);
-                string downloadStatus = result + ' ' + blobUri;
+                Task<string> result = new GetBlob().ExecuteAsync(blobUri, filePath, identity, ifNewer, deleteAfterCopy);
+                string downloadStatus = result.Result + ' ' + blobUri;
                 results.Add(downloadStatus);
             }
             return results;
