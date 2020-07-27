@@ -72,7 +72,7 @@ namespace azmi_main
 
             var options = new ParallelOptions()
             {
-                MaxDegreeOfParallelism = 10
+                MaxDegreeOfParallelism = 5
             };
             Parallel.ForEach(blobsListing, options, blob =>
             // foreach (var blob in blobsListing)
