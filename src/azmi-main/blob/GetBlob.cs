@@ -81,7 +81,7 @@ namespace azmi_main
                 string dirName = Path.GetDirectoryName(absolutePath);
                 Directory.CreateDirectory(dirName);
 
-                blobClient.DownloadToAsync(filePath);
+                blobClient.DownloadTo(filePath);
 
                 if (deleteAfterCopy)
                 {
