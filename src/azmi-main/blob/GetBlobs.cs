@@ -78,7 +78,10 @@ namespace azmi_main
                 string filePath = Path.Combine(directory, blob);
                 string result = new GetBlob().Execute(blobUri, filePath, identity, ifNewer, deleteAfterCopy);
                 string downloadStatus = result + ' ' + blobUri;
-                results.Add(downloadStatus);
+                lock (results)
+                {
+                    results.Add(downloadStatus);
+                }
             });
             return results;
         }
