@@ -70,7 +70,11 @@ namespace azmi_main
             List<string> blobsListing = new ListBlobs().Execute(containerUriTrimmed, identity, prefix, exclude);
             List<string> results = new List<string>();
 
-            Parallel.ForEach(blobsListing, blob =>
+            var options = new ParallelOptions()
+            {
+                MaxDegreeOfParallelism = 2
+            };
+            Parallel.ForEach(blobsListing, options, blob =>
             // foreach (var blob in blobsListing)
             {
                 // e.g. blobUri = https://<storageAccount>.blob.core.windows.net/Hello/World.txt
