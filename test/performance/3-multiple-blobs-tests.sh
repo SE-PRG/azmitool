@@ -33,7 +33,7 @@ rm -rf download1
 mkdir download1
 printf  "\n=================\n"
 echo "azmi getblobs -c $CONTAINER -d download1"
-time azmi getblobs -c $CONTAINER -d download1 > /dev/null
+time azmi getblobs -c $CONTAINER -d download1
 echo "disk usage: $(du download1)"
 
 
