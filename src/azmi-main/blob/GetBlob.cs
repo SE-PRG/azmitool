@@ -61,13 +61,16 @@ namespace azmi_main
         // Execute GetBlob
         //
 
-        public string Execute(string blobURL, string filePath, string identity = null, bool ifNewer = false, bool deleteAfterCopy = false)
+        public string Execute(string blobURL, string filePath, string identity = null, bool ifNewer = false, bool deleteAfterCopy = false, ManagedIdentityCredential Cred = null)
         {
 
             // method start
 
             // Connection
-            var Cred = new ManagedIdentityCredential(identity);
+            if (Cred == null)
+            {
+                Cred = new ManagedIdentityCredential(identity);
+            }
             var blobClient = new BlobClient(new Uri(blobURL), Cred);
 
             if (ifNewer && File.Exists(filePath) && !IsNewer(blobClient, filePath))

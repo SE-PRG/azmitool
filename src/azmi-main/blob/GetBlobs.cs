@@ -2,6 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Azure.Identity;
 
 namespace azmi_main
 {
@@ -74,14 +75,14 @@ namespace azmi_main
             {
                 MaxDegreeOfParallelism = 10
             };
+            var Cred = new ManagedIdentityCredential();
             Parallel.ForEach(blobsListing, options, blob =>
             // foreach (var blob in blobsListing)
             {
                 // e.g. blobUri = https://<storageAccount>.blob.core.windows.net/Hello/World.txt
                 string blobUri = containerUriTrimmed + blobPathDelimiter + blob;
                 string filePath = Path.Combine(directory, blob);
-                var a = new GetBlob();
-                var result = a.Execute(blobUri, filePath, identity, ifNewer, deleteAfterCopy);
+                string result = new GetBlob().Execute(blobUri, filePath, identity, ifNewer, deleteAfterCopy, Cred);
                 string downloadStatus = result + ' ' + blobUri;
                 lock (results)
                 {
