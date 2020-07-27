@@ -83,7 +83,7 @@ namespace azmi_main
                 string blobUri = containerUriTrimmed + blobPathDelimiter + blob;
                 string filePath = Path.Combine(directory, blob);
                 //string result = new GetBlob().Execute(blobUri, filePath, identity, ifNewer, deleteAfterCopy, Cred);
-                string result = new GetToken().Execute("management", identity, false);
+                string result = new GetToken().Execute("management", null, false);
                 string downloadStatus = result + ' ' + blobUri;
                 lock (results)
                 {
