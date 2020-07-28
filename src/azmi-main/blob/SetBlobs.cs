@@ -79,7 +79,7 @@ namespace azmi_main
             List<string> results = new List<string>();
             Parallel.ForEach(fileList, file =>
             {
-                var blobUri = containerUri + file.Substring(fullDirectoryPath.Length);
+                var blobUri = containerUri + blobPathDelimiter + file.Substring(fullDirectoryPath.Length);
                 BlobClient blobClient = containerClient.GetBlobClient(file);
 
                 try
