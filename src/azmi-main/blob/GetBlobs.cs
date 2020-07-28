@@ -85,17 +85,22 @@ namespace azmi_main
             }
 
             var results = new List<string>();
-            foreach (var blobItem in blobListing)
+            Parallel.ForEach(blobListing, blobItem =>
+            // foreach (var blobItem in blobListing)
             {
                 BlobClient bc = containerClient.GetBlobClient(blobItem);
 
-                string filePath = Path.Combine(directory, blobItem);
                 Directory.CreateDirectory(directory);
+                string filePath = Path.Combine(directory, blobItem);
                 bc.DownloadTo(filePath);
 
-                Console.WriteLine("Blob name: {0}", blobItem);
-                results.Add("Success");
-            }
+                lock (results)
+                {
+                    results.Add("Success");
+                }
+            });
+
+            // This function and setblobs. That is it.
 
 
             /*var options = new ParallelOptions()
