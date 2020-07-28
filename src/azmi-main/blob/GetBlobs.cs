@@ -7,6 +7,7 @@ using System.Threading;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using System.Reflection.Metadata;
+using System.Linq;
 
 namespace azmi_main
 {
@@ -75,63 +76,45 @@ namespace azmi_main
 
             var Cred = new ManagedIdentityCredential(identity);
             var containerClient = new BlobContainerClient(new Uri(containerUriTrimmed), Cred);
-            string continuationToken = null;
-            // int segmentSize;
 
-            List<string> results = new List<string>();
-            do
+            var results = new List<string>();
+
+            List<string> blobListing = containerClient.GetBlobs(prefix: prefix).Select(i => i.Name).ToList();
+
+            foreach (var blobItem in blobListing)
             {
-                var resultSegment = containerClient.GetBlobs()
-                    .AsPages(continuationToken);
+                BlobClient bc = containerClient.GetBlobClient(blobItem);
+                string filePath = Path.Combine(directory, blobItem);
+                bc.DownloadTo(filePath);
 
-                foreach (Azure.Page<BlobItem> blobPage in resultSegment)
+                Console.WriteLine("Blob name: {0}", blobItem);
+                results.Add("Success");
+            }
+
+
+            /*var options = new ParallelOptions()
+            {
+                MaxDegreeOfParallelism = 10
+            };
+            //var Cred = new ManagedIdentityCredential();
+            Parallel.ForEach(blobsListing, blob =>
+            // foreach (var blob in blobsListing)
+            {
+                // e.g. blobUri = https://<storageAccount>.blob.core.windows.net/Hello/World.txt
+                string blobUri = containerUriTrimmed + blobPathDelimiter + blob;
+                string filePath = Path.Combine(directory, blob);
+                //string result = new GetBlob().Execute(blobUri, filePath, identity, ifNewer, deleteAfterCopy, Cred);
+                Random r = new Random();
+                var wait = r.Next(0, 10000);
+                Thread.Sleep(wait);
+                string result = new GetToken().Execute("management", "006a540b-cef9-43d1-82e8-23b8679cc8d0", false);
+                string downloadStatus = result + ' ' + blobUri;
+                lock (results)
                 {
-                    foreach (BlobItem blobItem in blobPage.Values)
-                    {
-                        BlobClient bc = containerClient.GetBlobClient(blobItem.Name);
-                        string filePath = Path.Combine(directory, blobItem.Name);
-                        bc.DownloadTo(filePath);
-
-                        Console.WriteLine("Blob name: {0}", blobItem.Name);
-                        results.Add("Success");
-                    }
-
-                    // Get the continuation token and loop until it is empty.
-                    continuationToken = blobPage.ContinuationToken;
-
-                    Console.WriteLine();
+                    results.Add(downloadStatus);
                 }
-
-            } while (continuationToken != "");
-
-
-
-            /*            List<string> blobsListing = new ListBlobs().Execute(containerUriTrimmed, identity, prefix, exclude);
-                        List<string> results = new List<string>();
-
-                        var options = new ParallelOptions()
-                        {
-                            MaxDegreeOfParallelism = 10
-                        };
-                        //var Cred = new ManagedIdentityCredential();
-                        Parallel.ForEach(blobsListing, blob =>
-                        // foreach (var blob in blobsListing)
-                        {
-                            // e.g. blobUri = https://<storageAccount>.blob.core.windows.net/Hello/World.txt
-                            string blobUri = containerUriTrimmed + blobPathDelimiter + blob;
-                            string filePath = Path.Combine(directory, blob);
-                            //string result = new GetBlob().Execute(blobUri, filePath, identity, ifNewer, deleteAfterCopy, Cred);
-                            Random r = new Random();
-                            var wait = r.Next(0, 10000);
-                            Thread.Sleep(wait);
-                            string result = new GetToken().Execute("management", "006a540b-cef9-43d1-82e8-23b8679cc8d0", false);
-                            string downloadStatus = result + ' ' + blobUri;
-                            lock (results)
-                            {
-                                results.Add(downloadStatus);
-                            }
-                        }); */
-                        return results;
+            });*/
+            return results;
         }
     }
 }
