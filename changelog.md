@@ -12,7 +12,7 @@ Functionality / performance
 
 Other changes
 * updated doitnet core to version 3.1
-
+* Full list of issues: https://github.com/SRE-PRG/azmitool/milestone/5?closed=1
 # older versions
 
 For technical list, published within debian package, take a look [here](debian/changelog).
