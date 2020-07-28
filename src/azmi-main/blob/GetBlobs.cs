@@ -8,6 +8,7 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using System.Reflection.Metadata;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace azmi_main
 {
@@ -73,18 +74,23 @@ namespace azmi_main
         public List<string> Execute(string containerUri, string directory, string identity = null, string prefix = null, string exclude = null, bool ifNewer = false, bool deleteAfterCopy = false)
         {
             string containerUriTrimmed = containerUri.TrimEnd(blobPathDelimiter);
-
             var Cred = new ManagedIdentityCredential(identity);
             var containerClient = new BlobContainerClient(new Uri(containerUriTrimmed), Cred);
 
-            var results = new List<string>();
-
             List<string> blobListing = containerClient.GetBlobs(prefix: prefix).Select(i => i.Name).ToList();
+            if (exclude != null)
+            { // apply --exclude regular expression
+                var rx = new Regex(exclude);
+                blobListing = blobListing.Where(b => !rx.IsMatch(b)).ToList();
+            }
 
+            var results = new List<string>();
             foreach (var blobItem in blobListing)
             {
                 BlobClient bc = containerClient.GetBlobClient(blobItem);
+
                 string filePath = Path.Combine(directory, blobItem);
+                Directory.CreateDirectory(directory);
                 bc.DownloadTo(filePath);
 
                 Console.WriteLine("Blob name: {0}", blobItem);
