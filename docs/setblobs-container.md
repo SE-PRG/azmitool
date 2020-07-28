@@ -1,4 +1,4 @@
-Since azmi [version 0.5](../changelog.md)), azmi sub-command `setblob` is not supporting parameter `--container` anymore. You must use `--blob` to specify destination.
+Since azmi [version 0.5](../changelog.md#version-05), azmi sub-command `setblob` is not supporting parameter `--container` anymore. You must use `--blob` to specify destination.
 
 ## Not supported
 ```
