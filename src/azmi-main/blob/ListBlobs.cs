@@ -23,7 +23,7 @@ namespace azmi_main
                         description: "URL of container for which to list blobs. Example: https://myaccount.blob.core.windows.net/mycontainer"),
                     new AzmiArgument("prefix",
                         description: "Specifies a string that filters the results to return only blobs whose name begins with the specified prefix"),
-                    new AzmiArgument("exclude",
+                    new AzmiArgument("exclude", multiValued: true,
                         description: "Exclude blobs that match given regular expression."),
                     SharedAzmiArguments.identity,
                     SharedAzmiArguments.verbose
@@ -35,7 +35,7 @@ namespace azmi_main
         {
             public string container { get; set; }
             public string prefix { get; set; }
-            public string exclude { get; set; }
+            public string[] exclude { get; set; }
         }
 
         public List<string> Execute(object options)
@@ -57,7 +57,7 @@ namespace azmi_main
         //
 
 
-        public List<string> Execute(string containerUri, string identity = null, string prefix = null, string exclude = null)
+        public List<string> Execute(string containerUri, string identity = null, string prefix = null, string[] exclude = null)
         {
 
             var Cred = new ManagedIdentityCredential(identity);
@@ -70,7 +70,7 @@ namespace azmi_main
 
                 if (exclude != null)
                 { // apply --exclude regular expression
-                    var rx = new Regex(exclude);
+                    var rx = new Regex(String.Join('|',exclude));
                     blobListing = blobListing.Where(b => !rx.IsMatch(b)).ToList();
                 }
                 return blobListing.Count == 0 ? null : blobListing;
