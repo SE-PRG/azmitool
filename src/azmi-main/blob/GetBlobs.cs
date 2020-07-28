@@ -3,10 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Azure.Identity;
-using System.Threading;
 using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
-using System.Reflection.Metadata;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -86,46 +83,44 @@ namespace azmi_main
 
             var results = new List<string>();
             Parallel.ForEach(blobListing, blobItem =>
-            // foreach (var blobItem in blobListing)
             {
-                BlobClient bc = containerClient.GetBlobClient(blobItem);
+                BlobClient blobClient = containerClient.GetBlobClient(blobItem);
+
+                string filePath = Path.Combine(directory, blobItem);
+                if (ifNewer && File.Exists(filePath) && !IsNewer(blobClient, filePath))
+                {
+                    lock (results)
+                    {
+                        results.Add("Skipped. Blob is not newer than file.");
+                    }
+                }
 
                 Directory.CreateDirectory(directory);
-                string filePath = Path.Combine(directory, blobItem);
-                bc.DownloadTo(filePath);
+                blobClient.DownloadTo(filePath);
 
                 lock (results)
                 {
                     results.Add("Success");
                 }
-            });
 
-            // This function and setblobs. That is it.
-
-
-            /*var options = new ParallelOptions()
-            {
-                MaxDegreeOfParallelism = 10
-            };
-            //var Cred = new ManagedIdentityCredential();
-            Parallel.ForEach(blobsListing, blob =>
-            // foreach (var blob in blobsListing)
-            {
-                // e.g. blobUri = https://<storageAccount>.blob.core.windows.net/Hello/World.txt
-                string blobUri = containerUriTrimmed + blobPathDelimiter + blob;
-                string filePath = Path.Combine(directory, blob);
-                //string result = new GetBlob().Execute(blobUri, filePath, identity, ifNewer, deleteAfterCopy, Cred);
-                Random r = new Random();
-                var wait = r.Next(0, 10000);
-                Thread.Sleep(wait);
-                string result = new GetToken().Execute("management", "006a540b-cef9-43d1-82e8-23b8679cc8d0", false);
-                string downloadStatus = result + ' ' + blobUri;
-                lock (results)
+                if (deleteAfterCopy)
                 {
-                    results.Add(downloadStatus);
+                    blobClient.Delete();
                 }
-            });*/
+            });
             return results;
+        }
+
+        private bool IsNewer(BlobClient blob, string filePath)
+        {
+            var blobProperties = blob.GetProperties();
+            // Any operation that modifies a blob, including an update of the blob's metadata or properties, changes the last modified time of the blob
+            var blobLastModified = blobProperties.Value.LastModified.UtcDateTime;
+
+            // returns date of local file was last written to
+            DateTime fileLastWrite = File.GetLastWriteTimeUtc(filePath);
+
+            return blobLastModified > fileLastWrite;
         }
     }
 }
