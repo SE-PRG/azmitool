@@ -80,7 +80,6 @@ namespace azmi_main
                 var rx = new Regex(exclude);
                 blobListing = blobListing.Where(b => !rx.IsMatch(b)).ToList();
             }
-
             var results = new List<string>();
             Parallel.ForEach(blobListing, blobItem =>
             {
@@ -95,9 +94,12 @@ namespace azmi_main
                     }
                 }
 
+                string absolutePath = Path.GetFullPath(filePath);
+                string dirName = Path.GetDirectoryName(absolutePath);
+                Directory.CreateDirectory(dirName);
+
                 try
                 {
-                    Directory.CreateDirectory(directory);
                     blobClient.DownloadTo(filePath);
 
                     lock (results)
