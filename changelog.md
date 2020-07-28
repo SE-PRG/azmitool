@@ -8,7 +8,7 @@ Breaking changes:
 * `setblobs` is not supporting `--container` parameter anymore, more info [here](docs/setblobs-container.md)
 
 Functionality / performance
-* `getblobs` speed increased 10 times
+* `getblobs` speed increased 50 times!
 
 Other changes
 * updated doitnet core to version 3.1
