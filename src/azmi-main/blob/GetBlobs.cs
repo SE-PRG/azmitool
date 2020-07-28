@@ -95,17 +95,28 @@ namespace azmi_main
                     }
                 }
 
-                Directory.CreateDirectory(directory);
-                blobClient.DownloadTo(filePath);
-
-                lock (results)
+                try
                 {
-                    results.Add("Success");
+                    Directory.CreateDirectory(directory);
+                    blobClient.DownloadTo(filePath);
+
+                    lock (results)
+                    {
+                        results.Add("Success");
+                    }
+
+                    if (deleteAfterCopy)
+                    {
+                        blobClient.Delete();
+                    }
                 }
-
-                if (deleteAfterCopy)
+                catch (Azure.RequestFailedException)
                 {
-                    blobClient.Delete();
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    throw AzmiException.IDCheck(identity, ex);
                 }
             });
             return results;
