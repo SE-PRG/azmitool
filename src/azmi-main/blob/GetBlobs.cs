@@ -80,6 +80,7 @@ namespace azmi_main
                 var rx = new Regex(exclude);
                 blobListing = blobListing.Where(b => !rx.IsMatch(b)).ToList();
             }
+
             var results = new List<string>();
             Parallel.ForEach(blobListing, blobItem =>
             {
