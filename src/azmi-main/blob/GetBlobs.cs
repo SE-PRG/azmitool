@@ -1,11 +1,17 @@
-﻿using System;
+using Azure.Identity;
+using Azure.Storage.Blobs;
+using System;
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace azmi_main
 {
     public class GetBlobs : IAzmiCommand
     {
+        private const char blobPathDelimiter = '/';
 
         public SubCommandDefinition Definition()
         {
@@ -65,21 +71,79 @@ namespace azmi_main
 
         public List<string> Execute(string containerUri, string directory, string identity = null, string prefix = null, string[] exclude = null, bool ifNewer = false, bool deleteAfterCopy = false)
         {
-            const char blobPathDelimiter = '/';
+            // authentication
             string containerUriTrimmed = containerUri.TrimEnd(blobPathDelimiter);
-            List<string> blobsListing = new ListBlobs().Execute(containerUriTrimmed, identity, prefix, exclude);
-            List<string> results = new List<string>();
+            var cred  = new ManagedIdentityCredential(identity);
+            var containerClient = new BlobContainerClient(new Uri(containerUriTrimmed), cred);
 
-            foreach (var blob in blobsListing)
+            // get list of blobs
+            List<string> blobListing = containerClient.GetBlobs(prefix: prefix).Select(i => i.Name).ToList();
+
+            // apply --exclude regular expression
+            if (exclude != null)
             {
-                // e.g. blobUri = https://<storageAccount>.blob.core.windows.net/Hello/World.txt
-                string blobUri = containerUriTrimmed + blobPathDelimiter + blob;
-                string filePath = Path.Combine(directory, blob);
-                string result = new GetBlob().Execute(blobUri, filePath, identity, ifNewer, deleteAfterCopy);
-                string downloadStatus = result + ' ' + blobUri;
-                results.Add(downloadStatus);
+                var rx = new Regex(String.Join('|', exclude));
+                blobListing = blobListing.Where(b => !rx.IsMatch(b)).ToList();
             }
+
+            // create root folder for blobs
+            Directory.CreateDirectory(directory);
+
+            // download blobs
+            var results = new List<string>();
+            Parallel.ForEach(blobListing, blobItem =>
+            {
+                BlobClient blobClient = containerClient.GetBlobClient(blobItem);
+
+                string filePath = Path.Combine(directory, blobItem);
+                if (ifNewer && File.Exists(filePath) && !IsNewer(blobClient, filePath))
+                {
+                    lock (results)
+                    {
+                        results.Add($"Skipped. Blob '{blobClient.Uri}' is not newer than file.");
+                    }
+                }
+
+                string absolutePath = Path.GetFullPath(filePath);
+                string dirName = Path.GetDirectoryName(absolutePath);
+                Directory.CreateDirectory(dirName);
+
+                try
+                {
+                    blobClient.DownloadTo(filePath);
+
+                    lock (results)
+                    {
+                        results.Add($"Success '{blobClient.Uri}'");
+                    }
+
+                    if (deleteAfterCopy)
+                    {
+                        blobClient.Delete();
+                    }
+                }
+                catch (Azure.RequestFailedException)
+                {
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    throw AzmiException.IDCheck(identity, ex);
+                }
+            });
             return results;
+        }
+
+        private bool IsNewer(BlobClient blob, string filePath)
+        {
+            var blobProperties = blob.GetProperties();
+            // Any operation that modifies a blob, including an update of the blob's metadata or properties, changes the last modified time of the blob
+            var blobLastModified = blobProperties.Value.LastModified.UtcDateTime;
+
+            // returns date of local file was last written to
+            DateTime fileLastWrite = File.GetLastWriteTimeUtc(filePath);
+
+            return blobLastModified > fileLastWrite;
         }
     }
 }
