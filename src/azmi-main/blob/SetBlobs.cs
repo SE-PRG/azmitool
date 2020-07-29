@@ -64,18 +64,22 @@ namespace azmi_main
 
         public List<string> Execute(string containerUri, string directory, string identity = null, string exclude = null, bool force = false)
         {
+            // authentication
             string containerUriTrimmed = containerUri.TrimEnd(blobPathDelimiter);
-            var Cred = new ManagedIdentityCredential(identity);
-            var containerClient = new BlobContainerClient(new Uri(containerUriTrimmed), Cred);
+            var cred = new ManagedIdentityCredential(identity);
+            var containerClient = new BlobContainerClient(new Uri(containerUriTrimmed), cred);
 
+            // get list of files to be uploaded
             string fullDirectoryPath = Path.GetFullPath(directory);
             var fileList = Directory.EnumerateFiles(fullDirectoryPath, "*", SearchOption.AllDirectories);
 
+            // apply --exclude regular expression
             if (!String.IsNullOrEmpty(exclude)) {
                 Regex excludeRegEx = new Regex(exclude);
                 fileList = fileList.Where(file => !excludeRegEx.IsMatch(file));
             }
 
+            // upload blobs
             List<string> results = new List<string>();
             Parallel.ForEach(fileList, file =>
             {

@@ -70,35 +70,31 @@ namespace azmi_main
 
         public List<string> Execute(string containerUri, string directory, string identity = null, string prefix = null, string exclude = null, bool ifNewer = false, bool deleteAfterCopy = false)
         {
-            // auth
+            // authentication
             string containerUriTrimmed = containerUri.TrimEnd(blobPathDelimiter);
-            var Cred = new ManagedIdentityCredential(identity);
-            var containerClient = new BlobContainerClient(new Uri(containerUriTrimmed), Cred);
+            var cred  = new ManagedIdentityCredential(identity);
+            var containerClient = new BlobContainerClient(new Uri(containerUriTrimmed), cred);
 
             // get list of blobs
             List<string> blobListing = containerClient.GetBlobs(prefix: prefix).Select(i => i.Name).ToList();
+
+            // apply --exclude regular expression
             if (exclude != null)
-            { // apply --exclude regular expression
+            {
                 var rx = new Regex(exclude);
                 blobListing = blobListing.Where(b => !rx.IsMatch(b)).ToList();
             }
 
-            // create root folder of your download(s)
+            // create root folder for blobs
             Directory.CreateDirectory(directory);
-            // Console.WriteLine($"directory: {directory}");
 
             // download blobs
             var results = new List<string>();
             Parallel.ForEach(blobListing, blobItem =>
             {
-                // Console.WriteLine($"blobItem: {blobItem}");
                 BlobClient blobClient = containerClient.GetBlobClient(blobItem);
 
-                // string relative = Path.GetRelativePath(directory, blobItem);
-                // Console.WriteLine($"relative: {relative}");
-
                 string filePath = Path.Combine(directory, blobItem);
-                // Console.WriteLine($"filePath: {filePath}");
                 if (ifNewer && File.Exists(filePath) && !IsNewer(blobClient, filePath))
                 {
                     lock (results)
@@ -108,9 +104,7 @@ namespace azmi_main
                 }
 
                 string absolutePath = Path.GetFullPath(filePath);
-                // Console.WriteLine($"absolutePath: {absolutePath}");
                 string dirName = Path.GetDirectoryName(absolutePath);
-                // Console.WriteLine($"dirName: {dirName}");
                 Directory.CreateDirectory(dirName);
 
                 try
