@@ -84,7 +84,7 @@ namespace azmi_main
 
                 try
                 {
-                    blobClient.Upload(file, force);
+                    blobClient.Upload(blobPath, force);
 
                     lock (results)
                     {
