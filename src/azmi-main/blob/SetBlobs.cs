@@ -92,7 +92,7 @@ namespace azmi_main
 
                     lock (results)
                     {
-                        results.Add("Success" + ' ' + blobClient.Uri);
+                        results.Add($"Success '{blobClient.Uri}'");
                     }
                 }
                 catch (Exception ex)

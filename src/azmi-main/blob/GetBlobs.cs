@@ -100,7 +100,7 @@ namespace azmi_main
                 {
                     lock (results)
                     {
-                        results.Add("Skipped. Blob is not newer than file.");
+                        results.Add($"Skipped. Blob '{blobClient.Uri}' is not newer than file.");
                     }
                 }
 
@@ -114,7 +114,7 @@ namespace azmi_main
 
                     lock (results)
                     {
-                        results.Add("Success");
+                        results.Add($"Success '{blobClient.Uri}'");
                     }
 
                     if (deleteAfterCopy)
