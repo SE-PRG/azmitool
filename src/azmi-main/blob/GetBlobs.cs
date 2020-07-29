@@ -84,13 +84,14 @@ namespace azmi_main
             }
 
             // create root folder of your download(s)
-            Console.WriteLine($"directory: {directory}");
             Directory.CreateDirectory(directory);
+            Console.WriteLine($"directory: {directory}");
 
             // download blobs
             var results = new List<string>();
             Parallel.ForEach(blobListing, blobItem =>
             {
+                Console.WriteLine($"blobItem: {blobItem}");
                 BlobClient blobClient = containerClient.GetBlobClient(blobItem);
 
                 string filePath = Path.Combine(directory, blobItem);
@@ -104,6 +105,7 @@ namespace azmi_main
                 }
 
                 string absolutePath = Path.GetFullPath(filePath);
+                Console.WriteLine($"absolutePath: {absolutePath}");
                 string dirName = Path.GetDirectoryName(absolutePath);
                 Console.WriteLine($"dirName: {dirName}");
                 Directory.CreateDirectory(dirName);
