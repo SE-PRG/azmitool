@@ -94,6 +94,9 @@ namespace azmi_main
                 Console.WriteLine($"blobItem: {blobItem}");
                 BlobClient blobClient = containerClient.GetBlobClient(blobItem);
 
+                string relative = Path.GetRelativePath(directory, blobItem);
+                Console.WriteLine($"relative: {relative}");
+
                 string filePath = Path.Combine(directory, blobItem);
                 Console.WriteLine($"filePath: {filePath}");
                 if (ifNewer && File.Exists(filePath) && !IsNewer(blobClient, filePath))
@@ -109,6 +112,7 @@ namespace azmi_main
                 string dirName = Path.GetDirectoryName(absolutePath);
                 Console.WriteLine($"dirName: {dirName}");
                 Directory.CreateDirectory(dirName);
+
 
                 try
                 {
