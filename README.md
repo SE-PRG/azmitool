@@ -133,8 +133,9 @@ Or, if you want, feel free to [open a new issue](https://github.com/SRE-PRG/azmi
 | Pipeline | Status | Tests |
 |---|---|---|
 | Package build | [![Build status](https://skype.visualstudio.com/SCC/_apis/build/status/SE-UP/azmi/build%20-%20azmi)](https://skype.visualstudio.com/SCC/_build/latest?definitionId=8166) |   |
-| Integration tests | [![Build status](https://dev.azure.com/iiric/azmi/_apis/build/status/azmi-CI)](https://dev.azure.com/iiric/azmi/_build/latest?definitionId=28) | ![](https://img.shields.io/azure-devops/tests/iiric/azmi/28?label=integration%20tests) |
-| Unit tests | [![Build Status](https://dev.azure.com/iiric/azmi/_apis/build/status/Unit%20Testing?branchName=unit-tests)](https://dev.azure.com/iiric/azmi/_build/latest?definitionId=32&branchName=unit-tests) | ![](https://img.shields.io/azure-devops/tests/iiric/azmi/32?label=unit%20tests) |
+| Integration tests | [![Build status](https://dev.azure.com/iiric/azmi/_apis/build/status/azmi-CI)](https://dev.azure.com/iiric/azmi/_build/latest?definitionId=28) | [![Build details](https://img.shields.io/azure-devops/tests/iiric/azmi/28?label=integration%20tests)](https://dev.azure.com/iiric/azmi/_build/latest?definitionId=28) |
+| Unit tests | [![Build Status](https://dev.azure.com/iiric/azmi/_apis/build/status/Unit%20Testing)](https://dev.azure.com/iiric/azmi/_build/latest?definitionId=32) | [![Build details](https://img.shields.io/azure-devops/tests/iiric/azmi/32?label=unit%20tests)](https://dev.azure.com/iiric/azmi/_build/latest?definitionId=32) |
+| Performance test | [![Build Status](https://dev.azure.com/iiric/azmi/_apis/build/status/azmi-performance%20test?branchName=master)](https://dev.azure.com/iiric/azmi/_build/latest?definitionId=29&branchName=master) |
 
 See [testing overview here](./Testing.md).
 

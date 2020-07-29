@@ -46,6 +46,8 @@ BC=0; PREFIX="notExisting"
 test "listblobs finds $BC blobs with prefix $PREFIX" assert.Equals "azmi listblobs -c $CONTAINER_LB --prefix $PREFIX | wc -l" $BC
 BC=3; EXCLUDE="server2"
 test "listblobs finds $BC blobs excluding $EXCLUDE" assert.Equals "azmi listblobs -c $CONTAINER_LB --exclude $EXCLUDE | wc -l" $BC
+BC=1; EXCLUDE1="file1"; EXCLUDE2="file2"
+test "listblobs finds $BC blobs with multiple excludes" assert.Equals "azmi listblobs -c $CONTAINER_LB --exclude $EXCLUDE1 --exclude $EXCLUDE2 | wc -l" $BC
 
 
 testing class "getblob"
@@ -69,6 +71,8 @@ BC=0; PREFIX="notExisting"; rm -rf $DOWNLOAD_DIR
 test "getblobs downloads $BC blobs with prefix $PREFIX" assert.Equals "azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --prefix $PREFIX | wc -l" $BC
 BC=3; EXCLUDE="server2"; rm -rf $DOWNLOAD_DIR
 test "getblobs downloads $BC blobs excluding $EXCLUDE" assert.Equals "azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --exclude $EXCLUDE | grep Success | wc -l" $BC
+BC=1; EXCLUDE1="file1"; EXCLUDE2="file2"; rm -rf $DOWNLOAD_DIR
+test "getblobs downloads $BC blobs with multiple excludes" assert.Equals "azmi getblobs -c $CONTAINER_LB -d $DOWNLOAD_DIR --exclude $EXCLUDE1 --exclude $EXCLUDE2 | grep Success | wc -l" $BC
 
 
 testing class "setblob"

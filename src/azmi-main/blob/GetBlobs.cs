@@ -1,4 +1,4 @@
-﻿using Azure.Identity;
+using Azure.Identity;
 using Azure.Storage.Blobs;
 using System;
 using System.IO;
@@ -11,7 +11,6 @@ namespace azmi_main
 {
     public class GetBlobs : IAzmiCommand
     {
-        private const char blobPathDelimiter = '/';
 
         public SubCommandDefinition Definition()
         {
@@ -27,7 +26,8 @@ namespace azmi_main
                     new AzmiArgument("directory","Path to a local directory to which blobs will be downloaded to. Examples: /home/avalanche/tmp/ or ./",
                         required: true),
                     new AzmiArgument("prefix", "Specifies a string that filters the results to return only blobs whose name begins with the specified prefix"),
-                    new AzmiArgument("exclude", "Exclude blobs that match given regular expression."),
+                    new AzmiArgument("exclude", multiValued: true,
+                        description: "Exclude blobs that match given regular expression."),
                     new AzmiArgument("if-newer", null, "Download blobs only if newer versions exist in a container.",
                         ArgType.flag),
                     new AzmiArgument("delete-after-copy", null, "Successfully downloaded blobs are removed from a container.",
@@ -43,7 +43,7 @@ namespace azmi_main
             public string container { get; set; }
             public string directory { get; set; }
             public string prefix { get; set; }
-            public string exclude { get; set; }
+            public string[] exclude { get; set; }
             public bool ifNewer { get; set; }
             public bool deleteAfterCopy { get; set; }
         }
@@ -68,7 +68,7 @@ namespace azmi_main
         // GetBlobs main method
         //
 
-        public List<string> Execute(string containerUri, string directory, string identity = null, string prefix = null, string exclude = null, bool ifNewer = false, bool deleteAfterCopy = false)
+        public List<string> Execute(string containerUri, string directory, string identity = null, string prefix = null, string[] exclude = null, bool ifNewer = false, bool deleteAfterCopy = false)
         {
             // authentication
             string containerUriTrimmed = containerUri.TrimEnd(blobPathDelimiter);

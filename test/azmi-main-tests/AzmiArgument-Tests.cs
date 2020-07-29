@@ -50,6 +50,15 @@ namespace azmi_tests
                 var a = new AzmiArgument("some-name");
                 Assert.False(a.required);
             }
+
+            [Fact]
+            public void SimplestConstructor_DefinesSingleValued()
+            {
+                var a = new AzmiArgument("some-name");
+                var isMultiValued = a.multiValued;
+                Assert.False(isMultiValued);
+
+            }
         }
 
         public class TwoStringsConstructor_TestsGroup
@@ -105,6 +114,22 @@ namespace azmi_tests
                 var a = new AzmiArgument("some-name", "some-description", required: true);
                 Assert.True(a.required);
             }
+
+            [Fact]
+            public void TwoStringsConstructor_OptionalMultiValuedIsTrue()
+            {
+                var a = new AzmiArgument("some-name", "some-description", multiValued: true);
+                var isMultiValued = a.multiValued;
+                Assert.True(isMultiValued);
+            }
+
+            [Fact]
+            public void TwoStringsConstructor_OptionalMultiValuedIsFalse()
+            {
+                var a = new AzmiArgument("some-name", "some-description");
+                var isMultiValued = a.multiValued;
+                Assert.False(isMultiValued);
+            }
         }
 
         public class ThreeArgumentsConstructor_TestsGroup
@@ -138,6 +163,14 @@ namespace azmi_tests
             {
                 var a = new AzmiArgument("some-name", 'u', "some-description");
                 Assert.False(a.required);
+            }
+
+            [Fact]
+            public void ThreeArgsConstructor_AcceptsMultiValued()
+            {
+                var a = new AzmiArgument("some-name", 'u', "some-description", multiValued: true);
+                var isMultiValued = a.multiValued;
+                Assert.True(isMultiValued);
             }
         }
     }

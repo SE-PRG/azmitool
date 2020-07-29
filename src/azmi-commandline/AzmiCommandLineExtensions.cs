@@ -28,10 +28,11 @@ namespace azmi_commandline
         {
             switch (option.type)
             {
-                case ArgType.str: return new Argument<string>("string");
                 case ArgType.flag: return new Argument<bool>("bool");
-                case ArgType.url: return new Argument<string>("url");
-
+                case ArgType.str when (option.multiValued): return new Argument<string[]>("string");
+                case ArgType.url when (option.multiValued): return new Argument<string[]>("url");
+                case ArgType.str when (!option.multiValued): return new Argument<string>("string");
+                case ArgType.url when (!option.multiValued): return new Argument<string>("url");
                 default: throw new ArgumentException($"Unsupported option type: {option.type}");
             }
         }
@@ -48,12 +49,18 @@ namespace azmi_commandline
 
         internal static Option ToOption(this AzmiArgument option)
         {
-            return new Option(option.OptionNames())
+            var opt = new Option(option.OptionNames())
             {
                 Argument = option.OptionArgument(),
                 Description = option.OptionDescription(),
                 Required = option.required
             };
+            if (option.multiValued)
+            {
+                opt.Argument.Arity = ArgumentArity.OneOrMore;
+                // TODO: Should optional arguments have ZeroOrMore?
+            }
+            return opt;
         }
 
         internal static Command ToCommand<T, TOptions>()
