@@ -84,6 +84,7 @@ namespace azmi_main
             }
 
             // create root folder of your download(s)
+            Console.WriteLine($"directory: {directory}");
             Directory.CreateDirectory(directory);
 
             // download blobs
@@ -93,6 +94,7 @@ namespace azmi_main
                 BlobClient blobClient = containerClient.GetBlobClient(blobItem);
 
                 string filePath = Path.Combine(directory, blobItem);
+                Console.WriteLine($"filePath: {filePath}");
                 if (ifNewer && File.Exists(filePath) && !IsNewer(blobClient, filePath))
                 {
                     lock (results)
@@ -103,6 +105,7 @@ namespace azmi_main
 
                 string absolutePath = Path.GetFullPath(filePath);
                 string dirName = Path.GetDirectoryName(absolutePath);
+                Console.WriteLine($"dirName: {dirName}");
                 Directory.CreateDirectory(dirName);
 
                 try
