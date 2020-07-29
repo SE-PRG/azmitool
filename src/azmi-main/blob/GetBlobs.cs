@@ -70,10 +70,12 @@ namespace azmi_main
 
         public List<string> Execute(string containerUri, string directory, string identity = null, string prefix = null, string exclude = null, bool ifNewer = false, bool deleteAfterCopy = false)
         {
+            // auth
             string containerUriTrimmed = containerUri.TrimEnd(blobPathDelimiter);
             var Cred = new ManagedIdentityCredential(identity);
             var containerClient = new BlobContainerClient(new Uri(containerUriTrimmed), Cred);
 
+            // get list of blobs
             List<string> blobListing = containerClient.GetBlobs(prefix: prefix).Select(i => i.Name).ToList();
             if (exclude != null)
             { // apply --exclude regular expression
@@ -81,6 +83,10 @@ namespace azmi_main
                 blobListing = blobListing.Where(b => !rx.IsMatch(b)).ToList();
             }
 
+            // create root folder of your download(s)
+            Directory.CreateDirectory(directory);
+
+            // download blobs
             var results = new List<string>();
             Parallel.ForEach(blobListing, blobItem =>
             {
