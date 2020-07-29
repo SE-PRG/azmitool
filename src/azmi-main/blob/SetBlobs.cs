@@ -79,8 +79,8 @@ namespace azmi_main
             List<string> results = new List<string>();
             Parallel.ForEach(fileList, file =>
             {
-                var blobUri = containerUri + blobPathDelimiter + file.Substring(fullDirectoryPath.Length);
-                BlobClient blobClient = containerClient.GetBlobClient(file.Substring(fullDirectoryPath.Length));
+                var blobPath = file.Substring(fullDirectoryPath.Length);
+                BlobClient blobClient = containerClient.GetBlobClient(blobPath);
 
                 try
                 {
@@ -88,7 +88,7 @@ namespace azmi_main
 
                     lock (results)
                     {
-                        results.Add("Success" + ' ' + blobUri);
+                        results.Add("Success" + ' ' + blobClient.Uri);
                     }
                 }
                 catch (Exception ex)
