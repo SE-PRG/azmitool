@@ -11,6 +11,7 @@ namespace azmi_main
 {
     public class GetBlobs : IAzmiCommand
     {
+        private const char blobPathDelimiter = '/';
 
         public SubCommandDefinition Definition()
         {
@@ -81,7 +82,7 @@ namespace azmi_main
             // apply --exclude regular expression
             if (exclude != null)
             {
-                var rx = new Regex(exclude);
+                var rx = new Regex(String.Join('|', exclude));
                 blobListing = blobListing.Where(b => !rx.IsMatch(b)).ToList();
             }
 
