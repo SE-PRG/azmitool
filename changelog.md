@@ -2,13 +2,15 @@
 
 ## version 0.5 
 
-### date: July 29th, 2020
-Released in scope of MSFT Hackathon 2020 event
-
 Breaking changes:
 * `setblobs` is not supporting `--container` parameter anymore, more info [here](docs/setblobs-container.md)
 
 Functionality / performance
+* `getblobs` speed increased 50 times!
+
+Other changes
+* updated doitnet core to version 3.1
+* Full list of issues: https://github.com/SRE-PRG/azmitool/milestone/5?closed=1
 * added `setblobs` command
 * `getblobs` speed increased 5 times!
 * added `--file` output argument for `getcertificate` and `getsecret` subcommands
