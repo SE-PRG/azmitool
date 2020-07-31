@@ -1,13 +1,18 @@
-﻿using System;
+using Azure.Identity;
+using Azure.Storage.Blobs;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace azmi_main
 {
     public class SetBlobs : IAzmiCommand
     {
+        private const char blobPathDelimiter = '/';
+
         public SubCommandDefinition Definition()
         {
             return new SubCommandDefinition
@@ -59,22 +64,42 @@ namespace azmi_main
 
         public List<string> Execute(string containerUri, string directory, string identity = null, string exclude = null, bool force = false)
         {
-            List<string> results = new List<string>();
-            string fullDirectoryPath = Path.GetFullPath(directory);
+            // authentication
+            string containerUriTrimmed = containerUri.TrimEnd(blobPathDelimiter);
+            var cred = new ManagedIdentityCredential(identity);
+            var containerClient = new BlobContainerClient(new Uri(containerUriTrimmed), cred);
 
+            // get list of files to be uploaded
+            string fullDirectoryPath = Path.GetFullPath(directory);
             var fileList = Directory.EnumerateFiles(fullDirectoryPath, "*", SearchOption.AllDirectories);
 
+            // apply --exclude regular expression
             if (!String.IsNullOrEmpty(exclude)) {
                 Regex excludeRegEx = new Regex(exclude);
                 fileList = fileList.Where(file => !excludeRegEx.IsMatch(file));
             }
 
-            foreach (var file in fileList)
+            // upload blobs
+            List<string> results = new List<string>();
+            Parallel.ForEach(fileList, file =>
             {
-                var blobUri = containerUri + file.Substring(fullDirectoryPath.Length);
-                string result = new SetBlob().Execute(file, blobUri, identity, force);
-                results.Add(result + ' ' + blobUri);
-            }
+                var blobPath = file.Substring(fullDirectoryPath.Length).TrimStart(Path.DirectorySeparatorChar);
+                BlobClient blobClient = containerClient.GetBlobClient(blobPath);
+
+                try
+                {
+                    blobClient.Upload(file, force);
+
+                    lock (results)
+                    {
+                        results.Add($"Success '{blobClient.Uri}'");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw AzmiException.IDCheck(identity, ex);
+                }
+            });
             return results;
         }
     }

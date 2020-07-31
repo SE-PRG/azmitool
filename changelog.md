@@ -2,8 +2,6 @@
 
 ## version 0.5 
 
-### un-released, work in progress 👷‍♂️
-
 Breaking changes:
 * `setblobs` is not supporting `--container` parameter anymore, more info [here](docs/setblobs-container.md)
 
@@ -13,6 +11,19 @@ Functionality / performance
 Other changes
 * updated doitnet core to version 3.1
 * Full list of issues: https://github.com/SRE-PRG/azmitool/milestone/5?closed=1
+* added `setblobs` command
+* `getblobs` speed increased 5 times!
+* added `--file` output argument for `getcertificate` and `getsecret` subcommands
+* updated to .NET core 3.1 and System.CommandLine 2.0
+* `--exclude` accepts multiple values in `getblobs` and `setblobs`
+
+Documentation / testing:
+* extended unit testing for `azmi-main` project
+* migrate deliverables to `azmi` storage account
+* added [shields.io](https://shields.io) badges to readme page
+
+[Full list of issues on GitHub](https://github.com/SRE-PRG/azmitool/milestone/5?closed=1)
+
 # older versions
 
 For technical list, published within debian package, take a look [here](debian/changelog).
@@ -22,7 +33,7 @@ For technical list, published within debian package, take a look [here](debian/c
 ### date: June 19th, 2020
 
 * Bug fix - azmi enters endless loop if no identity on the VM
-* Full list of issues: https://github.com/SRE-PRG/azmitool/milestone/6?closed=1
+* [Full list of issues on GitHub](https://github.com/SRE-PRG/azmitool/milestone/6?closed=1)
 
 ## version 0.4
 
@@ -30,7 +41,7 @@ For technical list, published within debian package, take a look [here](debian/c
 
 * Implemented new command: getcertificate
 * Implemented new functionalities: fetch old versions of secrets and certificates, improved error handling
-* Full list of issues: https://github.com/SRE-PRG/azmitool/milestone/4?closed=1
+* [Full list of issues on GitHub](https://github.com/SRE-PRG/azmitool/milestone/4?closed=1)
 
 ## azmi (0.3.0-1) stable; urgency=medium
 
@@ -39,7 +50,7 @@ For technical list, published within debian package, take a look [here](debian/c
 * Implemented new commands: getblobs, listblobs, getsecret
 * Implemented new functionalities: JWT display of token, recursive folder copy, function delete-on-copy, function if-newer
 * Internal improvements: documentation extended (examples, overview), commands split into separate classes
-* Full list of issues: https://github.com/SRE-PRG/azmitool/milestone/3?closed=1
+* [Full list of issues on GitHub](https://github.com/SRE-PRG/azmitool/milestone/3?closed=1)
 
 ## azmi (0.2.0-1) stable; urgency=medium
 
@@ -48,7 +59,7 @@ For technical list, published within debian package, take a look [here](debian/c
 * Introduced new commandline parser
 * Implemented getblob command
 * Support VMs with multiple identities
-* Full list of issues: https://github.com/SRE-PRG/azmitool/milestone/1?closed=1
+* [Full list of issues on GitHub](https://github.com/SRE-PRG/azmitool/milestone/1?closed=1)
 
 ## azmi (0.1.0-1) stable; urgency=medium
 
