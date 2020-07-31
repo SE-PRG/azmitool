@@ -1,8 +1,25 @@
 azmi (0.5.0-1) stable; urgency=medium
 
-  * TBA
+  Released in scope of MSFT Hackathon 2020 event
 
- -- SRE-PRG <NA@NA.com>  TBA
+Breaking changes:
+    * `setblobs` is not supporting `--container` parameter anymore, more info [here](docs/setblobs-container.md)
+
+  Functionality / performance
+    * added `setblobs` command
+    * `getblobs` speed increased 5 times!
+    * added `--file` output argument for `getcertificate` and `getsecret` subcommands
+    * updated to .NET core 3.1 and System.CommandLine 2.0
+    * `--exclude` accepts multiple values in `getblobs` and `setblobs`
+
+  Documentation / testing:
+    * extended unit testing for `azmi-main` project
+    * migrate deliverables to `azmi` storage account
+    * added [shields.io](https://shields.io) badges to readme page
+
+  Full list of issues: https://github.com/SRE-PRG/azmitool/milestone/5?closed=1
+
+ -- SRE-PRG <NA@NA.com>  Fri, 31 Jul 2020 13:32:54 +0200
 
 azmi (0.4.1-1) stable; urgency=medium
 
