@@ -111,7 +111,7 @@ namespace azmi_main
 
             var results2 = blobListing.AsParallel().Select(blobItem =>
             {
-                Console.WriteLine($"    start delay {watch.ElapsedMilliseconds - parallelStartTime}");
+                //Console.WriteLine($"    start delay {watch.ElapsedMilliseconds - parallelStartTime}");
                 BlobClient blobClient = containerClient.GetBlobClient(blobItem);
                 string filePath = Path.Combine(directory, blobItem);
                 string absolutePath = Path.GetFullPath(filePath);
