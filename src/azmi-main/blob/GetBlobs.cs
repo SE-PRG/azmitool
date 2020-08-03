@@ -109,80 +109,79 @@ namespace azmi_main
 
 
 
-            var results2 = blobListing.AsParallel().Select(blobItem =>
-            {
-                Console.WriteLine($"    start delay {watch.ElapsedMilliseconds - parallelStartTime}");
-                BlobClient blobClient = containerClient.GetBlobClient(blobItem);
-                string filePath = Path.Combine(directory, blobItem);
-                string absolutePath = Path.GetFullPath(filePath);
-                string dirName = Path.GetDirectoryName(absolutePath);
-                Directory.CreateDirectory(dirName);
-
-
-                try
-                {
-                    blobClient.DownloadTo(filePath);
-                    return $"Success '{blobClient.Uri}'";
-                }
-                catch (Exception ex)
-                {
-                    throw AzmiException.IDCheck(identity, ex);
-                }
-
-            }).ToList<string>();
-
-
-
-            //Parallel.ForEach(blobListing, blobItem =>
+            //var results2 = blobListing.AsParallel().Select(blobItem =>
             //{
-            //    //var internalWatch = watch.ElapsedMilliseconds;
-            //    //Console.WriteLine("    internal watch start");
             //    Console.WriteLine($"    start delay {watch.ElapsedMilliseconds - parallelStartTime}");
             //    BlobClient blobClient = containerClient.GetBlobClient(blobItem);
-
             //    string filePath = Path.Combine(directory, blobItem);
-            //    if (ifNewer && File.Exists(filePath) && !IsNewer(blobClient, filePath))
-            //    {
-            //        lock (results)
-            //        {
-            //            results.Add($"Skipped. Blob '{blobClient.Uri}' is not newer than file.");
-            //        }
-            //    }
-
             //    string absolutePath = Path.GetFullPath(filePath);
             //    string dirName = Path.GetDirectoryName(absolutePath);
             //    Directory.CreateDirectory(dirName);
 
-            //    //Console.WriteLine($"    preparation: {watch.ElapsedMilliseconds - internalWatch} ms");
 
             //    try
             //    {
             //        blobClient.DownloadTo(filePath);
-
-            //        //lock (results)
-            //        //{
-            //        //    results.Add($"Success '{blobClient.Uri}'");
-            //        //}
-
-            //        if (deleteAfterCopy)
-            //        {
-            //            blobClient.Delete();
-            //        }
-            //    }
-            //    catch (Azure.RequestFailedException)
-            //    {
-            //        throw;
+            //        return $"Success '{blobClient.Uri}'";
             //    }
             //    catch (Exception ex)
             //    {
             //        throw AzmiException.IDCheck(identity, ex);
             //    }
-            //    //Console.WriteLine($"    download: {watch.ElapsedMilliseconds - internalWatch} ms");
-            //});
+
+            //}).ToList<string>();
+
+
+
+            //Parallel.ForEach(blobListing, blobItem =>
+            var results = blobListing.AsParallel().Select(blobItem =>
+            {
+                Console.WriteLine($"    start delay {watch.ElapsedMilliseconds - parallelStartTime}");
+                BlobClient blobClient = containerClient.GetBlobClient(blobItem);
+
+                string filePath = Path.Combine(directory, blobItem);
+                if (ifNewer && File.Exists(filePath) && !IsNewer(blobClient, filePath))
+                {
+                    //lock (results)
+                    //{
+                    //    results.Add($"Skipped. Blob '{blobClient.Uri}' is not newer than file.");
+                    //}
+                    return $"Skipped. Blob '{blobClient.Uri}' is not newer than file.";
+                }
+
+                string absolutePath = Path.GetFullPath(filePath);
+                string dirName = Path.GetDirectoryName(absolutePath);
+                Directory.CreateDirectory(dirName);
+
+                try
+                {
+                    blobClient.DownloadTo(filePath);
+
+                    //lock (results)
+                    //{
+                    //    results.Add($"Success '{blobClient.Uri}'");
+                    //}
+
+                    if (deleteAfterCopy)
+                    {
+                        blobClient.Delete();
+                    }
+                    return $"Success '{blobClient.Uri}'";
+                }
+                catch (Azure.RequestFailedException)
+                {
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    throw AzmiException.IDCheck(identity, ex);
+                }
+            }).ToList<string>();
+
             Console.WriteLine($"  Execution Time: {watch.ElapsedMilliseconds} ms");
             Console.WriteLine("return results");
             watch.Stop();
-            return results2;
+            return results;
 
         }
 
