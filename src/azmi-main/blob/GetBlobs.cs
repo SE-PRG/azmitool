@@ -72,9 +72,7 @@ namespace azmi_main
 
         public List<string> Execute(string containerUri, string directory, string identity = null, string prefix = null, string[] exclude = null, bool ifNewer = false, bool deleteAfterCopy = false)
         {
-
             // authentication
-            Console.WriteLine("authentication");
             string containerUriTrimmed = containerUri.TrimEnd(blobPathDelimiter);
             var cred  = new ManagedIdentityCredential(identity);
             var containerClient = new BlobContainerClient(new Uri(containerUriTrimmed), cred);
@@ -93,8 +91,6 @@ namespace azmi_main
             Directory.CreateDirectory(directory);
 
             // download blobs
-            // var results = new List<string>();
-
             //Parallel.ForEach(blobListing, blobItem =>
             var results = blobListing.AsParallel().Select(blobItem =>
             {
@@ -103,10 +99,6 @@ namespace azmi_main
                 string filePath = Path.Combine(directory, blobItem);
                 if (ifNewer && File.Exists(filePath) && !IsNewer(blobClient, filePath))
                 {
-                    //lock (results)
-                    //{
-                    //    results.Add($"Skipped. Blob '{blobClient.Uri}' is not newer than file.");
-                    //}
                     return $"Skipped. Blob '{blobClient.Uri}' is not newer than file.";
                 }
 
@@ -117,12 +109,6 @@ namespace azmi_main
                 try
                 {
                     blobClient.DownloadTo(filePath);
-
-                    //lock (results)
-                    //{
-                    //    results.Add($"Success '{blobClient.Uri}'");
-                    //}
-
                     if (deleteAfterCopy)
                     {
                         blobClient.Delete();
@@ -138,9 +124,7 @@ namespace azmi_main
                     throw AzmiException.IDCheck(identity, ex);
                 }
             }).ToList<string>();
-
             return results;
-
         }
 
         private bool IsNewer(BlobClient blob, string filePath)
