@@ -104,11 +104,12 @@ namespace azmi_main
             var results = new List<string>();
             Console.WriteLine($"  Execution Time: {watch.ElapsedMilliseconds} ms");
             Console.WriteLine("start parallel loop");
+            var parallelStartTime = watch.ElapsedMilliseconds;
             Parallel.ForEach(blobListing, blobItem =>
             {
-                var internalWatch = watch.ElapsedMilliseconds;
-                Console.WriteLine("    internal watch start");
-
+                //var internalWatch = watch.ElapsedMilliseconds;
+                //Console.WriteLine("    internal watch start");
+                Console.WriteLine($"    start delay {watch.ElapsedMilliseconds - parallelStartTime}");
                 BlobClient blobClient = containerClient.GetBlobClient(blobItem);
 
                 string filePath = Path.Combine(directory, blobItem);
@@ -124,7 +125,7 @@ namespace azmi_main
                 string dirName = Path.GetDirectoryName(absolutePath);
                 Directory.CreateDirectory(dirName);
 
-                Console.WriteLine($"    preparation: {watch.ElapsedMilliseconds - internalWatch} ms");
+                //Console.WriteLine($"    preparation: {watch.ElapsedMilliseconds - internalWatch} ms");
 
                 try
                 {
@@ -148,7 +149,7 @@ namespace azmi_main
                 {
                     throw AzmiException.IDCheck(identity, ex);
                 }
-                Console.WriteLine($"    download: {watch.ElapsedMilliseconds - internalWatch} ms");
+                //Console.WriteLine($"    download: {watch.ElapsedMilliseconds - internalWatch} ms");
             });
             Console.WriteLine($"  Execution Time: {watch.ElapsedMilliseconds} ms");
             Console.WriteLine("return results");
