@@ -71,15 +71,26 @@ namespace azmi_main
 
         public List<string> Execute(string containerUri, string directory, string identity = null, string prefix = null, string[] exclude = null, bool ifNewer = false, bool deleteAfterCopy = false)
         {
+
+            // II
+            var watch = new System.Diagnostics.Stopwatch();
+            Console.WriteLine("watch start");
+            watch.Start();
+
             // authentication
+            Console.WriteLine("authentication");
             string containerUriTrimmed = containerUri.TrimEnd(blobPathDelimiter);
             var cred  = new ManagedIdentityCredential(identity);
             var containerClient = new BlobContainerClient(new Uri(containerUriTrimmed), cred);
 
             // get list of blobs
+            Console.WriteLine($"  Execution Time: {watch.ElapsedMilliseconds} ms");
+            Console.WriteLine("get blob listing");
             List<string> blobListing = containerClient.GetBlobs(prefix: prefix).Select(i => i.Name).ToList();
 
             // apply --exclude regular expression
+            Console.WriteLine($"  Execution Time: {watch.ElapsedMilliseconds} ms");
+            Console.WriteLine("other tasks");
             if (exclude != null)
             {
                 var rx = new Regex(String.Join('|', exclude));
@@ -91,6 +102,8 @@ namespace azmi_main
 
             // download blobs
             var results = new List<string>();
+            Console.WriteLine($"  Execution Time: {watch.ElapsedMilliseconds} ms");
+            Console.WriteLine("start parallel loop");
             Parallel.ForEach(blobListing, blobItem =>
             {
                 BlobClient blobClient = containerClient.GetBlobClient(blobItem);
@@ -131,7 +144,11 @@ namespace azmi_main
                     throw AzmiException.IDCheck(identity, ex);
                 }
             });
+            Console.WriteLine($"  Execution Time: {watch.ElapsedMilliseconds} ms");
+            Console.WriteLine("return results");
+            watch.Stop();
             return results;
+
         }
 
         private bool IsNewer(BlobClient blob, string filePath)
