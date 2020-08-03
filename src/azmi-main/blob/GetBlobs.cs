@@ -131,10 +131,10 @@ namespace azmi_main
                 {
                     blobClient.DownloadTo(filePath);
 
-                    lock (results)
-                    {
-                        results.Add($"Success '{blobClient.Uri}'");
-                    }
+                    //lock (results)
+                    //{
+                    //    results.Add($"Success '{blobClient.Uri}'");
+                    //}
 
                     if (deleteAfterCopy)
                     {
