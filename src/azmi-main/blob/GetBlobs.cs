@@ -113,6 +113,10 @@ namespace azmi_main
             {
                 Console.WriteLine($"    start delay {watch.ElapsedMilliseconds - parallelStartTime}");
                 BlobClient blobClient = containerClient.GetBlobClient(blobItem);
+                string filePath = Path.Combine(directory, blobItem);
+                string absolutePath = Path.GetFullPath(filePath);
+                string dirName = Path.GetDirectoryName(absolutePath);
+                Directory.CreateDirectory(dirName);
                 return $"Success '{blobClient.Uri}'";
             }).ToList<string>();
 
