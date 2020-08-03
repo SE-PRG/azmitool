@@ -6,6 +6,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Azure.Storage.Blobs.Models;
 
 namespace azmi_main
 {
@@ -101,60 +102,72 @@ namespace azmi_main
             Directory.CreateDirectory(directory);
 
             // download blobs
-            var results = new List<string>();
+            // var results = new List<string>();
             Console.WriteLine($"  Execution Time: {watch.ElapsedMilliseconds} ms");
             Console.WriteLine("start parallel loop");
             var parallelStartTime = watch.ElapsedMilliseconds;
-            Parallel.ForEach(blobListing, blobItem =>
+
+
+
+            var results2 = blobListing.AsParallel().Select(blobItem =>
             {
-                //var internalWatch = watch.ElapsedMilliseconds;
-                //Console.WriteLine("    internal watch start");
                 Console.WriteLine($"    start delay {watch.ElapsedMilliseconds - parallelStartTime}");
                 BlobClient blobClient = containerClient.GetBlobClient(blobItem);
+                return $"Success '{blobClient.Uri}'";
+            }).ToList<string>();
 
-                string filePath = Path.Combine(directory, blobItem);
-                if (ifNewer && File.Exists(filePath) && !IsNewer(blobClient, filePath))
-                {
-                    lock (results)
-                    {
-                        results.Add($"Skipped. Blob '{blobClient.Uri}' is not newer than file.");
-                    }
-                }
 
-                string absolutePath = Path.GetFullPath(filePath);
-                string dirName = Path.GetDirectoryName(absolutePath);
-                Directory.CreateDirectory(dirName);
 
-                //Console.WriteLine($"    preparation: {watch.ElapsedMilliseconds - internalWatch} ms");
+            //Parallel.ForEach(blobListing, blobItem =>
+            //{
+            //    //var internalWatch = watch.ElapsedMilliseconds;
+            //    //Console.WriteLine("    internal watch start");
+            //    Console.WriteLine($"    start delay {watch.ElapsedMilliseconds - parallelStartTime}");
+            //    BlobClient blobClient = containerClient.GetBlobClient(blobItem);
 
-                try
-                {
-                    blobClient.DownloadTo(filePath);
+            //    string filePath = Path.Combine(directory, blobItem);
+            //    if (ifNewer && File.Exists(filePath) && !IsNewer(blobClient, filePath))
+            //    {
+            //        lock (results)
+            //        {
+            //            results.Add($"Skipped. Blob '{blobClient.Uri}' is not newer than file.");
+            //        }
+            //    }
 
-                    //lock (results)
-                    //{
-                    //    results.Add($"Success '{blobClient.Uri}'");
-                    //}
+            //    string absolutePath = Path.GetFullPath(filePath);
+            //    string dirName = Path.GetDirectoryName(absolutePath);
+            //    Directory.CreateDirectory(dirName);
 
-                    if (deleteAfterCopy)
-                    {
-                        blobClient.Delete();
-                    }
-                }
-                catch (Azure.RequestFailedException)
-                {
-                    throw;
-                }
-                catch (Exception ex)
-                {
-                    throw AzmiException.IDCheck(identity, ex);
-                }
-                //Console.WriteLine($"    download: {watch.ElapsedMilliseconds - internalWatch} ms");
-            });
+            //    //Console.WriteLine($"    preparation: {watch.ElapsedMilliseconds - internalWatch} ms");
+
+            //    try
+            //    {
+            //        blobClient.DownloadTo(filePath);
+
+            //        //lock (results)
+            //        //{
+            //        //    results.Add($"Success '{blobClient.Uri}'");
+            //        //}
+
+            //        if (deleteAfterCopy)
+            //        {
+            //            blobClient.Delete();
+            //        }
+            //    }
+            //    catch (Azure.RequestFailedException)
+            //    {
+            //        throw;
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        throw AzmiException.IDCheck(identity, ex);
+            //    }
+            //    //Console.WriteLine($"    download: {watch.ElapsedMilliseconds - internalWatch} ms");
+            //});
             Console.WriteLine($"  Execution Time: {watch.ElapsedMilliseconds} ms");
             Console.WriteLine("return results");
             watch.Stop();
-            return results;
+            return results2;
 
         }
 
