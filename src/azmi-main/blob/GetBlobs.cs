@@ -117,7 +117,11 @@ namespace azmi_main
                 string absolutePath = Path.GetFullPath(filePath);
                 string dirName = Path.GetDirectoryName(absolutePath);
                 Directory.CreateDirectory(dirName);
+
+
+                blobClient.DownloadTo(filePath);
                 return $"Success '{blobClient.Uri}'";
+
             }).ToList<string>();
 
 
