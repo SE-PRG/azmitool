@@ -91,7 +91,6 @@ namespace azmi_main
             Directory.CreateDirectory(directory);
 
             // download blobs
-            //Parallel.ForEach(blobListing, blobItem =>
             var results = blobListing.AsParallel().Select(blobItem =>
             {
                 BlobClient blobClient = containerClient.GetBlobClient(blobItem);
