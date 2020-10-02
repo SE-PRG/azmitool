@@ -111,9 +111,9 @@ namespace azmi_tests
                 // mock with success
                 var blobSubstitute = Substitute.For<IBlobClient>();
                 blobSubstitute.Upload(_path, _force).Returns(_bci);
-                var subCommand = new SetBlob();
+                var subCommand = new SetBlob(blobSubstitute);
 
-                var retValue = subCommand.Execute(_path, _url, _identity, _force, blobSubstitute);
+                var retValue = subCommand.Execute(_path, _url, _identity, _force);
                 Assert.Equal("Success", retValue);
 
             }
@@ -124,11 +124,11 @@ namespace azmi_tests
                 // mock with exception and call with identity
                 var blobSubstitute = Substitute.For<IBlobClient>();
                 blobSubstitute.Upload(_path, _force).Throws(_exception);
-                var subCommand = new SetBlob();
+                var subCommand = new SetBlob(blobSubstitute);
 
                 // it returns testing exception
                 var actualExc = Assert.Throws<Exception>(
-                    () => subCommand.Execute(_path, _url, _identity, _force, blobSubstitute)
+                    () => subCommand.Execute(_path, _url, _identity, _force)
                 );
                 Assert.Equal(_exception.Message, actualExc.Message);
             }
@@ -139,11 +139,11 @@ namespace azmi_tests
                 // mock with exception and call with no identity
                 var blobSubstitute = Substitute.For<IBlobClient>();
                 blobSubstitute.Upload(_path, _force).Throws(_exception);
-                var subCommand = new SetBlob();
+                var subCommand = new SetBlob(blobSubstitute);
 
                 // it returns Azmi exception and testing one as inner
                 var actualExc = Assert.Throws<AzmiException>(
-                    () => subCommand.Execute(_path, _url, null, _force, blobSubstitute)
+                    () => subCommand.Execute(_path, _url, null, _force)
                 );
                 Assert.Equal(_exception.Message, actualExc.InnerException.Message);
 

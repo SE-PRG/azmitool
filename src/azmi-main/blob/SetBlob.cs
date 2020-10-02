@@ -6,8 +6,28 @@ namespace azmi_main
 {
     public class SetBlob : IAzmiCommand
     {
+        private IBlobClient blobClient { get; set; }
+
+
+        //
+        //  Constructors
+        //
+
+        public SetBlob() { }
+
+        public SetBlob(IBlobClient blobClientMock)
+        {
+            blobClient = blobClientMock;
+        }
+
+
+        //
+        //  SubCommand Definition
+        //
+
         public SubCommandDefinition Definition()
         {
+
             return new SubCommandDefinition
             {
 
@@ -52,8 +72,7 @@ namespace azmi_main
         // Execute SetBlob
         //
 
-        public string Execute(string filePath, string blobUri, string identity = null, bool force = false,
-            IBlobClient blobClient = null)
+        public string Execute(string filePath, string blobUri, string identity = null, bool force = false)
         {
             var Cred = new ManagedIdentityCredential(identity);
             blobClient ??= new BlobClientImpl(new Uri(blobUri), Cred);
