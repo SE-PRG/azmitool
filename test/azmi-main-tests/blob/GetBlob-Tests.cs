@@ -89,7 +89,6 @@ namespace azmi_tests
             [Fact]
             public void FailsWithExistingProperty()
             {
-                
                 // Arrange
                 var obj = new GetBlob.AzmiArgumentsClass
                 {
@@ -98,9 +97,9 @@ namespace azmi_tests
                     ifNewer = false,
                     deleteAfterCopy = false,
                     identity = _identity,
-                    verbose = false                    
+                    verbose = false
                 };
-                
+
                 var blobSubstitute = Substitute.For<IBlobClient>();
                 blobSubstitute.DownloadTo(_anyGoodPath).Returns(_nullResponse);
                 var subCommand = new GetBlob(blobSubstitute);
