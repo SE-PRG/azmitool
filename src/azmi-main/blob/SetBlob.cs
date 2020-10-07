@@ -8,7 +8,6 @@ namespace azmi_main
     {
         private IBlobClient blobClient { get; set; }
 
-
         //
         //  Constructors
         //
@@ -22,7 +21,7 @@ namespace azmi_main
 
 
         //
-        //  SubCommand Definition
+        //  Declare command elements
         //
 
         public SubCommandDefinition Definition()
@@ -60,7 +59,8 @@ namespace azmi_main
             try
             {
                 opt = (AzmiArgumentsClass)options;
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw AzmiException.WrongObject(ex);
             }
@@ -81,7 +81,8 @@ namespace azmi_main
             {
                 blobClient.Upload(filePath, force);
                 return "Success";
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw AzmiException.IDCheck(identity, ex);
             }
