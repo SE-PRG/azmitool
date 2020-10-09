@@ -4,17 +4,24 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using NLog;
 
 namespace azmi_main
 {
     public class GetBlobs : IAzmiCommand
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private static readonly string className = nameof(GetBlobs);
+
         private const char blobPathDelimiter = '/';
 
         public SubCommandDefinition Definition()
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             return new SubCommandDefinition
             {
 
@@ -51,6 +58,8 @@ namespace azmi_main
 
         public List<string> Execute(object options)
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             AzmiArgumentsClass opt;
             try
             {
@@ -71,6 +80,8 @@ namespace azmi_main
 
         public List<string> Execute(string containerUri, string directory, string identity = null, string prefix = null, string[] exclude = null, bool ifNewer = false, bool deleteAfterCopy = false)
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             // authentication
             string containerUriTrimmed = containerUri.TrimEnd(blobPathDelimiter);
             var cred  = new ManagedIdentityCredential(identity);
@@ -136,6 +147,8 @@ namespace azmi_main
 
         private bool IsNewer(BlobClient blob, string filePath)
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             var blobProperties = blob.GetProperties();
             // Any operation that modifies a blob, including an update of the blob's metadata or properties, changes the last modified time of the blob
             var blobLastModified = blobProperties.Value.LastModified.UtcDateTime;

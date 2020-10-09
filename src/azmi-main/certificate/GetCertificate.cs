@@ -1,17 +1,23 @@
-﻿using System;
+﻿using Azure.Identity;
+using Azure.Security.KeyVault.Certificates;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
-using Azure.Identity;
-using Azure.Security.KeyVault.Certificates;
+using System.Reflection;
+using NLog;
 
 namespace azmi_main
 {
     public class GetCertificate : IAzmiCommand
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private static readonly string className = nameof(GetCertificate);
+
         public SubCommandDefinition Definition()
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             return new SubCommandDefinition
             {
 
@@ -37,6 +43,8 @@ namespace azmi_main
 
         public List<string> Execute(object options)
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             AzmiArgumentsClass opt;
             try
             {
@@ -57,6 +65,8 @@ namespace azmi_main
 
         public string Execute(string certificateIdentifierUrl, string filePath = null, string identity = null)
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             (Uri keyVaultUri, string certificateName, string certificateVersion) = ValidateAndParseCertificateURL(certificateIdentifierUrl);
 
             var MIcredential = new ManagedIdentityCredential(identity);
@@ -125,6 +135,8 @@ namespace azmi_main
 
         private (Uri, string, string) ValidateAndParseCertificateURL(string certificateIdentifierUrl)
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             // Example of expected URLs: https://my-key-vault.vault.azure.net/certificates/readThisCertificate (latest version)
             // or https://my-key-vault.vault.azure.net/certificates/readThisCertificate/013a7355c6094bc78307b2db7b85b3c2 (specific version)
             Uri certificateIdentifierUri = new Uri(certificateIdentifierUrl);

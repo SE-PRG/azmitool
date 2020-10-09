@@ -6,15 +6,22 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Reflection;
+using NLog;
 
 namespace azmi_main
 {
     public class SetBlobs : IAzmiCommand
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private static readonly string className = nameof(SetBlobs);
+
         private const char blobPathDelimiter = '/';
 
         public SubCommandDefinition Definition()
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             return new SubCommandDefinition
             {
 
@@ -45,6 +52,8 @@ namespace azmi_main
 
         public List<string> Execute(object options)
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             AzmiArgumentsClass opt;
             try
             {
@@ -64,6 +73,8 @@ namespace azmi_main
 
         public List<string> Execute(string containerUri, string directory, string identity = null, string exclude = null, bool force = false)
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             // authentication
             string containerUriTrimmed = containerUri.TrimEnd(blobPathDelimiter);
             var cred = new ManagedIdentityCredential(identity);

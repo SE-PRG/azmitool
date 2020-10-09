@@ -1,20 +1,26 @@
-﻿using System;
+﻿using Azure.Identity;
+using Azure.Storage.Blobs;
+using System;
 using System.IO;
 using System.Collections.Generic;
-
-using Azure.Identity;
-using Azure.Storage.Blobs;
+using System.Reflection;
+using NLog;
 
 namespace azmi_main
 {
     public class GetBlob : IAzmiCommand
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private static readonly string className = nameof(GetBlob);
+
         //
         // Declare command elements
         //
 
         public SubCommandDefinition Definition()
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             return new SubCommandDefinition
             {
 
@@ -45,6 +51,8 @@ namespace azmi_main
         }
 
         public List<string> Execute(object options) {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             AzmiArgumentsClass opt;
             try
             {
@@ -63,8 +71,7 @@ namespace azmi_main
 
         public string Execute(string blobURL, string filePath, string identity = null, bool ifNewer = false, bool deleteAfterCopy = false)
         {
-
-            // method start
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
 
             // Connection
             var Cred = new ManagedIdentityCredential(identity);
@@ -100,6 +107,8 @@ namespace azmi_main
 
         private bool IsNewer(BlobClient blob, string filePath)
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             var blobProperties = blob.GetProperties();
             // Any operation that modifies a blob, including an update of the blob's metadata or properties, changes the last modified time of the blob
             var blobLastModified = blobProperties.Value.LastModified.UtcDateTime;

@@ -1,17 +1,23 @@
-﻿using System;
+﻿using Azure.Identity;
+using Azure.Storage.Blobs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-
-using Azure.Identity;
-using Azure.Storage.Blobs;
+using System.Reflection;
+using NLog;
 
 namespace azmi_main
 {
     public class ListBlobs : IAzmiCommand
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private static readonly string className = nameof(ListBlobs);
+
         public SubCommandDefinition Definition()
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             return new SubCommandDefinition
             {
 
@@ -40,6 +46,8 @@ namespace azmi_main
 
         public List<string> Execute(object options)
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             AzmiArgumentsClass opt;
             try
             {
@@ -59,6 +67,7 @@ namespace azmi_main
 
         public List<string> Execute(string containerUri, string identity = null, string prefix = null, string[] exclude = null)
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
 
             var Cred = new ManagedIdentityCredential(identity);
             var containerClient = new BlobContainerClient(new Uri(containerUri), Cred);
