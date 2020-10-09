@@ -68,7 +68,7 @@ namespace azmi_tests
         {
             private readonly string _anyGoodPath = "a.txt";
             private readonly string _identity = "123";
-            private readonly string _anyValidURL = "https://www.example.com";
+            private readonly Uri _anyValidURL = new Uri("https://www.example.com");
             private readonly bool _force = false;
             private readonly string _failMsg = "Cannot convert input object to proper class";
 
