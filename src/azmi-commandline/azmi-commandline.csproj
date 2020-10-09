@@ -19,12 +19,18 @@ It is utilizing Azure AD authentication via user assigned managed identity.</Des
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NLog.Config" Version="4.7.5" />
+    <PackageReference Include="NLog" Version="4.7.5" />
     <PackageReference Include="System.CommandLine" Version="2.0.0-beta1.20253.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\azmi-main\azmi-main.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="nlog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
