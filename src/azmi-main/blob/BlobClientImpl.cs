@@ -16,10 +16,24 @@ namespace azmi_main
             blobClient = new BlobClient(blobUri, credential);
         }
 
-
         public Response<BlobContentInfo> Upload(string path, bool overwrite = false)
         {
-            return this.blobClient.Upload(path, overwrite);
+            return blobClient.Upload(path, overwrite);
+        }
+
+        public Response Delete()
+        {
+            return blobClient.Delete();
+        }
+
+        public Response DownloadTo(string path)
+        {
+            return blobClient.DownloadTo(path);
+        }
+
+        public Response<BlobProperties> GetProperties()
+        {
+            return blobClient.GetProperties();
         }
     }
 }

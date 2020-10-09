@@ -3,14 +3,27 @@ using System.IO;
 using System.Collections.Generic;
 
 using Azure.Identity;
-using Azure.Storage.Blobs;
 
 namespace azmi_main
 {
     public class GetBlob : IAzmiCommand
     {
+        private IBlobClient blobClient { get; set; }
+
         //
-        // Declare command elements
+        //  Constructors
+        //
+
+        public GetBlob() { }
+
+        public GetBlob(IBlobClient blobClientMock)
+        {
+            blobClient = blobClientMock;
+        }
+
+
+        //
+        //  Declare command elements
         //
 
         public SubCommandDefinition Definition()
@@ -68,7 +81,7 @@ namespace azmi_main
 
             // Connection
             var Cred = new ManagedIdentityCredential(identity);
-            var blobClient = new BlobClient(new Uri(blobURL), Cred);
+            blobClient ??= new BlobClientImpl(new Uri(blobURL), Cred);
 
             if (ifNewer && File.Exists(filePath) && !IsNewer(blobClient, filePath))
             {
@@ -98,7 +111,7 @@ namespace azmi_main
             }
         }
 
-        private bool IsNewer(BlobClient blob, string filePath)
+        private bool IsNewer(IBlobClient blob, string filePath)
         {
             var blobProperties = blob.GetProperties();
             // Any operation that modifies a blob, including an update of the blob's metadata or properties, changes the last modified time of the blob
