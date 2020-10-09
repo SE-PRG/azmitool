@@ -121,7 +121,7 @@ namespace azmi_tests
             // mock DownloadTo method to return success or failure and check SetBlob status
             private readonly string _anyGoodPath = "a.txt";
             private readonly string _identity = "123";
-            private readonly string _anyValidURL = new Uri("https://www.example.com");
+            private readonly Uri _anyValidURL = new Uri("https://www.example.com");
             private readonly Response _nullResponse = null;
             private readonly Exception _testException = new Exception("testing exception");
             private readonly Exception _testAzureException = new Azure.RequestFailedException("testing Azure exception");
