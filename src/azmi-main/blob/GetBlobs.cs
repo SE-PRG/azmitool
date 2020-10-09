@@ -41,7 +41,7 @@ namespace azmi_main
 
         public class AzmiArgumentsClass : SharedAzmiArgumentsClass
         {
-            public string container { get; set; }
+            public Uri container { get; set; }
             public string directory { get; set; }
             public string prefix { get; set; }
             public string[] exclude { get; set; }
@@ -69,12 +69,12 @@ namespace azmi_main
         // GetBlobs main method
         //
 
-        public List<string> Execute(string containerUri, string directory, string identity = null, string prefix = null, string[] exclude = null, bool ifNewer = false, bool deleteAfterCopy = false)
+        public List<string> Execute(Uri container, string directory, string identity = null, string prefix = null, string[] exclude = null, bool ifNewer = false, bool deleteAfterCopy = false)
         {
             // authentication
-            string containerUriTrimmed = containerUri.TrimEnd(blobPathDelimiter);
-            var cred  = new ManagedIdentityCredential(identity);
-            var containerClient = new BlobContainerClient(new Uri(containerUriTrimmed), cred);
+            var cred = new ManagedIdentityCredential(identity);
+            Uri containerTrimmed = new Uri(container.ToString().TrimEnd(blobPathDelimiter));
+            var containerClient = new BlobContainerClient(containerTrimmed, cred);
 
             // get list of blobs
             List<string> blobListing = containerClient.GetBlobs(prefix: prefix).Select(i => i.Name).ToList();

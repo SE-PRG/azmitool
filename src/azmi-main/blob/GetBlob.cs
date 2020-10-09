@@ -51,7 +51,7 @@ namespace azmi_main
 
         public class AzmiArgumentsClass : SharedAzmiArgumentsClass
         {
-            public string blob { get; set; }
+            public Uri blob { get; set; }
             public string file { get; set; }
             public bool ifNewer { get; set; }
             public bool deleteAfterCopy { get; set; }
@@ -74,14 +74,14 @@ namespace azmi_main
         // Execute GetBlob
         //
 
-        public string Execute(string blobURL, string filePath, string identity = null, bool ifNewer = false, bool deleteAfterCopy = false)
+        public string Execute(Uri blob, string filePath, string identity = null, bool ifNewer = false, bool deleteAfterCopy = false)
         {
 
             // method start
 
             // Connection
-            var Cred = new ManagedIdentityCredential(identity);
-            blobClient ??= new BlobClientImpl(new Uri(blobURL), Cred);
+            var cred = new ManagedIdentityCredential(identity);
+            blobClient ??= new BlobClientImpl(blob, cred);
 
             if (ifNewer && File.Exists(filePath) && !IsNewer(blobClient, filePath))
             {
