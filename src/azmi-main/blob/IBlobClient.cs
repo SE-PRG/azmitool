@@ -1,6 +1,6 @@
-﻿
-using Azure;
+﻿using Azure;
 using Azure.Storage.Blobs.Models;
+using System.Threading.Tasks;
 
 namespace azmi_main
 {
@@ -8,7 +8,9 @@ namespace azmi_main
     {
         Response<BlobContentInfo> Upload(string path, bool overwrite = false);
         Response DownloadTo(string path);
+        Task<Response> DownloadToAsync(string path);
         Response Delete();
         Response<BlobProperties> GetProperties();
+        Task<Response<BlobProperties>> GetPropertiesAsync();
     }
 }

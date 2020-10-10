@@ -62,10 +62,6 @@ namespace azmi_main
                 throw AzmiException.WrongObject(ex);
             }
 
-            //Task<ConfiguredTaskAwaitable<List<string>>> results = Task.Run(() => ExecuteAsync(opt.container, opt.directory, opt.identity, opt.prefix, opt.exclude, opt.ifNewer, opt.deleteAfterCopy).ConfigureAwait(false));
-            //results.Wait();
-            //return results.Result.ToString().ToStringList();
-
             Task<List<string>> task = ExecuteAsync(opt.container, opt.directory, opt.identity, opt.prefix, opt.exclude, opt.ifNewer, opt.deleteAfterCopy);
             List<string> results = task.Result;
             return results;
