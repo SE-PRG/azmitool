@@ -1,14 +1,13 @@
 using Azure.Identity;
 using Azure.Storage.Blobs;
-using System;
 using Azure.Storage.Blobs.Models;
+using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
-// TODO here should be improvement
+using System.Runtime.CompilerServices;
 
 namespace azmi_main
 {
@@ -63,10 +62,9 @@ namespace azmi_main
                 throw AzmiException.WrongObject(ex);
             }
 
-            var a = Execute(opt.container, opt.directory, opt.identity, opt.prefix, opt.exclude, opt.ifNewer, opt.deleteAfterCopy);
-            var results = new List<string>();
-            results = a.Result;
-            return results;
+            Task<ConfiguredTaskAwaitable<List<string>>> results = Task.Run(() => ExecuteAsync(opt.container, opt.directory, opt.identity, opt.prefix, opt.exclude, opt.ifNewer, opt.deleteAfterCopy).ConfigureAwait(false));
+            results.Wait();
+            return results.Result.ToString().ToStringList();
         }
 
 
@@ -74,22 +72,19 @@ namespace azmi_main
         // GetBlobs main method
         //
 
-        public async Task<List<string>> Execute(Uri container, string directory, string identity = null, string prefix = null, string[] exclude = null, bool ifNewer = false, bool deleteAfterCopy = false)
+        public async Task<List<string>> ExecuteAsync(Uri container, string directory, string identity = null, string prefix = null, string[] exclude = null, bool ifNewer = false, bool deleteAfterCopy = false)
         {
             // authentication
-            var cred = new ManagedIdentityCredential(identity);
+            ManagedIdentityCredential cred = new ManagedIdentityCredential(identity);
             Uri containerTrimmed = new Uri(container.ToString().TrimEnd(blobPathDelimiter));
-            var containerClient = new BlobContainerClient(containerTrimmed, cred);
+            BlobContainerClient containerClient = new BlobContainerClient(containerTrimmed, cred);
 
             // get list of blobs
-            List<string> blobListing = containerClient.GetBlobs(prefix: prefix).Select(i => i.Name).ToList();
-            List<string> names = new List<string>();
+            List<string> blobListing = new List<string>();
             await foreach (BlobItem blob in containerClient.GetBlobsAsync())
             {
-                names.Add(blob.Name);
+                blobListing.Add(blob.Name);
             }
-
-
 
             // apply --exclude regular expression
             if (exclude != null)
@@ -122,7 +117,7 @@ namespace azmi_main
 
                 try
                 {
-                    blobClient.DownloadTo(filePath);
+                    blobClient.DownloadToAsync(filePath);
 
                     lock (results)
                     {
@@ -131,7 +126,7 @@ namespace azmi_main
 
                     if (deleteAfterCopy)
                     {
-                        blobClient.Delete();
+                        blobClient.DeleteAsync();
                     }
                 }
                 catch (Azure.RequestFailedException)
