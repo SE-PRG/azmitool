@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 using Azure.Core;
 using Azure.Identity;
@@ -46,14 +47,21 @@ namespace azmi_main
                 throw AzmiException.WrongObject(ex);
             }
 
-            return Execute(opt.endpoint, opt.identity, opt.jwtformat).ToStringList();
+            //var a = Task.Run(() => ExecuteAsync(opt.endpoint, opt.identity, opt.jwtformat)).ConfigureAwait(false);
+            var a = Task.Run(() => ExecuteAsync(opt.endpoint, opt.identity, opt.jwtformat).ConfigureAwait(false));
+            a.Wait();
+
+            //var result = ExecuteAsync(opt.endpoint, opt.identity, opt.jwtformat).Result;
+            var b = a.Result.ToString();
+            return b.ToStringList();
+            // return Execute(opt.endpoint, opt.identity, opt.jwtformat).ToStringList();
         }
 
         //
         // Execute GetToken
         //
 
-        public string Execute(string endpoint = "management", string identity = null, bool JWTformat = false)
+        public async Task<string> ExecuteAsync(string endpoint = "management", string identity = null, bool JWTformat = false)
         {
 
             // method start
@@ -63,7 +71,8 @@ namespace azmi_main
             var Request = new TokenRequestContext(Scope);
             try
             {
-                var Token = Cred.GetToken(Request);
+                // var Token = Cred.GetToken(Request);
+                var Token = await Cred.GetTokenAsync(Request);
                 return (JWTformat) ? Decode_JWT(Token.Token) : Token.Token;
             } catch (Exception ex)
             {

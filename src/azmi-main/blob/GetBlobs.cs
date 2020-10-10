@@ -1,11 +1,14 @@
 using Azure.Identity;
 using Azure.Storage.Blobs;
 using System;
+using Azure.Storage.Blobs.Models;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+
+// TODO here should be improvement
 
 namespace azmi_main
 {
@@ -60,8 +63,10 @@ namespace azmi_main
                 throw AzmiException.WrongObject(ex);
             }
 
-
-            return Execute(opt.container, opt.directory, opt.identity, opt.prefix, opt.exclude, opt.ifNewer, opt.deleteAfterCopy);
+            var a = Execute(opt.container, opt.directory, opt.identity, opt.prefix, opt.exclude, opt.ifNewer, opt.deleteAfterCopy);
+            var results = new List<string>();
+            results = a.Result;
+            return results;
         }
 
 
@@ -69,7 +74,7 @@ namespace azmi_main
         // GetBlobs main method
         //
 
-        public List<string> Execute(Uri container, string directory, string identity = null, string prefix = null, string[] exclude = null, bool ifNewer = false, bool deleteAfterCopy = false)
+        public async Task<List<string>> Execute(Uri container, string directory, string identity = null, string prefix = null, string[] exclude = null, bool ifNewer = false, bool deleteAfterCopy = false)
         {
             // authentication
             var cred = new ManagedIdentityCredential(identity);
@@ -78,6 +83,13 @@ namespace azmi_main
 
             // get list of blobs
             List<string> blobListing = containerClient.GetBlobs(prefix: prefix).Select(i => i.Name).ToList();
+            List<string> names = new List<string>();
+            await foreach (BlobItem blob in containerClient.GetBlobsAsync())
+            {
+                names.Add(blob.Name);
+            }
+
+
 
             // apply --exclude regular expression
             if (exclude != null)
