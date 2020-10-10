@@ -66,9 +66,8 @@ namespace azmi_main
             //results.Wait();
             //return results.Result.ToString().ToStringList();
 
-            var a = ExecuteAsync(opt.container, opt.directory, opt.identity, opt.prefix, opt.exclude, opt.ifNewer, opt.deleteAfterCopy);
-            var results = new List<string>();
-            results = a.Result;
+            Task<List<string>> task = ExecuteAsync(opt.container, opt.directory, opt.identity, opt.prefix, opt.exclude, opt.ifNewer, opt.deleteAfterCopy);
+            List<string> results = task.Result;
             return results;
         }
 
@@ -122,7 +121,7 @@ namespace azmi_main
 
                 try
                 {
-                    blobClient.DownloadToAsync(filePath);
+                    blobClient.DownloadTo(filePath);
 
                     lock (results)
                     {
@@ -131,7 +130,7 @@ namespace azmi_main
 
                     if (deleteAfterCopy)
                     {
-                        blobClient.DeleteAsync();
+                        blobClient.Delete();
                     }
                 }
                 catch (Azure.RequestFailedException)
