@@ -33,7 +33,7 @@ namespace azmi_main
 
         public class AzmiArgumentsClass : SharedAzmiArgumentsClass
         {
-            public string container { get; set; }
+            public Uri container { get; set; }
             public string prefix { get; set; }
             public string[] exclude { get; set; }
         }
@@ -57,11 +57,11 @@ namespace azmi_main
         //
 
 
-        public List<string> Execute(string containerUri, string identity = null, string prefix = null, string[] exclude = null)
+        public List<string> Execute(Uri container, string identity = null, string prefix = null, string[] exclude = null)
         {
 
             var Cred = new ManagedIdentityCredential(identity);
-            var containerClient = new BlobContainerClient(new Uri(containerUri), Cred);
+            var containerClient = new BlobContainerClient(container, Cred);
             containerClient.CreateIfNotExists();
 
             try
