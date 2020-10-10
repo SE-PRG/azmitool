@@ -64,19 +64,16 @@ namespace azmi_main
 
         public async Task<List<string>> Execute(Uri container, string identity = null, string prefix = null, string[] exclude = null)
         {
-
-            var Cred = new ManagedIdentityCredential(identity);
-            var containerClient = new BlobContainerClient(container, Cred);
-            await containerClient.CreateIfNotExistsAsync();
+            var cred = new ManagedIdentityCredential(identity);
+            var containerClient = new BlobContainerClient(container, cred);
 
             try
             {
                 List<string> blobListing = new List<string>();
-                await foreach (BlobItem blob in containerClient.GetBlobsAsync())
+                await foreach (BlobItem blob in containerClient.GetBlobsAsync(prefix: prefix))
                 {
                     blobListing.Add(blob.Name);
                 }
-                // List<string> blobListing = containerClient.GetBlobs(prefix: prefix).Select(i => i.Name).ToList();
 
                 if (exclude != null)
                 { // apply --exclude regular expression
