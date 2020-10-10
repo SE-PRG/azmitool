@@ -1,6 +1,7 @@
 using azmi_main;
 using System;
 using System.CommandLine;
+using System.Threading.Tasks;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("azmi-commandline-tests")]
 
@@ -9,10 +10,10 @@ namespace azmi_commandline
     static class Program
     {
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             var rootCommand = ConfigureArguments();
-            var parseResult = rootCommand.Invoke(args);
+            var parseResult = await rootCommand.InvokeAsync(args).ConfigureAwait(false);
             Environment.Exit(parseResult);
         }
 
@@ -35,7 +36,6 @@ namespace azmi_commandline
             //
             // subcommands
             //
-
 
             // common
             rootCommand.AddCommand(AzmiCommandLineExtensions.ToCommand<GetToken, GetToken.AzmiArgumentsClass>());

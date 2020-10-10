@@ -57,7 +57,6 @@ namespace azmi_main
             return Execute(opt.container, opt.directory, opt.identity, opt.exclude, opt.force);
         }
 
-
         //
         // SetBlobs main method
         //

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 using Azure.Identity;
 
@@ -67,23 +68,24 @@ namespace azmi_main
                 throw AzmiException.WrongObject(ex);
             }
 
-            return Execute(opt.blob, opt.file, opt.identity, opt.ifNewer, opt.deleteAfterCopy).ToStringList();
+            Task<string> task = ExecuteAsync(opt.blob, opt.file, opt.identity, opt.ifNewer, opt.deleteAfterCopy);
+            List<string> results = task.Result.ToStringList();
+            return results;
         }
 
         //
         // Execute GetBlob
         //
 
-        public string Execute(Uri blob, string filePath, string identity = null, bool ifNewer = false, bool deleteAfterCopy = false)
+        public async Task<string> ExecuteAsync(Uri blob, string filePath, string identity = null, bool ifNewer = false, bool deleteAfterCopy = false)
         {
-
             // method start
 
             // Connection
             var cred = new ManagedIdentityCredential(identity);
             blobClient ??= new BlobClientImpl(blob, cred);
 
-            if (ifNewer && File.Exists(filePath) && !IsNewer(blobClient, filePath))
+            if (ifNewer && File.Exists(filePath) && !await IsNewer(blobClient, filePath))
             {
                 return "Skipped. Blob is not newer than file.";
             }
@@ -94,7 +96,7 @@ namespace azmi_main
                 string dirName = Path.GetDirectoryName(absolutePath);
                 Directory.CreateDirectory(dirName);
 
-                blobClient.DownloadTo(filePath);
+                await blobClient.DownloadToAsync(filePath).ConfigureAwait(false);
 
                 if (deleteAfterCopy)
                 {
@@ -111,9 +113,9 @@ namespace azmi_main
             }
         }
 
-        private bool IsNewer(IBlobClient blob, string filePath)
+        private async Task<bool> IsNewer(IBlobClient blob, string filePath)
         {
-            var blobProperties = blob.GetProperties();
+            var blobProperties = await blob.GetPropertiesAsync().ConfigureAwait(false);
             // Any operation that modifies a blob, including an update of the blob's metadata or properties, changes the last modified time of the blob
             var blobLastModified = blobProperties.Value.LastModified.UtcDateTime;
 

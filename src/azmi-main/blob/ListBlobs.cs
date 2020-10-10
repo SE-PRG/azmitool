@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 using Azure.Identity;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 
 namespace azmi_main
 {
@@ -49,24 +51,27 @@ namespace azmi_main
                 throw AzmiException.WrongObject(ex);
             }
 
-            return Execute(opt.container, opt.identity, opt.prefix, opt.exclude);
+            Task<List<string>> task = ExecuteAsync(opt.container, opt.identity, opt.prefix, opt.exclude);
+            List<string> results = task.Result;
+            return results;
         }
 
         //
         // Execute ListBlobs
         //
 
-
-        public List<string> Execute(Uri container, string identity = null, string prefix = null, string[] exclude = null)
+        public async Task<List<string>> ExecuteAsync(Uri container, string identity = null, string prefix = null, string[] exclude = null)
         {
-
-            var Cred = new ManagedIdentityCredential(identity);
-            var containerClient = new BlobContainerClient(container, Cred);
-            containerClient.CreateIfNotExists();
+            var cred = new ManagedIdentityCredential(identity);
+            var containerClient = new BlobContainerClient(container, cred);
 
             try
             {
-                List<string> blobListing = containerClient.GetBlobs(prefix: prefix).Select(i => i.Name).ToList();
+                List<string> blobListing = new List<string>();
+                await foreach (BlobItem blob in containerClient.GetBlobsAsync(prefix: prefix).ConfigureAwait(false))
+                {
+                    blobListing.Add(blob.Name);
+                }
 
                 if (exclude != null)
                 { // apply --exclude regular expression

@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Azure.Identity;
+using System;
 using System.Collections.Generic;
-using Azure.Identity;
+using System.Threading.Tasks;
 
 namespace azmi_main
 {
@@ -65,21 +66,23 @@ namespace azmi_main
                 throw AzmiException.WrongObject(ex);
             }
 
-            return Execute(opt.file, opt.blob, opt.identity, opt.force).ToStringList();
+            Task<string> task = ExecuteAsync(opt.file, opt.blob, opt.identity, opt.force);
+            List<string> results = task.Result.ToStringList();
+            return results;
         }
 
         //
         // Execute SetBlob
         //
 
-        public string Execute(string filePath, Uri blob, string identity = null, bool force = false)
+        public async Task<string> ExecuteAsync(string filePath, Uri blob, string identity = null, bool force = false)
         {
-            var Cred = new ManagedIdentityCredential(identity);
-            blobClient ??= new BlobClientImpl(blob, Cred);
+            var cred = new ManagedIdentityCredential(identity);
+            blobClient ??= new BlobClientImpl(blob, cred);
 
             try
             {
-                blobClient.Upload(filePath, force);
+                await blobClient.UploadAsync(filePath, force).ConfigureAwait(false);
                 return "Success";
             }
             catch (Exception ex)

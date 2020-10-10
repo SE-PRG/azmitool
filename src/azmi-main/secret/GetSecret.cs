@@ -1,11 +1,10 @@
-﻿using System;
+﻿using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using System;
 using System.Collections.Generic;
 using System.IO;
-
-using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
 using System.Linq;
-
+using System.Threading.Tasks;
 
 namespace azmi_main
 {
@@ -47,14 +46,16 @@ namespace azmi_main
                 throw AzmiException.WrongObject(ex);
             }
 
-            return Execute(opt.secret, opt.file, opt.identity).ToStringList();
+            Task<string> task = ExecuteAsync(opt.secret, opt.file, opt.identity);
+            List<string> results = task.Result.ToStringList();
+            return results;
         }
 
         //
         // execute GetSecret
         //
 
-        public string Execute(Uri secretIdentifier, string filePath = null, string identity = null)
+        public async Task<string> ExecuteAsync(Uri secretIdentifier, string filePath = null, string identity = null)
         {
             (Uri keyVault, string secretName, string secretVersion) = ValidateAndParseSecretURL(secretIdentifier);
 
@@ -64,7 +65,7 @@ namespace azmi_main
             // Retrieve a secret
             try
             {
-                KeyVaultSecret secret = secretClient.GetSecret(secretName, secretVersion);
+                KeyVaultSecret secret = await secretClient.GetSecretAsync(secretName, secretVersion).ConfigureAwait(false);
                 string secretValue = secret.Value;
 
                 if (String.IsNullOrEmpty(filePath))
@@ -73,7 +74,7 @@ namespace azmi_main
                 }
                 else
                 {   // creates or overwrites file and saves secret into it
-                    File.WriteAllText(filePath, secretValue);
+                    await File.WriteAllTextAsync(filePath, secretValue);
                     return "Saved";
                 }
             } catch (Exception ex)

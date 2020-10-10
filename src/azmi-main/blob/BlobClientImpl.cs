@@ -1,8 +1,9 @@
-﻿using System;
-using Azure;
+﻿using Azure;
 using Azure.Core;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs;
+using System;
+using System.Threading.Tasks;
 
 namespace azmi_main
 {
@@ -21,6 +22,11 @@ namespace azmi_main
             return blobClient.Upload(path, overwrite);
         }
 
+        public Task<Response<BlobContentInfo>> UploadAsync(string path, bool overwrite = false)
+        {
+            return blobClient.UploadAsync(path, overwrite);
+        }
+
         public Response Delete()
         {
             return blobClient.Delete();
@@ -31,9 +37,18 @@ namespace azmi_main
             return blobClient.DownloadTo(path);
         }
 
+        public Task<Response> DownloadToAsync(string path)
+        {
+            return blobClient.DownloadToAsync(path);
+        }
+
         public Response<BlobProperties> GetProperties()
         {
             return blobClient.GetProperties();
+        }
+        public Task<Response<BlobProperties>> GetPropertiesAsync()
+        {
+            return blobClient.GetPropertiesAsync();
         }
     }
 }
