@@ -65,7 +65,7 @@ namespace azmi_main
             // Retrieve a secret
             try
             {
-                KeyVaultSecret secret = await secretClient.GetSecretAsync(secretName, secretVersion);
+                KeyVaultSecret secret = await secretClient.GetSecretAsync(secretName, secretVersion).ConfigureAwait(false);
                 string secretValue = secret.Value;
 
                 if (String.IsNullOrEmpty(filePath))

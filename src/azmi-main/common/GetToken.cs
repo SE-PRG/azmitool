@@ -66,7 +66,7 @@ namespace azmi_main
             var request = new TokenRequestContext(scope);
             try
             {
-                var Token = await cred.GetTokenAsync(request);
+                var Token = await cred.GetTokenAsync(request).ConfigureAwait(false);
                 return (JWTformat) ? Decode_JWT(Token.Token) : Token.Token;
             } catch (Exception ex)
             {

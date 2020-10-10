@@ -57,7 +57,7 @@ namespace azmi_main
         {
             try
             {
-                (new GetToken()).ExecuteAsync(identity: null);
+                (new GetToken()).ExecuteAsync(identity: null).ConfigureAwait(false);
                 return false;
             } catch
             {

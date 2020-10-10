@@ -82,7 +82,7 @@ namespace azmi_main
 
             try
             {
-                await blobClient.UploadAsync(filePath, force);
+                await blobClient.UploadAsync(filePath, force).ConfigureAwait(false);
                 return "Success";
             }
             catch (Exception ex)

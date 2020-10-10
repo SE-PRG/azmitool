@@ -96,7 +96,7 @@ namespace azmi_main
                 string dirName = Path.GetDirectoryName(absolutePath);
                 Directory.CreateDirectory(dirName);
 
-                await blobClient.DownloadToAsync(filePath);
+                await blobClient.DownloadToAsync(filePath).ConfigureAwait(false);
 
                 if (deleteAfterCopy)
                 {
@@ -115,7 +115,7 @@ namespace azmi_main
 
         private async Task<bool> IsNewer(IBlobClient blob, string filePath)
         {
-            var blobProperties = await blob.GetPropertiesAsync();
+            var blobProperties = await blob.GetPropertiesAsync().ConfigureAwait(false);
             // Any operation that modifies a blob, including an update of the blob's metadata or properties, changes the last modified time of the blob
             var blobLastModified = blobProperties.Value.LastModified.UtcDateTime;
 

@@ -68,7 +68,7 @@ namespace azmi_main
             try
             {
                 List<string> blobListing = new List<string>();
-                await foreach (BlobItem blob in containerClient.GetBlobsAsync(prefix: prefix))
+                await foreach (BlobItem blob in containerClient.GetBlobsAsync(prefix: prefix).ConfigureAwait(false))
                 {
                     blobListing.Add(blob.Name);
                 }

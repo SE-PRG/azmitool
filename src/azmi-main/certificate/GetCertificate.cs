@@ -93,7 +93,7 @@ namespace azmi_main
 
                 // filePath: null means get secret into variable only
                 // otherwise secret may be unintentionally saved to file by GetSecret() method
-                string secret = await new GetSecret().ExecuteAsync(secretIdentifier, filePath: null, identity);
+                string secret = await new GetSecret().ExecuteAsync(secretIdentifier, filePath: null, identity).ConfigureAwait(false);
 
                 if (String.IsNullOrEmpty(filePath))
                 {   // print to stdout
