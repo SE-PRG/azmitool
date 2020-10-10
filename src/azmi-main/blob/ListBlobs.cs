@@ -67,7 +67,7 @@ namespace azmi_main
 
             var Cred = new ManagedIdentityCredential(identity);
             var containerClient = new BlobContainerClient(container, Cred);
-            containerClient.CreateIfNotExists();
+            await containerClient.CreateIfNotExistsAsync();
 
             try
             {
