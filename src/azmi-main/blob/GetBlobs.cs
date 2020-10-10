@@ -122,7 +122,7 @@ namespace azmi_main
 
                 try
                 {
-                    blobClient.DownloadTo(filePath);
+                    blobClient.DownloadToAsync(filePath);
 
                     lock (results)
                     {
@@ -131,7 +131,7 @@ namespace azmi_main
 
                     if (deleteAfterCopy)
                     {
-                        blobClient.Delete();
+                        blobClient.DeleteAsync();
                     }
                 }
                 catch (Azure.RequestFailedException)
