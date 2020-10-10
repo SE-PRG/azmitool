@@ -22,6 +22,11 @@ namespace azmi_main
             return blobClient.Upload(path, overwrite);
         }
 
+        public Task<Response<BlobContentInfo>> UploadAsync(string path, bool overwrite = false)
+        {
+            return blobClient.UploadAsync(path, overwrite);
+        }
+
         public Response Delete()
         {
             return blobClient.Delete();

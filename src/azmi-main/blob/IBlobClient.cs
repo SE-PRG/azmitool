@@ -7,6 +7,7 @@ namespace azmi_main
     public interface IBlobClient
     {
         Response<BlobContentInfo> Upload(string path, bool overwrite = false);
+        Task<Response<BlobContentInfo>> UploadAsync(string path, bool overwrite = false);
         Response DownloadTo(string path);
         Task<Response> DownloadToAsync(string path);
         Response Delete();

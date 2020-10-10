@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Azure.Identity;
+using Azure.Security.KeyVault.Certificates;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
-using Azure.Identity;
-using Azure.Security.KeyVault.Certificates;
 
 namespace azmi_main
 {
@@ -47,15 +48,16 @@ namespace azmi_main
                 throw AzmiException.WrongObject(ex);
             }
 
-            return Execute(opt.certificate, opt.file, opt.identity).ToStringList();
+            Task<string> task = ExecuteAsync(opt.certificate, opt.file, opt.identity);
+            List<string> results = task.Result.ToStringList();
+            return results;
         }
-
 
         //
         // execute GetCertificate
         //
 
-        public string Execute(Uri certificateIdentifier, string filePath = null, string identity = null)
+        public async Task<string> ExecuteAsync(Uri certificateIdentifier, string filePath = null, string identity = null)
         {
             (Uri keyVaultUri, string certificateName, string certificateVersion) = ValidateAndParseCertificateURL(certificateIdentifier);
 
@@ -91,7 +93,7 @@ namespace azmi_main
 
                 // filePath: null means get secret into variable only
                 // otherwise secret may be unintentionally saved to file by GetSecret() method
-                string secret = new GetSecret().Execute(secretIdentifier, filePath: null, identity);
+                string secret = await new GetSecret().ExecuteAsync(secretIdentifier, filePath: null, identity);
 
                 if (String.IsNullOrEmpty(filePath))
                 {   // print to stdout

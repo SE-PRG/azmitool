@@ -7,7 +7,6 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Runtime.CompilerServices;
 
 namespace azmi_main
 {
@@ -66,7 +65,6 @@ namespace azmi_main
             List<string> results = task.Result;
             return results;
         }
-
 
         //
         // GetBlobs main method

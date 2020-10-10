@@ -47,14 +47,9 @@ namespace azmi_main
                 throw AzmiException.WrongObject(ex);
             }
 
-            //var a = Task.Run(() => ExecuteAsync(opt.endpoint, opt.identity, opt.jwtformat)).ConfigureAwait(false);
-            var a = Task.Run(() => ExecuteAsync(opt.endpoint, opt.identity, opt.jwtformat).ConfigureAwait(false));
-            a.Wait();
-
-            //var result = ExecuteAsync(opt.endpoint, opt.identity, opt.jwtformat).Result;
-            var b = a.Result.ToString();
-            return b.ToStringList();
-            // return Execute(opt.endpoint, opt.identity, opt.jwtformat).ToStringList();
+            Task<string> task = ExecuteAsync(opt.endpoint, opt.identity, opt.jwtformat);
+            List<string> results = task.Result.ToStringList();
+            return results;
         }
 
         //
@@ -65,14 +60,13 @@ namespace azmi_main
         {
 
             // method start
-            var Cred = new ManagedIdentityCredential(identity);
+            var cred = new ManagedIdentityCredential(identity);
             if (String.IsNullOrEmpty(endpoint)) { endpoint = "management"; }
-            var Scope = new String[] { $"https://{endpoint}.azure.com" };
-            var Request = new TokenRequestContext(Scope);
+            var scope = new String[] { $"https://{endpoint}.azure.com" };
+            var request = new TokenRequestContext(scope);
             try
             {
-                // var Token = Cred.GetToken(Request);
-                var Token = await Cred.GetTokenAsync(Request);
+                var Token = await cred.GetTokenAsync(request);
                 return (JWTformat) ? Decode_JWT(Token.Token) : Token.Token;
             } catch (Exception ex)
             {
@@ -89,7 +83,6 @@ namespace azmi_main
             var handler = new JwtSecurityTokenHandler();
             var tokenDecoded = handler.ReadJwtToken(tokenEncoded);
             return tokenDecoded.ToString(); // decoded JSON Web Token
-
         }
     }
 }

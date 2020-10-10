@@ -51,9 +51,8 @@ namespace azmi_main
                 throw AzmiException.WrongObject(ex);
             }
 
-            var a = Execute(opt.container, opt.identity, opt.prefix, opt.exclude);
-            var results = new List<string>();
-            results = a.Result;
+            Task<List<string>> task = ExecuteAsync(opt.container, opt.identity, opt.prefix, opt.exclude);
+            List<string> results = task.Result;
             return results;
         }
 
@@ -61,8 +60,7 @@ namespace azmi_main
         // Execute ListBlobs
         //
 
-
-        public async Task<List<string>> Execute(Uri container, string identity = null, string prefix = null, string[] exclude = null)
+        public async Task<List<string>> ExecuteAsync(Uri container, string identity = null, string prefix = null, string[] exclude = null)
         {
             var cred = new ManagedIdentityCredential(identity);
             var containerClient = new BlobContainerClient(container, cred);
