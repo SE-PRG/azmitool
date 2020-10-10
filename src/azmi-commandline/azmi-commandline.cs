@@ -39,6 +39,7 @@ namespace azmi_commandline
 
             // common
             rootCommand.AddCommand(AzmiCommandLineExtensions.ToCommand<GetToken, GetToken.AzmiArgumentsClass>());
+
             // blob
             rootCommand.AddCommand(AzmiCommandLineExtensions.ToCommand<ListBlobs, ListBlobs.AzmiArgumentsClass>());
             rootCommand.AddCommand(AzmiCommandLineExtensions.ToCommand<GetBlob, GetBlob.AzmiArgumentsClass>());

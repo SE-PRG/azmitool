@@ -15,8 +15,8 @@ namespace azmi_gui
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            var a = (new GetToken()).ExecuteAsync("management");
-            TokenTextBlock.Text = a.Result.ToString();
+            var task = (new GetToken()).ExecuteAsync("management");
+            TokenTextBlock.Text = task.Result.ToString();
         }
     }
 }
