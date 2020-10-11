@@ -13,8 +13,21 @@ namespace azmi_main
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         private static readonly string className = nameof(GetBlob);
 
+        private IBlobClient blobClient { get; set; }
+
         //
-        // Declare command elements
+        //  Constructors
+        //
+
+        public GetBlob() { }
+
+        public GetBlob(IBlobClient blobClientMock)
+        {
+            blobClient = blobClientMock;
+        }
+
+        //
+        //  Declare command elements
         //
 
         public SubCommandDefinition Definition()
@@ -44,7 +57,7 @@ namespace azmi_main
 
         public class AzmiArgumentsClass : SharedAzmiArgumentsClass
         {
-            public string blob { get; set; }
+            public Uri blob { get; set; }
             public string file { get; set; }
             public bool ifNewer { get; set; }
             public bool deleteAfterCopy { get; set; }
@@ -69,13 +82,13 @@ namespace azmi_main
         // Execute GetBlob
         //
 
-        public string Execute(string blobURL, string filePath, string identity = null, bool ifNewer = false, bool deleteAfterCopy = false)
+        public string Execute(Uri blob, string filePath, string identity = null, bool ifNewer = false, bool deleteAfterCopy = false)
         {
             logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
 
             // Connection
-            var Cred = new ManagedIdentityCredential(identity);
-            var blobClient = new BlobClient(new Uri(blobURL), Cred);
+            var cred = new ManagedIdentityCredential(identity);
+            blobClient ??= new BlobClientImpl(blob, cred);
 
             if (ifNewer && File.Exists(filePath) && !IsNewer(blobClient, filePath))
             {
@@ -105,7 +118,7 @@ namespace azmi_main
             }
         }
 
-        private bool IsNewer(BlobClient blob, string filePath)
+        private bool IsNewer(IBlobClient blob, string filePath)
         {
             logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
 
