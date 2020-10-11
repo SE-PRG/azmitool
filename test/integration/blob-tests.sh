@@ -37,18 +37,18 @@ UPLOAD_DIR="./Upload"
 testing class "listblobs"
 BC=5 # blob count
 test "listblobs basic" assert.Success "azmi listblobs --container $CONTAINER_LB"
-# relative path
 test "listblobs finds $BC blobs" assert.Equals "azmi listblobs --container $CONTAINER_LB | wc -l" $BC
-# absolute path
-test "listblobs finds $BC blobs with absolute-paths flag" assert.Equals "azmi listblobs --container $CONTAINER_LB --absolute-paths | wc -l" $BC
+test "listblobs finds $BC blobs (absolute-paths flag enabled)" assert.Equals "azmi listblobs --container $CONTAINER_LB --absolute-paths | wc -l" $BC
 BC=3; PREFIX="server1"
 test "listblobs finds $BC blobs with prefix $PREFIX" assert.Equals "azmi listblobs -c $CONTAINER_LB --prefix $PREFIX | wc -l" $BC
 BC=2; PREFIX="server2"
 test "listblobs finds $BC blobs with prefix $PREFIX" assert.Equals "azmi listblobs -c $CONTAINER_LB --prefix $PREFIX | wc -l" $BC
+test "listblobs finds $BC blobs with prefix $PREFIX (absolute-paths flag enabled)" assert.Equals "azmi listblobs -c $CONTAINER_LB -a --prefix $PREFIX | wc -l" $BC
 BC=0; PREFIX="notExisting"
 test "listblobs finds $BC blobs with prefix $PREFIX" assert.Equals "azmi listblobs -c $CONTAINER_LB --prefix $PREFIX | wc -l" $BC
 BC=3; EXCLUDE="server2"
 test "listblobs finds $BC blobs excluding $EXCLUDE" assert.Equals "azmi listblobs -c $CONTAINER_LB --exclude $EXCLUDE | wc -l" $BC
+test "listblobs finds $BC blobs excluding $EXCLUDE (absolute-paths flag enabled)" assert.Equals "azmi listblobs -c $CONTAINER_LB --absolute-paths --exclude $EXCLUDE | wc -l" $BC
 BC=1; EXCLUDE1="file1"; EXCLUDE2="file2"
 test "listblobs finds $BC blobs with multiple excludes" assert.Equals "azmi listblobs -c $CONTAINER_LB --exclude $EXCLUDE1 --exclude $EXCLUDE2 | wc -l" $BC
 

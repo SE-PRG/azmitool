@@ -62,33 +62,35 @@ namespace azmi_main
 
         public List<string> Execute(Uri container, string identity = null, string prefix = null, string[] exclude = null, bool absolutePaths = false)
         {
-
             var cred = new ManagedIdentityCredential(identity);
             var containerClient = new BlobContainerClient(container, cred);
             containerClient.CreateIfNotExists();
 
+            List<string> results = new List<string>();
             try
             {
                 List<string> blobsNames = containerClient.GetBlobs(prefix: prefix).Select(i => i.Name).ToList();
 
+                List<string> blobsNamesExclusionApplied = new List<string>();
                 if (exclude != null)
                 { // apply --exclude regular expression
                     var rx = new Regex(String.Join('|',exclude));
-                    blobsNames = blobsNames.Where(b => !rx.IsMatch(b)).ToList();
+                    blobsNamesExclusionApplied = blobsNames.Where(b => !rx.IsMatch(b)).ToList();
+                    results = blobsNamesExclusionApplied;
                 }
 
                 if (absolutePaths)
                 { // apply --absolute-path
                     List<string> blobsUris = new List<string>();
-                    foreach (var blobName in blobsNames)
+                    foreach (string blobName in blobsNamesExclusionApplied)
                     {
                         BlobClient blobClient = containerClient.GetBlobClient(blobName);
                         blobsUris.Add(blobClient.Uri.ToString());
                     }
-                    blobsNames = blobsUris;
+                    results = blobsUris;
                 }
 
-                return blobsNames.Count == 0 ? null : blobsNames;
+                return results.Count == 0 ? null : results;
             } catch (Exception ex)
             {
                 throw AzmiException.IDCheck(identity, ex);
