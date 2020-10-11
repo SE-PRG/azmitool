@@ -68,26 +68,26 @@ namespace azmi_main
 
             try
             {
-                List<string> blobsNames = containerClient.GetBlobs(prefix: prefix).Select(i => i.Name).ToList();
+                List<string> blobsListing = containerClient.GetBlobs(prefix: prefix).Select(i => i.Name).ToList();
 
                 if (exclude != null)
                 { // apply --exclude regular expression
                     var rx = new Regex(String.Join('|', exclude));
-                    blobsNames = blobsNames.Where(b => !rx.IsMatch(b)).ToList();
+                    blobsListing = blobsListing.Where(b => !rx.IsMatch(b)).ToList();
                 }
 
                 if (absolutePaths)
                 { // apply --absolute-path
                     List<string> blobsUris = new List<string>();
-                    foreach (string blobName in blobsNames)
+                    foreach (string blobName in blobsListing)
                     {
                         BlobClient blobClient = containerClient.GetBlobClient(blobName);
                         blobsUris.Add(blobClient.Uri.ToString());
                     }
-                    blobsNames = blobsUris.ToList();
+                    blobsListing = blobsUris.ToList();
                 }
 
-                return blobsNames.Count == 0 ? null : blobsNames;
+                return blobsListing.Count == 0 ? null : blobsListing;
             } catch (Exception ex)
             {
                 throw AzmiException.IDCheck(identity, ex);
