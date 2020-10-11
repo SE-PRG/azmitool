@@ -66,15 +66,15 @@ namespace azmi_main
             var containerClient = new BlobContainerClient(container, cred);
             containerClient.CreateIfNotExists();
 
-            List<string> results = new List<string>();
             try
             {
                 List<string> blobsNames = containerClient.GetBlobs(prefix: prefix).Select(i => i.Name).ToList();
+                List<string> results = blobsNames;
 
                 List<string> blobsNamesExclusionApplied = new List<string>();
                 if (exclude != null)
                 { // apply --exclude regular expression
-                    var rx = new Regex(String.Join('|',exclude));
+                    var rx = new Regex(String.Join('|', exclude));
                     blobsNamesExclusionApplied = blobsNames.Where(b => !rx.IsMatch(b)).ToList();
                     results = blobsNamesExclusionApplied;
                 }
