@@ -111,7 +111,6 @@ namespace azmi_main
 
             // Example of expected URLs: https://my-key-vault.vault.azure.net/secrets/mySecret.pwd (latest version)
             // or https://my-key-vault.vault.azure.net/secrets/mySecret.pwd/67d1f6c499824607b81d5fa852f9865c (specific version)
-            Uri secretIdentifierUri = new Uri(secretIdentifierUrl);
 
             if (secretIdentifier.Scheme != Uri.UriSchemeHttps)
                 throw new UriFormatException($"Only '{Uri.UriSchemeHttps}' protocol is supported.");
