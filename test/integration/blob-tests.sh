@@ -37,7 +37,10 @@ UPLOAD_DIR="./Upload"
 testing class "listblobs"
 BC=5 # blob count
 test "listblobs basic" assert.Success "azmi listblobs --container $CONTAINER_LB"
+# relative path
 test "listblobs finds $BC blobs" assert.Equals "azmi listblobs --container $CONTAINER_LB | wc -l" $BC
+# absolute path
+test "listblobs finds $BC blobs with absolute-paths flag" assert.Equals "azmi listblobs --container $CONTAINER_LB --absolute-paths | wc -l" $BC
 BC=3; PREFIX="server1"
 test "listblobs finds $BC blobs with prefix $PREFIX" assert.Equals "azmi listblobs -c $CONTAINER_LB --prefix $PREFIX | wc -l" $BC
 BC=2; PREFIX="server2"
