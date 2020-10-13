@@ -1,6 +1,8 @@
 using azmi_main;
 using System;
 using System.CommandLine;
+using System.Reflection;
+using NLog;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("azmi-commandline-tests")]
 
@@ -8,16 +10,26 @@ namespace azmi_commandline
 {
     static class Program
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private const string className = nameof(Program);
 
         static void Main(string[] args)
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             var rootCommand = ConfigureArguments();
-            var parseResult = rootCommand.Invoke(args);
+            int parseResult = rootCommand.Invoke(args);
+
+            // Flush and close down internal threads and timers
+            NLog.LogManager.Shutdown();
+
+            logger.Debug($"Leaving {className}::{MethodBase.GetCurrentMethod().Name}() with exitCode={parseResult}");
             Environment.Exit(parseResult);
         }
 
         internal static RootCommand ConfigureArguments()
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
 
             //
             // Create main command

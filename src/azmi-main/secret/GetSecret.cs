@@ -1,18 +1,23 @@
-﻿using System;
+﻿using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using System;
 using System.Collections.Generic;
 using System.IO;
-
-using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
+using System.Reflection;
 using System.Linq;
-
+using NLog;
 
 namespace azmi_main
 {
     public class GetSecret : IAzmiCommand
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private static readonly string className = nameof(GetSecret);
+
         public SubCommandDefinition Definition()
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             return new SubCommandDefinition
             {
 
@@ -38,6 +43,8 @@ namespace azmi_main
 
         public List<string> Execute(object options)
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             AzmiArgumentsClass opt;
             try
             {
@@ -56,6 +63,8 @@ namespace azmi_main
 
         public string Execute(Uri secretIdentifier, string filePath = null, string identity = null)
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             (Uri keyVault, string secretName, string secretVersion) = ValidateAndParseSecretURL(secretIdentifier);
 
             var MIcredential = new ManagedIdentityCredential(identity);
@@ -98,8 +107,10 @@ namespace azmi_main
 
         private (Uri, string, string) ValidateAndParseSecretURL(Uri secretIdentifier)
         {
-        // Example of expected URLs: https://my-key-vault.vault.azure.net/secrets/mySecret.pwd (latest version)
-        // or https://my-key-vault.vault.azure.net/secrets/mySecret.pwd/67d1f6c499824607b81d5fa852f9865c (specific version)
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
+            // Example of expected URLs: https://my-key-vault.vault.azure.net/secrets/mySecret.pwd (latest version)
+            // or https://my-key-vault.vault.azure.net/secrets/mySecret.pwd/67d1f6c499824607b81d5fa852f9865c (specific version)
 
             if (secretIdentifier.Scheme != Uri.UriSchemeHttps)
                 throw new UriFormatException($"Only '{Uri.UriSchemeHttps}' protocol is supported.");

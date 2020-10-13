@@ -1,22 +1,26 @@
-﻿using System;
+﻿using Azure.Core;
+using Azure.Identity;
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Collections.Generic;
-
-using Azure.Core;
-using Azure.Identity;
+using System.Reflection;
+using NLog;
 
 namespace azmi_main
 {
     public class GetToken : IAzmiCommand
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private static readonly string className = nameof(GetToken);
 
         //
         // Declare command elements
         //
 
         public SubCommandDefinition Definition() {
-            return new SubCommandDefinition {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
 
+            return new SubCommandDefinition {
                 name = "gettoken",
                 description = "Obtains Azure authorization token for usage in other command line tools.",
 
@@ -37,12 +41,15 @@ namespace azmi_main
 
         public List<string> Execute(object options)
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             AzmiArgumentsClass opt;
             try
             {
                 opt = (AzmiArgumentsClass)options;
             } catch (Exception ex)
             {
+                logger.Error(ex, "WrongObject");
                 throw AzmiException.WrongObject(ex);
             }
 
@@ -55,6 +62,7 @@ namespace azmi_main
 
         public string Execute(string endpoint = "management", string identity = null, bool JWTformat = false)
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
 
             // method start
             var Cred = new ManagedIdentityCredential(identity);
@@ -77,6 +85,8 @@ namespace azmi_main
 
         private string Decode_JWT(string tokenEncoded)
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             var handler = new JwtSecurityTokenHandler();
             var tokenDecoded = handler.ReadJwtToken(tokenEncoded);
             return tokenDecoded.ToString(); // decoded JSON Web Token
