@@ -46,7 +46,7 @@ Print token in JSON Web Token (JWT) format.
 
 |**command**|description|
 |-|-|
-|**`azmi listblobs`**|Lists all blobs in container and send their names to output.|
+|**`azmi listblobs`**|Lists all blobs in container and send their names or URIs to output.|
 |**`azmi getblob`**|Downloads single blob from storage account to a local file.|
 |**`azmi getblobs`**|Downloads multiple blobs from container to a local directory.|
 |**`azmi setblob`**|Writes single local file to a storage account blob.|
@@ -58,7 +58,7 @@ Print token in JSON Web Token (JWT) format.
 |-|-|-|-|
 |**`listblobs`**|`--container`| *n.a.* |`--prefix`, `--exclude`|
 |**`getblob`**|`--blob`|`--file`|`--if-newer`, `--delete-after-copy`|
-|**`getblobs`**|`--container`|`--directory`|`--prefix`, `--if-newer`, `--delete-after-copy`, `--exclude`|
+|**`getblobs`**|`--container`|`--directory`|`--prefix`, `--if-newer`, `--delete-after-copy`, `--exclude`, `--absolute-paths`|
 |**`setblob`**|`--file`|`--blob` |`--force`|
 |**`setblobs`**|`--directory`|`--container`|`--force`,`--exclude`|
 
@@ -99,6 +99,9 @@ String. Specifies which blob to exclude from list or download operation.
 
 *`--delete-after-copy`*
 Bool. Deletes blob after successful copy. Similar to "move" operations on file system.
+
+*`--absolute-paths`*
+Bool. Listing of blobs is formatted to absolute URIs path. E.g. `https://{blobStorage-name}.blob.core.windows.net/{container-name}/file841.blob` 
 
 ## Known limitations
 

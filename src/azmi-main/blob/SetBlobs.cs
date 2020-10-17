@@ -6,11 +6,16 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Reflection;
+using NLog;
 
 namespace azmi_main
 {
     public class SetBlobs : IAzmiCommand
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private static readonly string className = nameof(SetBlobs);
+
         private const char blobPathDelimiter = '/';
         private IContainerClient containerClient { get; set; }
 
@@ -32,6 +37,8 @@ namespace azmi_main
 
         public SubCommandDefinition Definition()
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             return new SubCommandDefinition
             {
 
@@ -55,13 +62,15 @@ namespace azmi_main
         public class AzmiArgumentsClass : SharedAzmiArgumentsClass
         {
             public string directory { get; set; }
-            public string container { get; set; }
+            public Uri container { get; set; }
             public string exclude { get; set; }
             public bool force { get; set; }
         }
 
         public List<string> Execute(object options)
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             AzmiArgumentsClass opt;
             try
             {
@@ -79,12 +88,14 @@ namespace azmi_main
         // SetBlobs main method
         //
 
-        public List<string> Execute(string containerUri, string directory, string identity = null, string exclude = null, bool force = false)
+        public List<string> Execute(Uri container, string directory, string identity = null, string exclude = null, bool force = false)
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             // authentication
-            string containerUriTrimmed = containerUri.TrimEnd(blobPathDelimiter);
             var cred = new ManagedIdentityCredential(identity);
-            containerClient ??= new ContainerClientImpl(new Uri(containerUriTrimmed), cred);
+            Uri containerTrimmed = new Uri(container.ToString().TrimEnd(blobPathDelimiter));
+            containerClient ??= new ContainerClientImpl(containerTrimmed, cred);
 
             // get list of files to be uploaded
             string fullDirectoryPath = Path.GetFullPath(directory);

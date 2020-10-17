@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Azure.Identity;
+using Azure.Storage.Blobs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-
-using Azure.Identity;
-using Azure.Storage.Blobs;
+using System.Reflection;
+using NLog;
 
 namespace azmi_main
 {
@@ -12,6 +13,8 @@ namespace azmi_main
     {
 
         private IContainerClient containerClient { get; set; }
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private static readonly string className = nameof(ListBlobs);
 
         //
         //  Constructors
@@ -29,9 +32,10 @@ namespace azmi_main
         //  Declare command elements
         //
 
-
         public SubCommandDefinition Definition()
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             return new SubCommandDefinition
             {
 
@@ -44,7 +48,9 @@ namespace azmi_main
                     new AzmiArgument("prefix",
                         description: "Specifies a string that filters the results to return only blobs whose name begins with the specified prefix"),
                     new AzmiArgument("exclude", multiValued: true,
-                        description: "Exclude blobs that match given regular expression."),
+                        description: "Exclude blobs that match given regular expression"),
+                    new AzmiArgument("absolute-paths", type: ArgType.flag,
+                        description: "List absolute paths (URLs) of blobs instead of relative ones"),
                     SharedAzmiArguments.identity,
                     SharedAzmiArguments.verbose
                 }
@@ -53,13 +59,16 @@ namespace azmi_main
 
         public class AzmiArgumentsClass : SharedAzmiArgumentsClass
         {
-            public string container { get; set; }
+            public Uri container { get; set; }
             public string prefix { get; set; }
             public string[] exclude { get; set; }
+            public bool absolutePaths { get; set; }
         }
 
         public List<string> Execute(object options)
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             AzmiArgumentsClass opt;
             try
             {
@@ -69,7 +78,7 @@ namespace azmi_main
                 throw AzmiException.WrongObject(ex);
             }
 
-            return Execute(opt.container, opt.identity, opt.prefix, opt.exclude);
+            return Execute(opt.container, opt.identity, opt.prefix, opt.exclude, opt.absolutePaths);
         }
 
         //
@@ -77,8 +86,9 @@ namespace azmi_main
         //
 
 
-        public List<string> Execute(string containerUri, string identity = null, string prefix = null, string[] exclude = null)
+        public List<string> Execute(Uri container, string identity = null, string prefix = null, string[] exclude = null, bool absolutePaths = false)
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
 
             var Cred = new ManagedIdentityCredential(identity);
             containerClient ??= new ContainerClientImpl(new Uri(containerUri), Cred);
@@ -86,14 +96,26 @@ namespace azmi_main
 
             try
             {
-                List<string> blobListing = containerClient.GetBlobs(prefix: prefix).Select(i => i.Name).ToList();
+                List<string> blobsListing = containerClient.GetBlobs(prefix: prefix).Select(i => i.Name).ToList();
 
                 if (exclude != null)
                 { // apply --exclude regular expression
-                    var rx = new Regex(String.Join('|',exclude));
-                    blobListing = blobListing.Where(b => !rx.IsMatch(b)).ToList();
+                    var rx = new Regex(String.Join('|', exclude));
+                    blobsListing = blobsListing.Where(b => !rx.IsMatch(b)).ToList();
                 }
-                return blobListing.Count == 0 ? null : blobListing;
+
+                if (absolutePaths)
+                { // apply --absolute-path
+                    List<string> blobsUris = new List<string>();
+                    foreach (string blobName in blobsListing)
+                    {
+                        BlobClient blobClient = containerClient.GetBlobClient(blobName);
+                        blobsUris.Add(blobClient.Uri.ToString());
+                    }
+                    blobsListing = blobsUris.ToList();
+                }
+
+                return blobsListing.Count == 0 ? null : blobsListing;
             } catch (Exception ex)
             {
                 throw AzmiException.IDCheck(identity, ex);

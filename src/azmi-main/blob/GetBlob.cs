@@ -1,13 +1,18 @@
-﻿using System;
+﻿using Azure.Identity;
+using Azure.Storage.Blobs;
+using System;
 using System.IO;
 using System.Collections.Generic;
-
-using Azure.Identity;
+using System.Reflection;
+using NLog;
 
 namespace azmi_main
 {
     public class GetBlob : IAzmiCommand
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private static readonly string className = nameof(GetBlob);
+
         private IBlobClient blobClient { get; set; }
 
         //
@@ -21,13 +26,14 @@ namespace azmi_main
             blobClient = blobClientMock;
         }
 
-
         //
         //  Declare command elements
         //
 
         public SubCommandDefinition Definition()
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             return new SubCommandDefinition
             {
 
@@ -51,13 +57,15 @@ namespace azmi_main
 
         public class AzmiArgumentsClass : SharedAzmiArgumentsClass
         {
-            public string blob { get; set; }
+            public Uri blob { get; set; }
             public string file { get; set; }
             public bool ifNewer { get; set; }
             public bool deleteAfterCopy { get; set; }
         }
 
         public List<string> Execute(object options) {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             AzmiArgumentsClass opt;
             try
             {
@@ -74,14 +82,13 @@ namespace azmi_main
         // Execute GetBlob
         //
 
-        public string Execute(string blobURL, string filePath, string identity = null, bool ifNewer = false, bool deleteAfterCopy = false)
+        public string Execute(Uri blob, string filePath, string identity = null, bool ifNewer = false, bool deleteAfterCopy = false)
         {
-
-            // method start
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
 
             // Connection
-            var Cred = new ManagedIdentityCredential(identity);
-            blobClient ??= new BlobClientImpl(new Uri(blobURL), Cred);
+            var cred = new ManagedIdentityCredential(identity);
+            blobClient ??= new BlobClientImpl(blob, cred);
 
             if (ifNewer && File.Exists(filePath) && !IsNewer(blobClient, filePath))
             {
@@ -113,6 +120,8 @@ namespace azmi_main
 
         private bool IsNewer(IBlobClient blob, string filePath)
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             var blobProperties = blob.GetProperties();
             // Any operation that modifies a blob, including an update of the blob's metadata or properties, changes the last modified time of the blob
             var blobLastModified = blobProperties.Value.LastModified.UtcDateTime;

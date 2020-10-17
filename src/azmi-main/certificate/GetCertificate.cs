@@ -1,17 +1,23 @@
-﻿using System;
+﻿using Azure.Identity;
+using Azure.Security.KeyVault.Certificates;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
-using Azure.Identity;
-using Azure.Security.KeyVault.Certificates;
+using System.Reflection;
+using NLog;
 
 namespace azmi_main
 {
     public class GetCertificate : IAzmiCommand
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private static readonly string className = nameof(GetCertificate);
+
         public SubCommandDefinition Definition()
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             return new SubCommandDefinition
             {
 
@@ -31,12 +37,14 @@ namespace azmi_main
 
         public class AzmiArgumentsClass : SharedAzmiArgumentsClass
         {
-            public string certificate { get; set; }
+            public Uri certificate { get; set; }
             public string file { get; set; }
         }
 
         public List<string> Execute(object options)
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             AzmiArgumentsClass opt;
             try
             {
@@ -55,9 +63,11 @@ namespace azmi_main
         // execute GetCertificate
         //
 
-        public string Execute(string certificateIdentifierUrl, string filePath = null, string identity = null)
+        public string Execute(Uri certificateIdentifier, string filePath = null, string identity = null)
         {
-            (Uri keyVaultUri, string certificateName, string certificateVersion) = ValidateAndParseCertificateURL(certificateIdentifierUrl);
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
+            (Uri keyVaultUri, string certificateName, string certificateVersion) = ValidateAndParseCertificateURL(certificateIdentifier);
 
             var MIcredential = new ManagedIdentityCredential(identity);
             var certificateClient = new CertificateClient(keyVaultUri, MIcredential);
@@ -73,25 +83,25 @@ namespace azmi_main
             try
             {
                 // certificate (and key) is stored as a secret at the end in Azure
-                string secretIdentifierUrl;
+                Uri secretIdentifier;
                 if (String.IsNullOrEmpty(certificateVersion))
                 {
                     // certificate has no specific version:
                     // https://my-key-vault.vault.azure.net/certificates/readThisCertificate
                     KeyVaultCertificateWithPolicy certificateWithPolicy = certificateClient.GetCertificate(certificateName);
-                    secretIdentifierUrl = certificateWithPolicy.SecretId.ToString();
+                    secretIdentifier = new Uri(certificateWithPolicy.SecretId.ToString());
                 }
                 else
                 {
                     // certificate has specific version:
                     // https://my-key-vault.vault.azure.net/certificates/readThisCertificate/103a7355c6094bc78307b2db7b85b3c2
                     KeyVaultCertificate certificate = certificateClient.GetCertificateVersion(certificateName, certificateVersion);
-                    secretIdentifierUrl = certificate.SecretId.ToString();
+                    secretIdentifier = new Uri(certificate.SecretId.ToString());
                 }
 
                 // filePath: null means get secret into variable only
                 // otherwise secret may be unintentionally saved to file by GetSecret() method
-                string secret = new GetSecret().Execute(secretIdentifierUrl, filePath: null, identity);
+                string secret = new GetSecret().Execute(secretIdentifier, filePath: null, identity);
 
                 if (String.IsNullOrEmpty(filePath))
                 {   // print to stdout
@@ -123,20 +133,21 @@ namespace azmi_main
             CertificateVersion = 4 // 013a7355c6094bc78307b2db7b85b3c2
         }
 
-        private (Uri, string, string) ValidateAndParseCertificateURL(string certificateIdentifierUrl)
+        private (Uri, string, string) ValidateAndParseCertificateURL(Uri certificateIdentifier)
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             // Example of expected URLs: https://my-key-vault.vault.azure.net/certificates/readThisCertificate (latest version)
             // or https://my-key-vault.vault.azure.net/certificates/readThisCertificate/013a7355c6094bc78307b2db7b85b3c2 (specific version)
-            Uri certificateIdentifierUri = new Uri(certificateIdentifierUrl);
 
-            if (certificateIdentifierUri.Scheme != Uri.UriSchemeHttps)
+            if (certificateIdentifier.Scheme != Uri.UriSchemeHttps)
                 throw new UriFormatException($"Only '{Uri.UriSchemeHttps}' protocol is supported.");
 
             // e.g. https://my-key-vault.vault.azure.net
-            Uri keyVaultUri = new Uri(certificateIdentifierUri.GetLeftPart(UriPartial.Authority));
+            Uri keyVault = new Uri(certificateIdentifier.GetLeftPart(UriPartial.Authority));
 
             // Segments = /, certificates/, readThisCertificate/, 013a7355c6094bc78307b2db7b85b3c2
-            CertificateURLsegmentsScheme segmentsCount = (CertificateURLsegmentsScheme)certificateIdentifierUri.Segments.Count();
+            CertificateURLsegmentsScheme segmentsCount = (CertificateURLsegmentsScheme)certificateIdentifier.Segments.Count();
             string certificateName = null;
             string certificateVersion = null;
 
@@ -145,23 +156,23 @@ namespace azmi_main
                 case CertificateURLsegmentsScheme.NoSlash:
                 case CertificateURLsegmentsScheme.FirstSlash:
                 case CertificateURLsegmentsScheme.CertificateFolder:
-                    throw new UriFormatException($"URL '{certificateIdentifierUrl}' is missing a path to Azure certificate.");
+                    throw new UriFormatException($"URL '{certificateIdentifier}' is missing a path to Azure certificate.");
                 // certificate name only (no specific version)
                 case CertificateURLsegmentsScheme.CertificateName:
-                    certificateName = certificateIdentifierUri.Segments.Last();
+                    certificateName = certificateIdentifier.Segments.Last();
                     certificateVersion = null;
                     break;
                 // certificate including specific version
                 case CertificateURLsegmentsScheme.CertificateVersion:
-                    int lastButOne = certificateIdentifierUri.Segments.Length - 2;
-                    certificateName = certificateIdentifierUri.Segments[lastButOne];
-                    certificateVersion = certificateIdentifierUri.Segments.Last();
+                    int lastButOne = certificateIdentifier.Segments.Length - 2;
+                    certificateName = certificateIdentifier.Segments[lastButOne];
+                    certificateVersion = certificateIdentifier.Segments.Last();
                     break;
                 default:
                     throw new InvalidOperationException("URL seems too long and does not seem to be a valid URL to Azure certificate.");
             }
 
-            return (keyVaultUri, certificateName, certificateVersion);
+            return (keyVault, certificateName, certificateVersion);
         }
     }
 }

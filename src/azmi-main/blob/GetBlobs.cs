@@ -4,13 +4,18 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using NLog;
 
 namespace azmi_main
 {
     public class GetBlobs : IAzmiCommand
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private static readonly string className = nameof(GetBlobs);
+
         private const char blobPathDelimiter = '/';
         private IContainerClient containerClient { get; set; }
 
@@ -32,6 +37,8 @@ namespace azmi_main
 
         public SubCommandDefinition Definition()
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             return new SubCommandDefinition
             {
 
@@ -58,7 +65,7 @@ namespace azmi_main
 
         public class AzmiArgumentsClass : SharedAzmiArgumentsClass
         {
-            public string container { get; set; }
+            public Uri container { get; set; }
             public string directory { get; set; }
             public string prefix { get; set; }
             public string[] exclude { get; set; }
@@ -68,6 +75,8 @@ namespace azmi_main
 
         public List<string> Execute(object options)
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             AzmiArgumentsClass opt;
             try
             {
@@ -86,10 +95,12 @@ namespace azmi_main
         // GetBlobs main method
         //
 
-        public List<string> Execute(string containerUri, string directory, string identity = null, string prefix = null, string[] exclude = null, bool ifNewer = false, bool deleteAfterCopy = false)
+        public List<string> Execute(Uri container, string directory, string identity = null, string prefix = null, string[] exclude = null, bool ifNewer = false, bool deleteAfterCopy = false)
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             // authentication
-            string containerUriTrimmed = containerUri.TrimEnd(blobPathDelimiter);
+            Uri containerTrimmed = new Uri(container.ToString().TrimEnd(blobPathDelimiter));
             var cred  = new ManagedIdentityCredential(identity);
             containerClient ??= new ContainerClientImpl(new Uri(containerUriTrimmed), cred);
 
@@ -153,6 +164,8 @@ namespace azmi_main
 
         private bool IsNewer(BlobClient blob, string filePath)
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             var blobProperties = blob.GetProperties();
             // Any operation that modifies a blob, including an update of the blob's metadata or properties, changes the last modified time of the blob
             var blobLastModified = blobProperties.Value.LastModified.UtcDateTime;

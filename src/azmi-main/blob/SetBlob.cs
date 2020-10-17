@@ -1,11 +1,16 @@
-﻿using System;
+﻿using Azure.Identity;
+using System;
 using System.Collections.Generic;
-using Azure.Identity;
+using System.Reflection;
+using NLog;
 
 namespace azmi_main
 {
     public class SetBlob : IAzmiCommand
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private static readonly string className = nameof(SetBlob);
+
         private IBlobClient blobClient { get; set; }
 
         //
@@ -26,6 +31,7 @@ namespace azmi_main
 
         public SubCommandDefinition Definition()
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
 
             return new SubCommandDefinition
             {
@@ -49,12 +55,14 @@ namespace azmi_main
         public class AzmiArgumentsClass : SharedAzmiArgumentsClass
         {
             public string file { get; set; }
-            public string blob { get; set; }
+            public Uri blob { get; set; }
             public bool force { get; set; }
         }
 
         public List<string> Execute(object options)
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             AzmiArgumentsClass opt;
             try
             {
@@ -72,10 +80,12 @@ namespace azmi_main
         // Execute SetBlob
         //
 
-        public string Execute(string filePath, string blobUri, string identity = null, bool force = false)
+        public string Execute(string filePath, Uri blob, string identity = null, bool force = false)
         {
+            logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
+
             var Cred = new ManagedIdentityCredential(identity);
-            blobClient ??= new BlobClientImpl(new Uri(blobUri), Cred);
+            blobClient ??= new BlobClientImpl(blob, Cred);
 
             try
             {
