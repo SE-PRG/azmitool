@@ -87,7 +87,7 @@ namespace azmi_tests
 
             // TODO: Add test that will fail with existing property, but with different exception than above
             [Fact]
-            public void FailsWithExistingProperty()
+            public void WorksWithExistingProperties()
             {
                 // Arrange
                 var obj = new GetBlob.AzmiArgumentsClass

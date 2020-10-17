@@ -10,6 +10,26 @@ namespace azmi_main
 {
     public class ListBlobs : IAzmiCommand
     {
+
+        private IContainerClient containerClient { get; set; }
+
+        //
+        //  Constructors
+        //
+
+        public ListBlobs() { }
+
+        public ListBlobs(IContainerClient containerClientMock)
+        {
+            containerClient = containerClientMock;
+        }
+
+
+        //
+        //  Declare command elements
+        //
+
+
         public SubCommandDefinition Definition()
         {
             return new SubCommandDefinition
@@ -61,7 +81,7 @@ namespace azmi_main
         {
 
             var Cred = new ManagedIdentityCredential(identity);
-            var containerClient = new BlobContainerClient(new Uri(containerUri), Cred);
+            containerClient ??= new ContainerClientImpl(new Uri(containerUri), Cred);
             containerClient.CreateIfNotExists();
 
             try

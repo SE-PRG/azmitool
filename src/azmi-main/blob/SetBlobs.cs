@@ -12,6 +12,23 @@ namespace azmi_main
     public class SetBlobs : IAzmiCommand
     {
         private const char blobPathDelimiter = '/';
+        private IContainerClient containerClient { get; set; }
+
+        //
+        //  Constructors
+        //
+
+        public SetBlobs() { }
+
+        public SetBlobs(IContainerClient containerClientMock)
+        {
+            containerClient = containerClientMock;
+        }
+
+
+        //
+        //  Declare command elements
+        //
 
         public SubCommandDefinition Definition()
         {
@@ -67,7 +84,7 @@ namespace azmi_main
             // authentication
             string containerUriTrimmed = containerUri.TrimEnd(blobPathDelimiter);
             var cred = new ManagedIdentityCredential(identity);
-            var containerClient = new BlobContainerClient(new Uri(containerUriTrimmed), cred);
+            containerClient ??= new ContainerClientImpl(new Uri(containerUriTrimmed), cred);
 
             // get list of files to be uploaded
             string fullDirectoryPath = Path.GetFullPath(directory);
