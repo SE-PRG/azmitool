@@ -71,7 +71,7 @@ namespace azmi_tests
 
         public class GenericExecute_TestsGroup
         {
-            private readonly string _anyValidURL = "https://www.example.com";
+            private readonly Uri _anyValidURL = new Uri("https://www.example.com");
             private readonly string _failMsg = "Cannot convert input object to proper class";
             private readonly Exception _testException = new Exception("testing exception");
 
@@ -123,7 +123,7 @@ namespace azmi_tests
         public class ListBlobsExecute_TestsGroup
         {
 
-            private readonly string _anyValidURL = "https://www.example.com";
+            private readonly Uri _anyValidURL = new Uri("https://www.example.com");
             private static readonly Pageable<BlobItem> _nullBlobItems = null;
             //private static readonly BlobItem emptyBlob = new BlobItem() { Name = "testBlob" };
             //private static readonly Pageable<BlobItem> _zeroBlobs = new MyPageable(new List<Page<BlobItem>>() { });

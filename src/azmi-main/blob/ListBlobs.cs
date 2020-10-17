@@ -91,7 +91,7 @@ namespace azmi_main
             logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
 
             var Cred = new ManagedIdentityCredential(identity);
-            containerClient ??= new ContainerClientImpl(new Uri(containerUri), Cred);
+            containerClient ??= new ContainerClientImpl(container, Cred);
             containerClient.CreateIfNotExists();
 
             try

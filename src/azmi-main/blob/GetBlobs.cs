@@ -102,7 +102,7 @@ namespace azmi_main
             // authentication
             Uri containerTrimmed = new Uri(container.ToString().TrimEnd(blobPathDelimiter));
             var cred  = new ManagedIdentityCredential(identity);
-            containerClient ??= new ContainerClientImpl(new Uri(containerUriTrimmed), cred);
+            containerClient ??= new ContainerClientImpl(containerTrimmed, cred);
 
             // get list of blobs
             List<string> blobListing = containerClient.GetBlobs(prefix: prefix).Select(i => i.Name).ToList();
