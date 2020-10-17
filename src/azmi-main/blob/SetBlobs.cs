@@ -145,13 +145,10 @@ namespace azmi_main
 
         private byte[] GetMD5HashFromFile(string filePath)
         {
-            using (MD5 md5 = MD5.Create())
-            {
-                using (FileStream stream = File.OpenRead(filePath))
-                {
-                    return md5.ComputeHash(stream);
-                }
-            }
+            MD5 md5 = MD5.Create();
+            FileStream stream = File.OpenRead(filePath);
+
+            return md5.ComputeHash(stream);
         }
     }
 }
