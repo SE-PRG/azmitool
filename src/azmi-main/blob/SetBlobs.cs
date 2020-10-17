@@ -104,7 +104,7 @@ namespace azmi_main
                 BlobClient blobClient = containerClient.GetBlobClient(blobPath);
 
                 // "--skip-if-same" flag
-                if (skipIfSame)
+                if (skipIfSame && blobClient.Exists())
                 {
                     Response<BlobProperties> response = blobClient.GetProperties();
                     BlobProperties blobProperties = response.Value;
