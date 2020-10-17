@@ -35,12 +35,14 @@ namespace azmi_main
                 {
                     // exception type 2
                     return new AzmiException("Managed identity not found", ex);
-                } else
+                }
+                else
                 {
                     // exception type 3
                     return ex.InnerException;
                 }
-            } else
+            }
+            else
             {
                 // exception type 4
                 return ex;
@@ -59,7 +61,8 @@ namespace azmi_main
             {
                 (new GetToken()).Execute(identity: null);
                 return false;
-            } catch
+            }
+            catch
             {
                 return true;
             }

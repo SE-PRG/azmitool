@@ -49,7 +49,8 @@ namespace azmi_main
             try
             {
                 opt = (AzmiArgumentsClass)options;
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw AzmiException.WrongObject(ex);
             }
@@ -85,7 +86,8 @@ namespace azmi_main
                     File.WriteAllText(filePath, secretValue);
                     return "Saved";
                 }
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw AzmiException.IDCheck(identity, ex);
             }
