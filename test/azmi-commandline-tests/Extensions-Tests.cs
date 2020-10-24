@@ -1,10 +1,11 @@
-﻿using azmi_commandline;
+﻿using Xunit;
+using azmi_commandline;
 using azmi_main;
 using System.CommandLine;
 using System.Collections.Generic;
 using System.Linq;
 using System.CommandLine.Invocation;
-using Xunit;
+using System;
 
 namespace azmi_commandline_tests
 {
@@ -123,8 +124,7 @@ namespace azmi_commandline_tests
             {
                 public SubCommandDefinition Definition()
                 {
-                    return new SubCommandDefinition
-                    {
+                    return new SubCommandDefinition {
                         name = "dummy_command",
                         arguments = new AzmiArgument[] { SharedAzmiArguments.identity }
                     };
@@ -132,7 +132,7 @@ namespace azmi_commandline_tests
 
                 public List<string> Execute(object options)
                 {
-                    return new List<string> { "dummy command executed" };
+                    return new List<string> { "dummy command executed"};
                 }
             }
 

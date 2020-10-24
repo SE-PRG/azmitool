@@ -1,5 +1,10 @@
-﻿using System.CommandLine;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using Xunit;
+using azmi_commandline;
+using azmi_main;
+using System.CommandLine;
 
 namespace azmi_commandline_tests
 {

@@ -17,12 +17,10 @@ namespace azmi_main
         // Declare command elements
         //
 
-        public SubCommandDefinition Definition()
-        {
+        public SubCommandDefinition Definition() {
             logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
 
-            return new SubCommandDefinition
-            {
+            return new SubCommandDefinition {
                 name = "gettoken",
                 description = "Obtains Azure authorization token for usage in other command line tools.",
 
@@ -49,8 +47,7 @@ namespace azmi_main
             try
             {
                 opt = (AzmiArgumentsClass)options;
-            }
-            catch (Exception ex)
+            } catch (Exception ex)
             {
                 logger.Error(ex, "WrongObject");
                 throw AzmiException.WrongObject(ex);
@@ -76,8 +73,7 @@ namespace azmi_main
             {
                 var Token = Cred.GetToken(Request);
                 return (JWTformat) ? Decode_JWT(Token.Token) : Token.Token;
-            }
-            catch (Exception ex)
+            } catch (Exception ex)
             {
                 throw AzmiException.IDCheck(identity, ex, false);
             }
