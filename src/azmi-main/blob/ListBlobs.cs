@@ -11,8 +11,26 @@ namespace azmi_main
 {
     public class ListBlobs : IAzmiCommand
     {
+
+        private IContainerClient containerClient { get; set; }
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         private static readonly string className = nameof(ListBlobs);
+
+        //
+        //  Constructors
+        //
+
+        public ListBlobs() { }
+
+        public ListBlobs(IContainerClient containerClientMock)
+        {
+            containerClient = containerClientMock;
+        }
+
+
+        //
+        //  Declare command elements
+        //
 
         public SubCommandDefinition Definition()
         {
@@ -73,8 +91,8 @@ namespace azmi_main
         {
             logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
 
-            var cred = new ManagedIdentityCredential(identity);
-            var containerClient = new BlobContainerClient(container, cred);
+            var Cred = new ManagedIdentityCredential(identity);
+            containerClient ??= new ContainerClientImpl(container, Cred);
             containerClient.CreateIfNotExists();
 
             try
