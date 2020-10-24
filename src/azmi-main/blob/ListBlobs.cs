@@ -73,8 +73,7 @@ namespace azmi_main
             try
             {
                 opt = (AzmiArgumentsClass)options;
-            }
-            catch (Exception ex)
+            } catch (Exception ex)
             {
                 throw AzmiException.WrongObject(ex);
             }
@@ -117,8 +116,7 @@ namespace azmi_main
                 }
 
                 return blobsListing.Count == 0 ? null : blobsListing;
-            }
-            catch (Exception ex)
+            } catch (Exception ex)
             {
                 throw AzmiException.IDCheck(identity, ex);
             }

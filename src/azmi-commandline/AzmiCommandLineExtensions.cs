@@ -1,8 +1,10 @@
 ﻿using azmi_main;
+
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Invocation;
+using System.IO;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("azmi-main-tests")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("azmi-commandline-tests")]
@@ -16,8 +18,7 @@ namespace azmi_commandline
             if (option.alias != null)
             {
                 return new String[] { $"--{option.name}", $"-{option.alias}" };
-            }
-            else
+            } else
             {
                 return new String[] { $"--{option.name}" };
             }
@@ -75,17 +76,12 @@ namespace azmi_commandline
                 commandLineSubCommand.AddOption(op.ToOption());
             }
             commandLineSubCommand.Handler = CommandHandler.Create<TOptions>(
-                op =>
-                {
-                    try
-                    {
+                op => {
+                    try {
                         cmd.Execute(op).WriteLines();
-                    }
-                    catch (Exception ex)
-                    {
+                    } catch (Exception ex) {
                         DisplayError(cmd.Definition().name, ex, op.verbose);
-                    }
-                });
+                    } });
 
             return commandLineSubCommand;
         }
