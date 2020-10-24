@@ -1,10 +1,10 @@
-﻿using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Linq;
+using System.Reflection;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using NLog;
 
 namespace azmi_main
@@ -49,7 +49,8 @@ namespace azmi_main
             try
             {
                 opt = (AzmiArgumentsClass)options;
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw AzmiException.WrongObject(ex);
             }
@@ -85,7 +86,8 @@ namespace azmi_main
                     File.WriteAllText(filePath, secretValue);
                     return "Saved";
                 }
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw AzmiException.IDCheck(identity, ex);
             }

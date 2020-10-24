@@ -1,10 +1,8 @@
-﻿using Azure;
+﻿using System;
+using Azure;
 using Azure.Core;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace azmi_main
 {

@@ -6,7 +6,7 @@
 namespace azmi_main
 {
 
-    public enum ArgType {str, flag, url};
+    public enum ArgType { str, flag, url };
     // what are supported input argument types
     // flag is boolean type
     // str is string type
@@ -45,7 +45,8 @@ namespace azmi_main
             $"Description for {name}",
             required,
             type,
-            multiValued) { }
+            multiValued)
+        { }
 
         // constructor NAME + ALIAS? + DESCRIPTION
         internal AzmiArgument(string name, char? alias, string description,
@@ -56,10 +57,11 @@ namespace azmi_main
             description,
             required,
             type,
-            multiValued) { }
+            multiValued)
+        { }
 
         // constructor NAME + DESCRIPTION
-        internal AzmiArgument(string name, [DisallowNull]string description,
+        internal AzmiArgument(string name, [DisallowNull] string description,
             ArgType type = defaultType, bool required = defaultRequired, bool multiValued = defaultMultiValued)
         : this(
             name,
@@ -67,6 +69,7 @@ namespace azmi_main
             description,
             required,
             type,
-            multiValued) { }
+            multiValued)
+        { }
     }
 }
