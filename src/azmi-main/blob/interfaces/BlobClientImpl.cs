@@ -1,8 +1,8 @@
-﻿using System;
-using Azure;
+﻿using Azure;
 using Azure.Core;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs;
+using System;
 
 namespace azmi_main
 {
@@ -11,7 +11,7 @@ namespace azmi_main
 
         private readonly BlobClient blobClient;
 
-        public BlobClientImpl (Uri blobUri, TokenCredential credential)
+        public BlobClientImpl(Uri blobUri, TokenCredential credential)
         {
             blobClient = new BlobClient(blobUri, credential);
         }

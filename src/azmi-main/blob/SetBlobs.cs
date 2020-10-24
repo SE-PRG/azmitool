@@ -75,7 +75,8 @@ namespace azmi_main
             try
             {
                 opt = (AzmiArgumentsClass)options;
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw AzmiException.WrongObject(ex);
             }
@@ -102,7 +103,8 @@ namespace azmi_main
             var fileList = Directory.EnumerateFiles(fullDirectoryPath, "*", SearchOption.AllDirectories);
 
             // apply --exclude regular expression
-            if (!String.IsNullOrEmpty(exclude)) {
+            if (!String.IsNullOrEmpty(exclude))
+            {
                 Regex excludeRegEx = new Regex(exclude);
                 fileList = fileList.Where(file => !excludeRegEx.IsMatch(file));
             }
