@@ -66,6 +66,9 @@ azmi setblobs -d $UPLOAD_DIR -c $CONTAINER --identity $identity
 # upload and overwrite existing blobs
 azmi setblobs -d $UPLOAD_DIR -c $CONTAINER --force
 
+# the same, but before overwriting verify contents via hashes; upload only if contents are different
+azmi setblobs -d $UPLOAD_DIR -c $CONTAINER --force --skip-if-same
+
 # setblobs and getblobs have the same folder structure
 azmi getblobs -c $CONTAINER -d $DOWNLOAD_DIR
 diff -r $UPLOAD_DIR $DOWNLOAD_DIR # returns exit code 0
