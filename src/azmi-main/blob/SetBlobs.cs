@@ -1,12 +1,12 @@
-using Azure.Identity;
-using Azure.Storage.Blobs;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Reflection;
+using Azure.Identity;
+using Azure.Storage.Blobs;
 using NLog;
 
 namespace azmi_main
@@ -75,7 +75,8 @@ namespace azmi_main
             try
             {
                 opt = (AzmiArgumentsClass)options;
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw AzmiException.WrongObject(ex);
             }
@@ -102,7 +103,8 @@ namespace azmi_main
             var fileList = Directory.EnumerateFiles(fullDirectoryPath, "*", SearchOption.AllDirectories);
 
             // apply --exclude regular expression
-            if (!String.IsNullOrEmpty(exclude)) {
+            if (!String.IsNullOrEmpty(exclude))
+            {
                 Regex excludeRegEx = new Regex(exclude);
                 fileList = fileList.Where(file => !excludeRegEx.IsMatch(file));
             }

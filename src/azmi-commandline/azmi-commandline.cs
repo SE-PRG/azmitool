@@ -1,7 +1,7 @@
-using azmi_main;
-using System;
+﻿using System;
 using System.CommandLine;
 using System.Reflection;
+using azmi_main;
 using NLog;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("azmi-commandline-tests")]

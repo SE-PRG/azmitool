@@ -1,10 +1,10 @@
-﻿using Azure.Identity;
-using Azure.Security.KeyVault.Certificates;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Azure.Identity;
+using Azure.Security.KeyVault.Certificates;
 using NLog;
 
 namespace azmi_main

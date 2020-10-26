@@ -1,9 +1,8 @@
-﻿using Azure.Identity;
-using Azure.Storage.Blobs;
-using System;
-using System.IO;
+﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
+using Azure.Identity;
 using NLog;
 
 namespace azmi_main
@@ -63,14 +62,16 @@ namespace azmi_main
             public bool deleteAfterCopy { get; set; }
         }
 
-        public List<string> Execute(object options) {
+        public List<string> Execute(object options)
+        {
             logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
 
             AzmiArgumentsClass opt;
             try
             {
                 opt = (AzmiArgumentsClass)options;
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw AzmiException.WrongObject(ex);
             }
@@ -109,10 +110,12 @@ namespace azmi_main
                 }
                 return "Success";
 
-            } catch (Azure.RequestFailedException)
+            }
+            catch (Azure.RequestFailedException)
             {
                 throw;
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw AzmiException.IDCheck(identity, ex);
             }
