@@ -6,10 +6,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.Security.Cryptography;
+using Azure.Identity;
+using Azure.Storage.Blobs;
 using NLog;
 
 namespace azmi_main
@@ -20,6 +23,23 @@ namespace azmi_main
         private static readonly string className = nameof(SetBlobs);
 
         private const char blobPathDelimiter = '/';
+        private IContainerClient containerClient { get; set; }
+
+        //
+        //  Constructors
+        //
+
+        public SetBlobs() { }
+
+        public SetBlobs(IContainerClient containerClientMock)
+        {
+            containerClient = containerClientMock;
+        }
+
+
+        //
+        //  Declare command elements
+        //
 
         public SubCommandDefinition Definition()
         {
@@ -64,7 +84,8 @@ namespace azmi_main
             try
             {
                 opt = (AzmiArgumentsClass)options;
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw AzmiException.WrongObject(ex);
             }
@@ -84,14 +105,15 @@ namespace azmi_main
             // authentication
             var cred = new ManagedIdentityCredential(identity);
             Uri containerTrimmed = new Uri(container.ToString().TrimEnd(blobPathDelimiter));
-            var containerClient = new BlobContainerClient(containerTrimmed, cred);
+            containerClient ??= new ContainerClientImpl(containerTrimmed, cred);
 
             // get list of files to be uploaded
             string fullDirectoryPath = Path.GetFullPath(directory);
             var fileList = Directory.EnumerateFiles(fullDirectoryPath, "*", SearchOption.AllDirectories);
 
             // apply "--exclude" regular expression
-            if (!String.IsNullOrEmpty(exclude)) {
+            if (!String.IsNullOrEmpty(exclude))
+            {
                 Regex excludeRegEx = new Regex(exclude);
                 fileList = fileList.Where(file => !excludeRegEx.IsMatch(file));
             }

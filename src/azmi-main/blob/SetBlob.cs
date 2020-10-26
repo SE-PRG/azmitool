@@ -1,7 +1,7 @@
-﻿using Azure.Identity;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Azure.Identity;
 using NLog;
 
 namespace azmi_main

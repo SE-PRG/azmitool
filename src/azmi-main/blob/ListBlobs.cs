@@ -1,18 +1,36 @@
-﻿using Azure.Identity;
-using Azure.Storage.Blobs;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Reflection;
+using System.Text.RegularExpressions;
+using Azure.Identity;
+using Azure.Storage.Blobs;
 using NLog;
 
 namespace azmi_main
 {
     public class ListBlobs : IAzmiCommand
     {
+
+        private IContainerClient containerClient { get; set; }
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         private static readonly string className = nameof(ListBlobs);
+
+        //
+        //  Constructors
+        //
+
+        public ListBlobs() { }
+
+        public ListBlobs(IContainerClient containerClientMock)
+        {
+            containerClient = containerClientMock;
+        }
+
+
+        //
+        //  Declare command elements
+        //
 
         public SubCommandDefinition Definition()
         {
@@ -55,7 +73,8 @@ namespace azmi_main
             try
             {
                 opt = (AzmiArgumentsClass)options;
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw AzmiException.WrongObject(ex);
             }
@@ -72,8 +91,8 @@ namespace azmi_main
         {
             logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
 
-            var cred = new ManagedIdentityCredential(identity);
-            var containerClient = new BlobContainerClient(container, cred);
+            var Cred = new ManagedIdentityCredential(identity);
+            containerClient ??= new ContainerClientImpl(container, Cred);
             containerClient.CreateIfNotExists();
 
             try
@@ -98,7 +117,8 @@ namespace azmi_main
                 }
 
                 return blobsListing.Count == 0 ? null : blobsListing;
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw AzmiException.IDCheck(identity, ex);
             }

@@ -1,12 +1,12 @@
-using Azure.Identity;
-using Azure.Storage.Blobs;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Azure.Identity;
+using Azure.Storage.Blobs;
 using NLog;
 
 namespace azmi_main
@@ -17,6 +17,23 @@ namespace azmi_main
         private static readonly string className = nameof(GetBlobs);
 
         private const char blobPathDelimiter = '/';
+        private IContainerClient containerClient { get; set; }
+
+        //
+        //  Constructors
+        //
+
+        public GetBlobs() { }
+
+        public GetBlobs(IContainerClient containerClientMock)
+        {
+            containerClient = containerClientMock;
+        }
+
+
+        //
+        //  Declare command elements
+        //
 
         public SubCommandDefinition Definition()
         {
@@ -64,7 +81,8 @@ namespace azmi_main
             try
             {
                 opt = (AzmiArgumentsClass)options;
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw AzmiException.WrongObject(ex);
             }
@@ -83,9 +101,9 @@ namespace azmi_main
             logger.Debug($"Entering {className}::{MethodBase.GetCurrentMethod().Name}()");
 
             // authentication
-            var cred = new ManagedIdentityCredential(identity);
             Uri containerTrimmed = new Uri(container.ToString().TrimEnd(blobPathDelimiter));
-            var containerClient = new BlobContainerClient(containerTrimmed, cred);
+            var cred = new ManagedIdentityCredential(identity);
+            containerClient ??= new ContainerClientImpl(containerTrimmed, cred);
 
             // get list of blobs
             List<string> blobListing = containerClient.GetBlobs(prefix: prefix).Select(i => i.Name).ToList();
