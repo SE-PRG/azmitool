@@ -44,3 +44,35 @@ printf  "\n=================\n"
 echo "rclone copy pt:azmi-pt ./download2"
 time rclone copy pt:azmi-pt ./download2
 echo "disk usage: $(du download2)"
+
+
+
+CONTAINER="https://azmitest5.blob.core.windows.net/azmi-rw"
+rm -rf upload
+mkdir upload
+printf  "\n=================\n"
+echo "1) Generate 10 x 10MB files"
+for i in `seq 1 10`; do
+  head -c 10M < /dev/urandom > upload/file${i}
+done
+
+echo "2) Measure normal upload"
+echo "azmi setblobs --container $CONTAINER --directory ./upload --force"
+time azmi setblobs --container $CONTAINER --directory ./upload --force
+
+echo "3) Measure re-upload with --skip-if-same"
+echo "azmi setblobs --container $CONTAINER --directory ./upload --force --skip-if-same"
+time azmi setblobs --container $CONTAINER --directory ./upload --force --skip-if-same
+
+echo "4) Re-generate the same random files with updated content"
+for i in `seq 1 10`; do
+  head -c 10M </dev/urandom > upload/file${i}
+done
+
+echo "5) Measure upload with --skip-if-same"
+echo "azmi setblobs --container $CONTAINER --directory ./upload --force --skip-if-same"
+time azmi setblobs --container $CONTAINER --directory ./upload --force --skip-if-same
+
+echo "* teardown"
+azmi getblobs --container $CONTAINER --directory ./upload --delete-after-copy
+rm -rf upload

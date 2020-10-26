@@ -103,6 +103,10 @@ test "setblobs fails on RO container" assert.Fail "azmi setblobs -d $UPLOAD_DIR 
 echo "$DATE2" > "$UPLOAD_DIR/file2.txt"
 test "setblobs fails with 2 files without force" assert.Fail "azmi setblobs -d $UPLOAD_DIR -c $CONTAINER_RW"
 test "setblobs OK with 2 files and force" assert.Success "azmi setblobs -d $UPLOAD_DIR -c $CONTAINER_RW --force"
+# --skip-if-same
+test "setblobs skipping 2 same objects: local file == remote blob" assert.Success "azmi setblobs -d $UPLOAD_DIR -c $CONTAINER_RW --skip-if-same --force | grep 'are same. Skip setting the blob.' | wc -l" 2
+echo $(date +%s%N) > "$UPLOAD_DIR/file2.txt" # update contents so 1 object is different now
+test "setblobs skipping 1 same object: local file == remote blob" assert.Success "azmi setblobs -d $UPLOAD_DIR -c $CONTAINER_RW --skip-if-same --force | grep 'are same. Skip setting the blob.' | wc -l" 1
 # three files and subdirectory
 mkdir -p "$UPLOAD_DIR/subdirectory" && echo "$DATE2" > "$UPLOAD_DIR/subdirectory/file3.txt"
 test "setblobs OK with subdirectory" assert.Equals "azmi setblobs -d $UPLOAD_DIR -c $CONTAINER_RW --force | wc -l" 3
