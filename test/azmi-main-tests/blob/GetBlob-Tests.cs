@@ -1,9 +1,12 @@
 ﻿using azmi_main;
 using Azure;
+using Azure.Storage.Blobs.Models;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using NSubstitute.Extensions;
 using System;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using Xunit;
 
@@ -208,9 +211,54 @@ namespace azmi_tests
                 // Arrange
                 var blobSubstitute = Substitute.For<IBlobClient>();
                 blobSubstitute.DownloadTo(_anyGoodPath).Returns(_nullResponse);
-                var subCommand = new GetBlob(blobSubstitute);
+                var fileSystemSubstitute = Substitute.For<IFileSystem>();
+                fileSystemSubstitute.File.Exists(_anyGoodPath).Returns(false);
+                var subCommand = new GetBlob(blobSubstitute, fileSystemSubstitute);
                 // Act & Assert
                 var retValue = subCommand.Execute(_anyValidURL, _anyGoodPath, _identity, ifNewer: true);
+                Assert.NotEqual("Skipped", retValue);
+            }
+
+            [Fact]
+            public void IfNewer_IgnoredForNewerFile()
+            {
+                // mock these things
+                //   File.Exists => true
+                //   File.GetLastWriteTimeUtc => yesterday
+                //   Blob.GetProperties().LastModified => twoDaysBack
+                //   Blob.DownloadTo => do-nothing
+
+                var twoDaysBack = DateTime.Now.AddDays(-2);
+                var yesterday = DateTime.Now.AddDays(-1);
+
+
+                // Arrange
+                var fileSystemSubstitute = Substitute.For<IFileSystem>();
+                fileSystemSubstitute.File.Exists(_anyGoodPath).Returns(true);
+                fileSystemSubstitute.File.GetLastWriteTimeUtc(_anyGoodPath).Returns(yesterday);
+
+                var blobPropertiesSubstitute = Substitute.For<BlobProperties>();
+                blobPropertiesSubstitute.LastModified.Returns(yesterday);
+
+                //var blobResponseSubstitute = Substitute.For<Response<BlobProperties>>();
+                //blobResponseSubstitute.Value.Returns(blobPropertiesSubstitute);
+
+                var blobSubstitute = Substitute.For<IBlobClient>();
+                blobSubstitute.DownloadTo(_anyGoodPath).Returns(_nullResponse);
+                var response = Substitute.For<Response<BlobProperties>>();
+                response.ReturnsForAll(_nullResponse);
+                blobSubstitute.GetProperties().Returns(response);
+                //BlobProperties r1 = new { LastModified = twoDaysBack };
+                //response.ReturnsForAll(returnThis: (BlobProperties)r1);
+
+
+                var subCommand = new GetBlob(blobSubstitute, fileSystemSubstitute);
+
+
+                //// Act
+                var retValue = subCommand.Execute(_anyValidURL, _anyGoodPath, _identity, ifNewer: true);
+
+                // Assert
                 Assert.NotEqual("Skipped", retValue);
             }
 

@@ -5,6 +5,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Reflection;
 using NLog;
+using System.IO.Abstractions;
 
 namespace azmi_main
 {
@@ -14,16 +15,26 @@ namespace azmi_main
         private static readonly string className = nameof(GetBlob);
 
         private IBlobClient blobClient { get; set; }
+        private readonly IFileSystem fileSystem;
 
         //
         //  Constructors
         //
 
-        public GetBlob() { }
+        public GetBlob() {
+            this.fileSystem = new FileSystem();
+        }
 
         public GetBlob(IBlobClient blobClientMock)
         {
             blobClient = blobClientMock;
+            this.fileSystem = new FileSystem();
+        }
+
+        public GetBlob(IBlobClient blobClientMock, IFileSystem fileSystem)
+        {
+            blobClient = blobClientMock;
+            this.fileSystem = fileSystem;
         }
 
         //
@@ -90,7 +101,7 @@ namespace azmi_main
             var cred = new ManagedIdentityCredential(identity);
             blobClient ??= new BlobClientImpl(blob, cred);
 
-            if (ifNewer && File.Exists(filePath) && !IsNewer(blobClient, filePath))
+            if (ifNewer && fileSystem.File.Exists(filePath) && !IsNewer(blobClient, filePath))
             {
                 return "Skipped. Blob is not newer than file.";
             }
@@ -99,7 +110,7 @@ namespace azmi_main
             {
                 string absolutePath = Path.GetFullPath(filePath);
                 string dirName = Path.GetDirectoryName(absolutePath);
-                Directory.CreateDirectory(dirName);
+                fileSystem.Directory.CreateDirectory(dirName);
 
                 blobClient.DownloadTo(filePath);
 
@@ -127,7 +138,7 @@ namespace azmi_main
             var blobLastModified = blobProperties.Value.LastModified.UtcDateTime;
 
             // returns date of local file was last written to
-            DateTime fileLastWrite = File.GetLastWriteTimeUtc(filePath);
+            DateTime fileLastWrite = fileSystem.File.GetLastWriteTimeUtc(filePath);
 
             return blobLastModified > fileLastWrite;
         }

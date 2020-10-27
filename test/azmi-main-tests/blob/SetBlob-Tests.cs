@@ -71,6 +71,7 @@ namespace azmi_tests
             private readonly Uri _anyValidURL = new Uri("https://www.example.com");
             private readonly bool _force = false;
             private readonly string _failMsg = "Cannot convert input object to proper class";
+            private readonly Exception _testException = new Exception("testing exception");
 
             // test if it will call real execute method
             [Fact]
@@ -86,28 +87,53 @@ namespace azmi_tests
                 Assert.Equal(_failMsg, actualExc.Message);
             }
 
-            // Fix dependency on FileSystem
-            //[Fact]
-            //public void FailsWithExistingProperty()
-            //{
-            //    var obj = new SetBlob.AzmiArgumentsClass
-            //    {
-            //        file = _anyGoodPath,
-            //        blob = _anyValidURL,
-            //        force = _force,
-            //        identity = _identity,
-            //        verbose = false
-            //    };
-            //    var subCommand = new SetBlob();
+            [Fact]
+            public void FailsWithAnotherErrorWithGoodPropertiesAndNoIdentity()
+            {
+                var obj = new SetBlob.AzmiArgumentsClass
+                {
+                    file = _anyGoodPath,
+                    blob = _anyValidURL,
+                    force = _force,
+                    identity = null,
+                    verbose = false
+                };
+                var blobSubstitute = Substitute.For<IBlobClient>();
+                blobSubstitute.Upload(_anyGoodPath, _force).Throws(_testException);
+                var subCommand = new SetBlob(blobSubstitute);
 
-            //    // it throws exception
-            //    var actualExc = Assert.Throws<FileNotFoundException>(
-            //        () => subCommand.Execute(obj)
-            //    );
-            //    // TODO: Here we rely that path is really not existing, we should mock it!
-            //    Assert.NotEqual(_failMsg, actualExc.Message);
-            //    Assert.Contains(_anyGoodPath, actualExc.Message);
-            //}
+                // it throws exception
+                var actualExc = Assert.Throws<AzmiException>(() =>
+                   subCommand.Execute(obj)
+                );
+                Assert.NotEqual(_failMsg, actualExc.Message);
+                // without identity, real exception is inside of azmi exception
+                Assert.Equal(_testException.Message, actualExc.InnerException.Message);
+            }
+
+            [Fact]
+            public void FailsWithAnotherErrorWithGoodPropertiesAndWithIdentity()
+            {
+                var obj = new SetBlob.AzmiArgumentsClass
+                {
+                    file = _anyGoodPath,
+                    blob = _anyValidURL,
+                    force = _force,
+                    identity = _identity,
+                    verbose = false
+                };
+                var blobSubstitute = Substitute.For<IBlobClient>();
+                blobSubstitute.Upload(_anyGoodPath, _force).Throws(_testException);
+                var subCommand = new SetBlob(blobSubstitute);
+
+                // it throws exception
+                var actualExc = Assert.Throws<Exception>(() =>
+                   subCommand.Execute(obj)
+                );
+                Assert.NotEqual(_failMsg, actualExc.Message);
+                // with identity, we return real exception
+                Assert.Equal(_testException.Message, actualExc.Message);
+            }
         }
 
 
