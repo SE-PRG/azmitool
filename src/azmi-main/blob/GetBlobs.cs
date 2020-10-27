@@ -86,11 +86,14 @@ namespace azmi_main
                 blobListing = blobListing.Where(b => !rx.IsMatch(b)).ToList();
             }
 
-            // create root folder for blobs if we have any blobs
-            if (blobListing.Any())
+            // if no blobs, just return empty list and exit
+            if (!blobListing.Any())
             {
-                Directory.CreateDirectory(directory);
+                return new List<string>();
             }
+
+            // create root folder for blobs if we have any blobs
+            Directory.CreateDirectory(directory);
 
             // download blobs
             var results = new List<string>();
