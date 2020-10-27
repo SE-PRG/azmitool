@@ -92,7 +92,7 @@ namespace azmi_main
                 return new List<string>();
             }
 
-            // create root folder for blobs if we have any blobs
+            // create root folder for blobs
             Directory.CreateDirectory(directory);
 
             // download blobs
