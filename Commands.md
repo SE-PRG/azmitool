@@ -60,7 +60,7 @@ Print token in JSON Web Token (JWT) format.
 |**`getblob`**|`--blob`|`--file`|`--if-newer`, `--delete-after-copy`|
 |**`getblobs`**|`--container`|`--directory`|`--prefix`, `--if-newer`, `--delete-after-copy`, `--exclude`, `--absolute-paths`|
 |**`setblob`**|`--file`|`--blob` |`--force`|
-|**`setblobs`**|`--directory`|`--container`|`--force`,`--exclude`|
+|**`setblobs`**|`--directory`|`--container`|`--force`,`--exclude`, `--skip-if-same`|
 
 All commands support arguments `--identity` and `--verbose`.
 
@@ -102,6 +102,9 @@ Bool. Deletes blob after successful copy. Similar to "move" operations on file s
 
 *`--absolute-paths`*
 Bool. Listing of blobs is formatted to absolute URIs path. E.g. `https://{blobStorage-name}.blob.core.windows.net/{container-name}/file841.blob` 
+
+*`--skip-if-same`*
+Bool. Skip setting particular blob in batch if local file and already existing remote blob are same. Try to upload otherwise.
 
 ## Known limitations
 
