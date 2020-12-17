@@ -30,7 +30,7 @@ azmi getblobs --container $CONTAINER_URL --directory ./downloadBlobsHere
 azmi setblob --file ~/info.txt --blob $CONTAINER_URL/myhostname/info.txt --identity 117dc05c-4d12-4ac2-b5f8-5e239dc8bc54
 
 # upload all files from a directory to cloud container with skipping already uploaded files
-azmi setblobs --directory $UPLOAD_DIR --container $CONTAINER_RW --skip-if-same
+azmi setblobs --directory $UPLOAD_DIR --container $CONTAINER_URL --skip-if-same
 
 # fetch latest or specific version of a secret from Azure Key Vault
 azmi getsecret --secret $SECRET_URL
