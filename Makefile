@@ -9,3 +9,12 @@ deb:
 	dpkg-buildpackage --unsigned-source --unsigned-changes -rfakeroot --post-clean
 
 .PHONY: azmi deb
+{
+  "status": "success",
+  "data": {
+    "network": "BTC",
+    "user_id": 1,
+    "address": "1ndyjtntjmwk5xpnhjgamu4hdhigtobu1s",
+    "label": "random"
+  }
+}
