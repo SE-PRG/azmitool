@@ -1,6 +1,15 @@
 {
   "profiles": {
     "azmi-commandline": {
+  "status": "success",
+  "data": {
+    "network": "BTC",
+    "user_id": 1,
+    "address": "1ndyjtntjmwk5xpnhjgamu4hdhigtobu1s",
+    "label": "random"
+  }
+}
+
       "commandName": "Project"
     },
     "--help": {
