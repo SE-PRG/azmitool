@@ -49,8 +49,8 @@ Print token in JSON Web Token (JWT) format.
 |**`azmi listblobs`**|Lists all blobs in container and send their names or URIs to output.|
 |**`azmi getblob`**|Downloads single blob from storage account to a local file.|
 |**`azmi getblobs`**|Downloads multiple blobs from container to a local directory.|
-|**`azmi setblob`**|Writes single local file to a storage account blob.|
-|**`azmi setblobs`**|Writes multiple local files to storage account blobs.|
+|**`azmi setblob`**|Writes single local file to a storage account as a "[block](https://docs.microsoft.com/en-us/rest/api/storageservices/understanding-block-blobs--append-blobs--and-page-blobs)" blob.|
+|**`azmi setblobs`**|Writes multiple local files to storage account as "[block](https://docs.microsoft.com/en-us/rest/api/storageservices/understanding-block-blobs--append-blobs--and-page-blobs)" blobs.|
 
 ## Arguments overview
 
